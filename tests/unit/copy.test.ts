@@ -4,9 +4,9 @@
  */
 import { describe, expect, it } from 'vitest';
 import { ABSENT_TECH, GO_LANG, REAL_EMPLOYERS } from '../../src/content/facts';
-import * as meta from '../../src/content/copy/meta';
-import * as projects from '../../src/content/copy/projects';
-import * as resumeExtras from '../../src/content/copy/resumeExtras';
+import * as meta from '../../src/content/site/meta';
+import * as projects from '../../src/content/site/projects';
+import * as resumeExtras from '../../src/content/site/resumeExtras';
 import * as credits from '../../src/content/credits';
 import * as home from '../../src/content/site/home';
 import * as colophon from '../../src/content/site/colophon';

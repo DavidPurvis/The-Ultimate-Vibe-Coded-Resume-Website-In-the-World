@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test';
-import { ROUTES } from '../../src/content/copy/meta';
+import { ROUTES } from '../../src/content/site/meta';
 
 export const BASE = (
   process.env.BASE_PATH || '/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World'

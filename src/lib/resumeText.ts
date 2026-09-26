@@ -1,6 +1,6 @@
 /** Plain-text and Markdown renderings of the résumé (for resume.md, tests and llms.txt). */
 import { education, experience, identity, projects, skills, summary } from '../content/resume';
-import { resumeSections as S } from '../content/copy/resumeExtras';
+import { resumeSections as S } from '../content/site/resumeExtras';
 import { LANES, type LaneResume } from '../content/lanes';
 
 export function contactLine(): string {

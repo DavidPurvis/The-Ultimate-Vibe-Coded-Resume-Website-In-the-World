@@ -72,3 +72,32 @@ describe('steps and runtime', () => {
     }
   });
 });
+
+describe('the résumé boundary, at the source (A-10)', () => {
+  const RESUME_SURFACE = [
+    'src/layouts/Resume.astro',
+    'src/components/ResumeDocument.astro',
+    'src/components/LaneSwitcher.astro',
+    'src/pages/resume/index.astro',
+    'src/pages/resume/for/[lane].astro',
+    'src/scripts/resume-page.ts',
+  ];
+
+  it('the résumé never imports the case, its steps, its domain or its copy', () => {
+    for (const f of RESUME_SURFACE)
+      for (const spec of importsOf(read(f)))
+        expect(spec, `${f} imports ${spec}`).not.toMatch(
+          /\/(domain|steps|content\/institution)\/|runtime\/(kernel|persistence|signals|title)/,
+        );
+  });
+});
+
+describe('storage', () => {
+  it('only the storage primitives touch localStorage or sessionStorage directly', () => {
+    const allowed = new Set(['src/lib/storage.ts', 'src/lib/boot.ts']);
+    for (const f of files('src').filter((f) => !allowed.has(f)))
+      expect(read(f).replace(/\/\*[^]*?\*\/|\/\/.*$/gm, ''), f).not.toMatch(
+        /\b(localStorage|sessionStorage)\s*\./,
+      );
+  });
+});
