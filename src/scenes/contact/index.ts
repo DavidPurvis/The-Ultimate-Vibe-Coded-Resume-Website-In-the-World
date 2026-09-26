@@ -36,7 +36,6 @@ const faces = [...(ring?.children ?? [])] as HTMLElement[];
 let state: DrumState = { index: 0, composed: '' };
 
 if (section && drum && ring) {
-  section.hidden = false;
   const radius = (2.6 * 16) / Math.tan(Math.PI / DRUM_CHARS.length); // px, keeps faces edge to edge
   faces.forEach((f, i) => {
     f.style.transform = `rotateX(${-i * DRUM_STEP_DEG}deg) translateZ(${radius.toFixed(1)}px)`;

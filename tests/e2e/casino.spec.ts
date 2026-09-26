@@ -168,12 +168,22 @@ test.describe('link roulette', () => {
 });
 
 test.describe('without JavaScript', () => {
-  test('the house concedes: real links, no wheel', async ({ request }) => {
+  test('the house concedes: real links, no wheel', async ({ browser, request }) => {
+    const ctx = await browser.newContext({ javaScriptEnabled: false });
+    const page = await ctx.newPage();
+    await page.goto('casino/');
+    await expect(page.locator('[data-casino]')).toBeHidden();
     const html = await (await request.get('casino/')).text();
     expect(html).toMatch(
       /<noscript>[\s\S]*The wheel requires JavaScript\. The house concedes:[\s\S]*data-direct="github"[\s\S]*<\/noscript>/,
     );
-    expect(html).toMatch(/<section[^>]*data-casino[^>]*hidden/);
+    await ctx.close();
+  });
+
+  test('with JavaScript the table is in the first paint (no layout shift)', async ({ page }) => {
+    await page.goto('casino/', { waitUntil: 'commit' });
+    await expect(page.locator('html')).toHaveAttribute('data-js', '');
+    await expect(page.locator('[data-casino]')).toBeVisible();
   });
 });
 

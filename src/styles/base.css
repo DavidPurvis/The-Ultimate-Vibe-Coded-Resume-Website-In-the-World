@@ -723,6 +723,11 @@ dialog.scene-dialog::backdrop {
   }
 }
 
+/* ---------- JS-only blocks (html[data-js] is set before first paint by the boot script) ---------- */
+html:not([data-js]) .js-only {
+  display: none !important;
+}
+
 /* ---------- global effects ---------- */
 html.inspected {
   filter: invert(1) hue-rotate(180deg);

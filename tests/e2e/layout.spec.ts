@@ -29,3 +29,23 @@ test('dialogs fit a small phone with Close visible @mobile', async ({ page }) =>
   expect(box && box.width <= 320).toBe(true);
   await expect(d.getByRole('button', { name: 'Close', exact: true })).toBeInViewport();
 });
+
+test('no layout shift on load for pages with JS-only instruments', async ({ page }) => {
+  await seedPrefs(page, {}, { identityPrompted: true });
+  await page.addInitScript(() => {
+    (window as unknown as { __cls: number }).__cls = 0;
+    new PerformanceObserver((list) => {
+      for (const e of list.getEntries() as (PerformanceEntry & {
+        value: number;
+        hadRecentInput: boolean;
+      })[])
+        if (!e.hadRecentInput) (window as unknown as { __cls: number }).__cls += e.value;
+    }).observe({ type: 'layout-shift', buffered: true });
+  });
+  for (const r of ['casino/', 'contact/', 'legal/', '']) {
+    await page.goto(r);
+    await page.waitForTimeout(800);
+    const cls = await page.evaluate(() => (window as unknown as { __cls: number }).__cls);
+    expect(cls, r || '/').toBeLessThan(0.1);
+  }
+});

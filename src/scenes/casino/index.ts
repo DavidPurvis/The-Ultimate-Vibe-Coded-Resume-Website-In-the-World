@@ -321,7 +321,6 @@ function renderResult(outcome: Outcome, id: DestId): void {
 
 /* ---------- wiring ---------- */
 if (table && rotor) {
-  table.hidden = false;
   const params = new URLSearchParams(location.search);
   if (params.get('debug') === 'wedges') {
     wheel?.classList.add('wheel--debug');
