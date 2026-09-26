@@ -1,0 +1,21 @@
+---
+/**
+ * A link to one of David's destinations. On gag pages it goes through the casino (maximum
+ * hostility) — as a plain href, so it works without JS. On the résumé it is the real link.
+ */
+import { DEST, url } from '../lib/paths';
+import type { DestId } from '../content/types';
+interface Props {
+  dest: DestId;
+  layout?: 'gag' | 'resume';
+  class?: string;
+}
+const { dest, layout = 'gag', class: className } = Astro.props;
+const d = DEST[dest];
+const href = layout === 'resume' ? d.href : url(`/casino/?dest=${dest}`);
+const rel = layout === 'resume' && d.external ? 'noopener noreferrer' : undefined;
+---
+
+<a href={href} class={className} data-dest={dest} rel={rel}>
+  <slot>{d.label}</slot>
+</a>

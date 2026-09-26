@@ -1,0 +1,58 @@
+---
+import Icon from './Icon.astro';
+import ThreatMeter from './ThreatMeter.astro';
+import ThemeCycle from './ThemeCycle.astro';
+import { header, nav, callbacks } from '../content/copy/global';
+import { ROUTES } from '../content/copy/meta';
+import { url } from '../lib/paths';
+
+interface Props {
+  formId?: string;
+  currentPath: string;
+}
+const { formId, currentPath } = Astro.props;
+const formFor = (path: string) =>
+  Object.values(ROUTES).find((r) => r.path === path && 'formId' in r) as
+    { formId?: string } | undefined;
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <div class="brand">
+      <span class="brand__name">{header.name}</span>
+      <span class="brand__role">
+        {header.role} · {header.location}
+      </span>
+      {formId && <span class="brand__dept">{header.deptLine(formId)}</span>}
+      <p class="callback chaos-only" data-identity-callback>
+        {callbacks.unknown}
+      </p>
+    </div>
+    <div class="header-tools">
+      <ThreatMeter />
+      <ThemeCycle />
+      <details class="dept-menu" data-dept-menu>
+        <summary class="btn btn--small">
+          <Icon name="menu" />
+          <span>{header.navLabel}</span>
+        </summary>
+        <nav class="dept-menu__panel" aria-label={header.navLabel}>
+          <ul>
+            {nav.map((item) => (
+              <li>
+                <a
+                  href={url(item.path)}
+                  aria-current={item.path === currentPath ? 'page' : undefined}
+                  data-playful
+                >
+                  <span>{item.label}</span>
+                  <span class="form-id">{formFor(item.path)?.formId}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

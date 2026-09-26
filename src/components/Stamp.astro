@@ -1,0 +1,19 @@
+---
+interface Props {
+  text: string;
+  tone?: 'red' | 'green' | 'amber' | 'ink';
+  rotate?: number;
+  class?: string;
+}
+const { text, tone = 'red', rotate = -4, class: className } = Astro.props;
+const toneClass = tone === 'red' ? '' : `stamp--${tone}`;
+---
+
+<span
+  class:list={['stamp', toneClass, className]}
+  data-rotate={rotate}
+  role="img"
+  aria-label={`Stamp: ${text}`}
+>
+  {text}
+</span>

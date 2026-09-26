@@ -1,12 +1,12 @@
 ---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Stamp from '../components/Stamp.astro';
+import { ROUTES } from '../content/copy/meta';
+import { landing } from '../content/copy/identity';
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Scaffold</title>
-  </head>
-  <body>
-    <h1>Scaffold</h1>
-  </body>
-</html>
+<Base route={ROUTES.home}>
+  <PageHero kicker={landing.kicker} title={landing.h1} lede={landing.lede} />
+  <Stamp text="Under review" />
+</Base>

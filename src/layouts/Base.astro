@@ -1,0 +1,56 @@
+---
+/**
+ * Layout G — every gag page. Chaos layer, skip link, escape hatch, print-only résumé copy.
+ */
+import '../styles/fonts';
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/print.css';
+import Head from '../components/Head.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import ResumeDocument from '../components/ResumeDocument.astro';
+import { exits } from '../content/copy/global';
+import type { RouteMeta } from '../content/copy/meta';
+import { url } from '../lib/paths';
+
+interface Props {
+  route: RouteMeta;
+  ogTitle?: string;
+  bodyClass?: string;
+  noindex?: boolean;
+}
+const { route, ogTitle, bodyClass, noindex = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-mode="chaos" data-layout="gag">
+  <head>
+    <Head
+      title={route.title}
+      description={route.description}
+      path={route.path}
+      {...(ogTitle ? { ogTitle } : {})}
+      noindex={noindex}
+    />
+    <slot name="head" />
+  </head>
+  <body class:list={['layout-g', bodyClass]} data-cursor={route.cursor}>
+    <a class="skip-link" href={`${url('/resume/')}?mode=recruiter`} data-escape>
+      {exits.skipLink}
+    </a>
+    <SiteHeader currentPath={route.path} {...(route.formId ? { formId: route.formId } : {})} />
+    <main id="main" tabindex="-1">
+      <div class="container">
+        <slot />
+      </div>
+    </main>
+    <SiteFooter />
+    <div class="print-only" aria-hidden="true">
+      <ResumeDocument idPrefix="print" />
+    </div>
+    <slot name="after" />
+    <div class="toast-stack" data-toasts role="region" aria-label="Notifications"></div>
+    <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  </body>
+</html>

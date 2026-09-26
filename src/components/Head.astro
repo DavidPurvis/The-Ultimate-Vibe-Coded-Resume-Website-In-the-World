@@ -1,0 +1,69 @@
+---
+import { createHash } from 'node:crypto';
+import { BOOT_SCRIPT } from '../lib/boot';
+import { absoluteUrl, url } from '../lib/paths';
+import { OG_IMAGE_ALT } from '../content/copy/meta';
+import plexUrl from '@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url';
+import frauncesUrl from '@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2?url';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  ogTitle?: string;
+  noindex?: boolean;
+  preloadDisplay?: boolean;
+}
+const { title, description, path, ogTitle, noindex = false, preloadDisplay = true } = Astro.props;
+const canonical = absoluteUrl(path, Astro.site);
+const ogImage = absoluteUrl('/og.png', Astro.site);
+const bootHash = createHash('sha256').update(BOOT_SCRIPT).digest('base64');
+const csp = [
+  "default-src 'self'",
+  `script-src 'self' 'sha256-${bootHash}'`,
+  "style-src 'self'",
+  "img-src 'self' data:",
+  "font-src 'self'",
+  "connect-src 'self'",
+  'frame-src https://www.youtube-nocookie.com',
+  "media-src 'none'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'none'",
+  'upgrade-insecure-requests',
+].join('; ');
+const isProd = import.meta.env.PROD;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+{isProd && <meta http-equiv="Content-Security-Policy" content={csp} />}
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex" />}
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content="#F6F1E7" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0E1421" media="(prefers-color-scheme: dark)" />
+<link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" data-favicon />
+<link rel="icon" href={url('/generated/favicon-32.png')} sizes="32x32" type="image/png" />
+<link rel="apple-touch-icon" href={url('/generated/apple-touch-icon.png')} />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="David Purvis — Résumé" />
+<meta property="og:title" content={ogTitle ?? title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={OG_IMAGE_ALT} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={ogTitle ?? title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+<script is:inline set:html={BOOT_SCRIPT} />
+<link rel="preload" href={plexUrl} as="font" type="font/woff2" crossorigin />
+{preloadDisplay && (
+  <link rel="preload" href={frauncesUrl} as="font" type="font/woff2" crossorigin />
+)}

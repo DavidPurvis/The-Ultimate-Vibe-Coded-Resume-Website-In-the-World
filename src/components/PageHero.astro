@@ -1,0 +1,25 @@
+---
+interface Props {
+  kicker: string;
+  title: string;
+  lede?: string;
+  sub?: string;
+}
+const { kicker, title, lede, sub } = Astro.props;
+---
+
+<header class="page-hero">
+  <p class="kicker">{kicker}</p>
+  <h1>{title}</h1>
+  {sub && <p class="page-hero__sub">{sub}</p>}
+  {lede && <p class="lede">{lede}</p>}
+  <slot />
+</header>
+
+<style>
+  .page-hero__sub {
+    font: italic 400 1.15rem/1.4 var(--font-display);
+    color: var(--ink-2);
+    margin-top: calc(var(--s-2) * -1);
+  }
+</style>

@@ -1,0 +1,157 @@
+/* Design tokens — Department of Recruiter Verification. Contrast ratios verified (see plan §4.1). */
+:root {
+  color-scheme: light;
+  --paper: #f6f1e7;
+  --card: #fffdf8;
+  --ink: #14213d;
+  --ink-2: #44506b;
+  --action: #0b6b6b;
+  --action-hover: #085656;
+  --action-ink: #ffffff;
+  --warn-bg: #fce9b8;
+  --warn-ink: #7a3e00;
+  --stamp: #a8201a;
+  --ok: #1f6b2a;
+  --focus: #c2410c;
+  --rule: #b9ae96;
+  --shadow-color: 20 33 61;
+  --real-error-bg: #eceff3;
+  --real-error-ink: #1f2933;
+
+  --felt: #0b5d3b;
+  --felt-2: #0a4a30;
+  --felt-ink: #f4ebd0;
+  --gold: #e8c15a;
+  --wedge-rick: #7c2d92;
+  --wedge-rip: #3f3f46;
+  --wedge-link: #e8c15a;
+  --wedge-double: #b3261e;
+
+  --cn-bg: #fff7b3;
+  --cn-yellow: #ffe600;
+  --cn-pink: #ff3ea5;
+  --cn-purple: #5b21b6;
+  --cn-ink: #1a0033;
+  --cn-error: #b00020;
+
+  --font-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-display: 'Fraunces Variable', 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-comic: 'Comic Sans MS', 'Comic Neue', 'Chalkboard SE', cursive;
+
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4rem;
+  --s-9: 6rem;
+
+  --r-1: 4px;
+  --r-2: 10px;
+  --r-3: 18px;
+  --r-pill: 999px;
+
+  --sh-1: 0 1px 0 rgb(var(--shadow-color) / 0.08), 0 2px 8px rgb(var(--shadow-color) / 0.06);
+  --sh-2: 0 12px 40px rgb(var(--shadow-color) / 0.18);
+
+  --dur-1: 120ms;
+  --dur-2: 180ms;
+  --dur-3: 320ms;
+  --dur-spin: 4200ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spin: cubic-bezier(0.12, 0.8, 0.12, 1);
+
+  --content: 72rem;
+  --prose: 42rem;
+  --target: 44px;
+
+  --z-header: 10;
+  --z-threat: 20;
+  --z-toast: 30;
+  --z-banner: 40;
+  --z-lights: 50;
+  --z-lights-ui: 55;
+  --z-gravity: 60;
+  --z-error: 70;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]),
+  :root[data-theme='system'] {
+    color-scheme: dark;
+    --paper: #0e1421;
+    --card: #172036;
+    --ink: #eee7d8;
+    --ink-2: #b8b1a1;
+    --action: #4cc9c4;
+    --action-hover: #6fd8d4;
+    --action-ink: #05201f;
+    --warn-bg: #3a2a0a;
+    --warn-ink: #ffd58a;
+    --stamp: #ff8a80;
+    --ok: #7bd88f;
+    --focus: #fdba74;
+    --rule: #2b3550;
+    --shadow-color: 0 0 0;
+    --real-error-bg: #1d2533;
+    --real-error-ink: #e6eaf0;
+  }
+}
+
+:root[data-theme='dark'],
+:root[data-theme='lights-out'] {
+  color-scheme: dark;
+  --paper: #0e1421;
+  --card: #172036;
+  --ink: #eee7d8;
+  --ink-2: #b8b1a1;
+  --action: #4cc9c4;
+  --action-hover: #6fd8d4;
+  --action-ink: #05201f;
+  --warn-bg: #3a2a0a;
+  --warn-ink: #ffd58a;
+  --stamp: #ff8a80;
+  --ok: #7bd88f;
+  --focus: #fdba74;
+  --rule: #2b3550;
+  --shadow-color: 0 0 0;
+  --real-error-bg: #1d2533;
+  --real-error-ink: #e6eaf0;
+}
+
+:root[data-theme='darker'] {
+  color-scheme: dark;
+  --paper: #050709;
+  --card: #0b0f17;
+  --ink: #cfc8b8;
+  --ink-2: #9c9587;
+  --action: #3ab5b0;
+  --action-hover: #55c9c4;
+  --action-ink: #05201f;
+  --warn-bg: #2a1f08;
+  --warn-ink: #ffd58a;
+  --stamp: #ff8a80;
+  --ok: #7bd88f;
+  --focus: #fdba74;
+  --rule: #1a2030;
+  --shadow-color: 0 0 0;
+  --real-error-bg: #11161f;
+  --real-error-ink: #d6dbe2;
+}
+
+:root[data-theme='comic'] {
+  --font-body: var(--font-comic);
+  --font-display: var(--font-comic);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0.01ms;
+    --dur-2: 0.01ms;
+    --dur-3: 0.01ms;
+    --dur-spin: 400ms;
+  }
+}
