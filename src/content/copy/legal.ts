@@ -23,8 +23,9 @@ export const facts = {
   tableCols: ['Key', 'Where', 'Size', 'Purpose'],
   empty: 'Nothing is stored right now.',
   purposes: {
-    'uvcr:prefs': 'Your mode, theme and cookie-banner choice.',
-    'uvcr:session': 'Your fictional identity and game progress, for this tab only.',
+    'uvcr:prefs': 'Your mode, theme, HUD setting and cookie-banner choice.',
+    'uvcr:session':
+      'Your fictional identity, game progress and summoned players, for this tab only.',
     'uvcr:biscotti': 'Fifty drawings of biscotti, only if you asked for them.',
   } as Record<string, string>,
   where: { local: 'localStorage (this browser)', session: 'sessionStorage (this tab)' },

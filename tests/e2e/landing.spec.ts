@@ -183,11 +183,17 @@ test.describe('I am not a robot', () => {
   test('keyboard activation never moves it and earns the power-user toast', async ({ page }) => {
     await page.goto('./');
     const btn = page.locator('[data-robot]');
-    const before = await btn.boundingBox();
+    // Page coordinates, not viewport ones: focusing may scroll the page, which isn't the button moving.
+    const pagePos = () =>
+      btn.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        return { x: r.left + scrollX, y: r.top + scrollY, w: r.width, h: r.height };
+      });
+    const before = await pagePos();
     await btn.focus();
     await page.keyboard.press('Enter');
     await expect(page.getByText('Keyboard user detected. You may pass, power user.')).toBeVisible();
-    expect(await btn.boundingBox()).toEqual(before);
+    expect(await pagePos()).toEqual(before);
     await expect(page).toHaveURL(/\/verify\/$/);
   });
 

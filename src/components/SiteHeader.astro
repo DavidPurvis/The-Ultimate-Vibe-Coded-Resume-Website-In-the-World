@@ -2,7 +2,7 @@
 import Icon from './Icon.astro';
 import ThreatMeter from './ThreatMeter.astro';
 import ThemeCycle from './ThemeCycle.astro';
-import { header, nav, callbacks } from '../content/copy/global';
+import { header, navGroups, callbacks } from '../content/copy/global';
 import { ROUTES } from '../content/copy/meta';
 import { url } from '../lib/paths';
 
@@ -37,20 +37,27 @@ const formFor = (path: string) =>
           <span>{header.navLabel}</span>
         </summary>
         <nav class="dept-menu__panel" aria-label={header.navLabel}>
-          <ul>
-            {nav.map((item) => (
-              <li>
-                <a
-                  href={url(item.path)}
-                  aria-current={item.path === currentPath ? 'page' : undefined}
-                  data-playful
-                >
-                  <span>{item.label}</span>
-                  <span class="form-id">{formFor(item.path)?.formId}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
+          {navGroups.map((g) => (
+            <div class="dept-menu__group">
+              <p class="dept-menu__heading" id={`nav-${g.id}`}>
+                {g.label}
+              </p>
+              <ul aria-labelledby={`nav-${g.id}`}>
+                {g.items.map((item) => (
+                  <li>
+                    <a
+                      href={url(item.path)}
+                      aria-current={item.path === currentPath ? 'page' : undefined}
+                      data-playful
+                    >
+                      <span>{item.label}</span>
+                      <span class="form-id">{formFor(item.path)?.formId}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </nav>
       </details>
     </div>

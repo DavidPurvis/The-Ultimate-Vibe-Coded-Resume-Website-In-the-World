@@ -69,7 +69,7 @@ test.describe('routes', () => {
         /verify you are human|recaptcha|turnstile|hcaptcha|win\s*\+\s*r/i,
       );
       expect(html, r).not.toMatch(/<input[^>]+type="(checkbox|password)"/);
-      expect(html, r).not.toMatch(/DRV-7\b/);
+      expect(html, r).not.toMatch(/DRV-\d*7\d*\b/);
     }
   });
 });

@@ -67,6 +67,12 @@ describe('prefs', () => {
     expect(p.theme).toBe('system');
     expect(p).not.toHaveProperty('evil');
   });
+  it('HUD preference accepts only off/overkill', () => {
+    local.setItem('uvcr:prefs', JSON.stringify({ v: 1, hud: 'overkill' }));
+    expect(readPrefs().hud).toBe('overkill');
+    local.setItem('uvcr:prefs', JSON.stringify({ v: 1, hud: 'maximum' }));
+    expect(readPrefs().hud).toBe('off');
+  });
   it('writePrefs merges', () => {
     writePrefs({ theme: 'darker' });
     writePrefs({ mode: 'recruiter' });
@@ -92,6 +98,20 @@ describe('session', () => {
     const s = readSession();
     expect(s.casino).toEqual({ linkedin: 2 });
     expect(s.captcha).toMatchObject({ round: 'windows', totalRejections: 0 });
+  });
+  it('clamps the summoned-player count to the reasonable amount', () => {
+    for (const [raw, want] of [
+      [5, 5],
+      [99, 12],
+      [-3, 0],
+      [2.9, 2],
+      ['lots', 0],
+    ] as const) {
+      session.setItem('uvcr:session', JSON.stringify({ v: 1, subway: { count: raw } }));
+      expect(readSession().subway.count).toBe(want);
+    }
+    session.setItem('uvcr:session', JSON.stringify({ v: 1, subway: 'yes' }));
+    expect(readSession().subway).toEqual({ count: 0 });
   });
 });
 

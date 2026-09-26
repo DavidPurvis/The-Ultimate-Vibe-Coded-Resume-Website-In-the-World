@@ -112,10 +112,10 @@ describe('copy deck hygiene', () => {
     for (const s of allStrings) for (const re of forbidden) expect(s, s).not.toMatch(re);
   });
 
-  it('form numbers never include 7', () => {
+  it('form numbers never include a 7 (DRV-7, DRV-17 and DRV-27 were abolished)', () => {
     for (const s of allStrings) {
-      expect(s, s).not.toMatch(/DRV-7\b/);
-      expect(s, s).not.toMatch(/DRV-\d+\/0?7\b/);
+      expect(s, s).not.toMatch(/DRV-\d*7\d*\b/);
+      expect(s, s).not.toMatch(/DRV-\d+\/\d*7\d*\b/);
     }
   });
 

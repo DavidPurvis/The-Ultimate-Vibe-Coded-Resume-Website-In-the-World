@@ -243,6 +243,9 @@ html:not([data-mode='recruiter']) .recruiter-only {
   right: 0;
   top: calc(100% + var(--s-2));
   min-width: 16rem;
+  max-height: min(75vh, 44rem);
+  overflow: auto;
+  overscroll-behavior: contain;
   background: var(--card);
   border: 1px solid var(--rule);
   border-radius: var(--r-2);
@@ -269,6 +272,30 @@ html:not([data-mode='recruiter']) .recruiter-only {
 .dept-menu__panel a:hover,
 .dept-menu__panel a[aria-current='page'] {
   background: color-mix(in srgb, var(--action) 12%, transparent);
+}
+.dept-menu__heading {
+  margin: var(--s-2) var(--s-3) var(--s-1);
+  font: 600 0.75rem/1.2 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.dept-menu__group + .dept-menu__group {
+  border-top: 1px solid var(--rule);
+  margin-top: var(--s-1);
+}
+@media (min-width: 48rem) {
+  .dept-menu__panel {
+    width: max-content;
+    max-width: min(46rem, calc(100vw - 2rem));
+    display: grid;
+    grid-template-columns: repeat(2, minmax(15rem, 1fr));
+    column-gap: var(--s-4);
+  }
+  .dept-menu__group + .dept-menu__group {
+    border-top: 0;
+    margin-top: 0;
+  }
 }
 .dept-menu__panel .form-id {
   font: 400 0.75rem var(--font-mono);

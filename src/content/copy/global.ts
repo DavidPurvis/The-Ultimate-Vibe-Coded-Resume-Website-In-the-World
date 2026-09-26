@@ -10,20 +10,51 @@ export const header = {
   navLabel: 'Departments',
 };
 
-/** The Departments menu. The résumé is deliberately not listed (maximum hostility). */
-export const nav = [
-  { path: '/', label: 'Identity Checkpoint' },
-  { path: '/verify/', label: 'CAPTCHAN’T™' },
-  { path: '/about/', label: 'Character Review' },
-  { path: '/skills/', label: 'Loadout' },
-  { path: '/beliefs/', label: 'Research' },
-  { path: '/support/', label: 'Causes' },
-  { path: '/legal/', label: 'Legally Binding Vibes' },
-  { path: '/casino/', label: 'Link Roulette' },
-  { path: '/contact/', label: 'Contact' },
-  { path: '/projects/', label: 'Case Files' },
-  { path: '/how-it-was-built/', label: 'How This Was Built' },
-] as const;
+export interface NavItem {
+  path: string;
+  label: string;
+}
+export interface NavGroup {
+  id: string;
+  label: string;
+  items: NavItem[];
+}
+
+/** The Departments menu, by division. The résumé is deliberately not listed (maximum hostility). */
+export const navGroups: NavGroup[] = [
+  {
+    id: 'gauntlet',
+    label: 'The Gauntlet',
+    items: [
+      { path: '/', label: 'Identity Checkpoint' },
+      { path: '/verify/', label: 'CAPTCHAN’T™' },
+      { path: '/about/', label: 'Character Review' },
+      { path: '/skills/', label: 'Loadout' },
+      { path: '/beliefs/', label: 'Research' },
+      { path: '/support/', label: 'Causes' },
+      { path: '/casino/', label: 'Link Roulette' },
+      { path: '/projects/', label: 'Case Files' },
+    ],
+  },
+  {
+    id: 'forms',
+    label: 'Forms',
+    items: [{ path: '/contact/', label: 'Contact' }],
+  },
+  {
+    id: 'legal',
+    label: 'Legal',
+    items: [{ path: '/legal/', label: 'Legally Binding Vibes' }],
+  },
+  {
+    id: 'about-site',
+    label: 'Facilities',
+    items: [{ path: '/how-it-was-built/', label: 'How This Was Built' }],
+  },
+];
+
+/** Flat list (hotbars, tests). */
+export const nav: NavItem[] = navGroups.flatMap((g) => g.items);
 
 export const exits = {
   skipLink: 'Skip the gauntlet → résumé',

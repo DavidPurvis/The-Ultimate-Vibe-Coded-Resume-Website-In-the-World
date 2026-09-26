@@ -2,7 +2,7 @@
  * Post-build scan of dist/ (plan §12.3). Fails the build on anything that would make the site's
  * promises untrue: malware-flavoured copy, CAPTCHA-vendor lookalikes, third-party loads, a CSP
  * hash that doesn't match the one inline script, style attributes, missing meta, blown JS budgets,
- * test hooks leaking into production, or Form DRV-7 (which does not exist).
+ * test hooks leaking into production, or a form number containing a 7 (abolished).
  */
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -44,7 +44,7 @@ const FORBIDDEN: [RegExp, string][] = [
   [/execCommand\(\s*['"]copy/, 'clipboard access'],
   [/\.exe\b/i, 'executable reference'],
   [/g-recaptcha|recaptcha|turnstile|cf-challenge|hcaptcha/i, 'CAPTCHA vendor lookalike'],
-  [/DRV-7\b/, 'Form DRV-7 does not exist'],
+  [/DRV-\d*7\d*\b/, 'Form numbers never contain a 7'],
   [/\[(EMAIL|PHONE|USERNAME)\]/, 'unfilled placeholder'],
 ];
 /** Test hooks must never ship. */

@@ -29,6 +29,8 @@ export interface Prefs {
   cookieBanner: BannerState;
   notified: boolean;
   sound: boolean;
+  /** Overkill HUD (edge-crowding overlay). */
+  hud: 'off' | 'overkill';
 }
 
 export interface IdentitySnapshot {
@@ -57,6 +59,8 @@ export interface SessionState {
   appendixOpened: boolean;
   identityPrompted: boolean;
   loadBearingShown: boolean;
+  /** Attention-Span Mode: how many gameplay players were summoned this session. */
+  subway: { count: number };
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -66,6 +70,7 @@ export const DEFAULT_PREFS: Prefs = {
   cookieBanner: 'pending',
   notified: false,
   sound: false,
+  hud: 'off',
 };
 
 export const DEFAULT_SESSION: SessionState = {
@@ -81,6 +86,7 @@ export const DEFAULT_SESSION: SessionState = {
   appendixOpened: false,
   identityPrompted: false,
   loadBearingShown: false,
+  subway: { count: 0 },
 };
 
 type Area = 'local' | 'session';
@@ -212,6 +218,7 @@ export function validatePrefs(o: Record<string, unknown> | null): Prefs {
     ),
     notified: bool(o.notified, false),
     sound: bool(o.sound, false),
+    hud: oneOf(o.hud, ['off', 'overkill'] as const, 'off'),
   };
 }
 
@@ -271,6 +278,19 @@ export function validateSession(o: Record<string, unknown> | null): SessionState
     appendixOpened: bool(o.appendixOpened, false),
     identityPrompted: bool(o.identityPrompted, false),
     loadBearingShown: bool(o.loadBearingShown, false),
+    subway: validateSubway(o.subway),
+  };
+}
+
+/** Subway players are capped (see scenes/subway/logic.ts); anything else resets to none. */
+export const SUBWAY_MAX = 12;
+function validateSubway(v: unknown): { count: number } {
+  const n = v && typeof v === 'object' ? (v as { count?: unknown }).count : 0;
+  return {
+    count:
+      typeof n === 'number' && Number.isFinite(n)
+        ? Math.min(SUBWAY_MAX, Math.max(0, Math.floor(n)))
+        : 0,
   };
 }
 

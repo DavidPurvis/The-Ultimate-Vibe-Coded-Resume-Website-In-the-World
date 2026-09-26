@@ -2,6 +2,7 @@
 import ModeToggle from './ModeToggle.astro';
 import Memo from './Memo.astro';
 import { exits, footer } from '../content/copy/global';
+import { adsCopy } from '../content/copy/ads';
 import { memos } from '../content/copy/memos';
 import { url } from '../lib/paths';
 ---
@@ -22,6 +23,7 @@ import { url } from '../lib/paths';
       ))}
     </div>
     <p class="fine">{footer.tagline}</p>
+    <p class="fine chaos-only">{adsCopy.blockerNote}</p>
     <p class="fine">{footer.copyright}</p>
   </div>
   <Memo text={memos.konami} />

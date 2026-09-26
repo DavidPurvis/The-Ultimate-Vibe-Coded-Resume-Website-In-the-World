@@ -1,0 +1,36 @@
+---
+/**
+ * A parody ad that just says "ad". Static HTML with a reserved height (no layout shift), hidden in
+ * Recruiter Mode, never on the résumé. Class names avoid ad-blocker filter patterns on purpose.
+ */
+import { adsCopy, pickAd } from '../content/copy/ads';
+
+interface Props {
+  placement: 'leaderboard' | 'banner' | 'inline';
+  seed: string;
+}
+const { placement, seed } = Astro.props;
+const salt = { leaderboard: 1, banner: 2, inline: 3 }[placement];
+const v = pickAd(seed, salt);
+---
+
+<aside
+  class={`parody-billboard parody-billboard--${placement} chaos-only`}
+  aria-label={adsCopy.label}
+  data-parody-ad
+  data-variant={v.id}
+>
+  <span class="parody-billboard__tag">{adsCopy.tag}</span>
+  <div class={`pb pb--${v.style}`} data-pb>
+    <p class="pb__text">
+      {v.struck && <del>{v.struck}</del>}
+      <span data-pb-text>{v.text}</span>
+    </p>
+    <p class="pb__small" data-pb-small>
+      {v.small ?? ''}
+    </p>
+  </div>
+  <button type="button" class="pb__skip" data-ad-skip>
+    {adsCopy.skip}
+  </button>
+</aside>

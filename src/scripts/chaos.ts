@@ -192,4 +192,10 @@ greet();
 if (readPrefs().cookieBanner === 'pending' && isChaos())
   void import('../scenes/cookie-banner').then((m) => m.maybeStartBanner());
 
+/* ---------- Parody ads: "Skip this ad" skips to another ad (logic loads on first skip) ---------- */
+document.addEventListener('click', (e) => {
+  const btn = (e.target as HTMLElement | null)?.closest<HTMLElement>('[data-ad-skip]');
+  if (btn) void import('../scenes/ads').then((m) => m.skipAd(btn));
+});
+
 window.addEventListener('pagehide', () => disposeAll('navigate'));
