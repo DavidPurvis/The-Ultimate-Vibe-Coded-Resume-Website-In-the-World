@@ -12,14 +12,19 @@ const stars = (n: number) => '★'.repeat(n) + '☆'.repeat(5 - n);
   <PageHero kicker={W.kicker} title={W.h1} sub={W.sub} />
 
   <figure class="hero-cube" data-cube-hero>
-    <img
-      src={url('/illustrations/tungsten-cube.svg')}
-      alt={W.heroAlt}
-      width="320"
-      height="300"
-      data-cube-fallback
-    />
-    <figcaption class="fine">{W.heroCaption}</figcaption>
+    <div class="hero-cube__stage">
+      <img
+        src={url('/illustrations/tungsten-cube.svg')}
+        alt={W.heroAlt}
+        width="320"
+        height="300"
+        data-cube-fallback
+      />
+      <canvas role="img" aria-label={W.heroAlt} hidden></canvas>
+    </div>
+    <figcaption class="fine">
+      {W.heroCaption} <a href={url('/cube/')}>{W.heroLink}</a>
+    </figcaption>
   </figure>
 
   <ul class="wishes" role="list" data-wishes>
@@ -59,6 +64,7 @@ const stars = (n: number) => '★'.repeat(n) + '☆'.repeat(5 - n);
 
 <script>
   import '../../scenes/wishlist';
+  import '../../scenes/cube/hero';
 </script>
 
 <style>
@@ -67,9 +73,19 @@ const stars = (n: number) => '★'.repeat(n) + '☆'.repeat(5 - n);
     max-width: 22rem;
     text-align: center;
   }
-  .hero-cube img {
+  .hero-cube__stage {
+    position: relative;
+    aspect-ratio: 320 / 300;
+  }
+  .hero-cube__stage img,
+  .hero-cube__stage canvas {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: auto;
+    height: 100%;
+  }
+  .hero-cube__stage [hidden] {
+    display: none;
   }
   .wishes {
     list-style: none;

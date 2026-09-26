@@ -139,6 +139,13 @@ export const ROUTES = {
       'David Purvis’s wishlist: a tungsten cube, a second tungsten cube for symmetry, and quantities of everyday essentials that concern procurement.',
     formId: 'DRV-18',
   },
+  cube: {
+    path: '/cube/',
+    title: 'The Tungsten Cube Experience · David Purvis',
+    description:
+      'A four-inch tungsten cube from David Purvis’s wishlist, rendered in physically based WebGL. Drag to orbit, heft it, and summon ten thousand more.',
+    formId: 'DRV-19',
+  },
   sellData: {
     path: '/sell-your-data/',
     title: 'Sell Your Data (For Free) · David Purvis',

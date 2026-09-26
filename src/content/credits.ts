@@ -297,6 +297,15 @@ export const LEDGER: LedgerEntry[] = [
     note: 'Loaded only when you press the button you were told not to press.',
   },
   {
+    id: 'lib-three',
+    name: 'three.js',
+    kind: 'library',
+    license: 'MIT',
+    author: 'three.js authors',
+    url: 'https://threejs.org/',
+    note: 'Loaded only on the tungsten cube pages, and only once they need to draw.',
+  },
+  {
     id: 'media-rick',
     name: 'Rick Astley — official music video',
     kind: 'media',

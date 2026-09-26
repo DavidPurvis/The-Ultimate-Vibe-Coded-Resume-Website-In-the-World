@@ -38,6 +38,8 @@ const JS_BUDGET_KB: Record<string, number> = {
 const DEFAULT_JS_BUDGET_KB = 14;
 const CSS_BUDGET_KB = 20;
 const LAZY_CHUNK_BUDGET_KB = 35;
+/** three.js and the tungsten cube scene: lazy, loaded only by /cube/ and the wishlist hero. */
+const THREE_BUDGET_KB = 200;
 
 const FORBIDDEN: [RegExp, string][] = [
   [/verify you are human/i, 'real-CAPTCHA phrasing'],
@@ -125,7 +127,9 @@ for (const f of jsFiles) {
       u.startsWith('https://github.com/DavidPurvis') ||
       u.startsWith('https://www.linkedin.com/in/dgp0') ||
       u.startsWith('http://www.w3.org/') ||
-      u.startsWith('https://tosdr.org');
+      u.startsWith('https://tosdr.org') ||
+      // A paper cited in a comment inside one of three.js's GLSL shader strings; never fetched.
+      u === 'https://jcgt.org/published/0007/04/01/';
     if (!allowed) fail(f, `unexpected external URL in script: ${u}`);
   }
 }
@@ -225,6 +229,17 @@ for (const f of jsFiles) {
       fail(f, `lazy chunk over ${LAZY_CHUNK_BUDGET_KB} KB gz`);
   }
 }
+
+/* ---------- three.js must stay lazy (never in a page's static bundle) and bounded ---------- */
+const threeChunks = jsFiles.filter((f) =>
+  /isWebGLRenderer|isMeshPhysicalMaterial|isInstancedMesh/.test(readFileSync(f, 'utf8')),
+);
+for (const f of threeChunks)
+  if (staticallyReachable.has(f)) fail(f, 'three.js is statically reachable from a page');
+const threeTotal = threeChunks.reduce((n, f) => n + gz(readFileSync(f)), 0);
+if (threeTotal > THREE_BUDGET_KB * 1024)
+  fail(DIST, `three.js chunks total ${kb(threeTotal)} KB gz, over ${THREE_BUDGET_KB} KB`);
+rows.push(['(lazy) three.js + cube', kb(threeTotal), String(THREE_BUDGET_KB)]);
 
 /* ---------- report ---------- */
 const w = Math.max(...rows.map((r) => r[0].length), 5);

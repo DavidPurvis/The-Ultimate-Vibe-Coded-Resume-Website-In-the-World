@@ -59,7 +59,10 @@ export const navGroups: NavGroup[] = [
   {
     id: 'recreation',
     label: 'Recreation',
-    items: [{ path: '/presentation/', label: 'Résumé.ppt' }],
+    items: [
+      { path: '/cube/', label: 'Tungsten Cube' },
+      { path: '/presentation/', label: 'Résumé.ppt' },
+    ],
   },
   {
     id: 'legal',

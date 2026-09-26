@@ -9,6 +9,7 @@ export const wishlistCopy = {
   added: 'Added to cart. The cart has since been returned to the corral.',
   heroCaption: 'Figure 1. A four-inch tungsten cube. About 44 pounds of pure intention.',
   heroAlt: 'A dense, dark-grey metal cube with softly rounded edges',
+  heroLink: 'Heft it in 3D →',
   totalLabel: 'Estimated total',
   total: 'More than a salary. Less than a tungsten sphere.',
 };
