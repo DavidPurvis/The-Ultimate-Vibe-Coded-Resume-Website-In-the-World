@@ -26,6 +26,10 @@ describe('asset ledger', () => {
     for (const f of files) expect(covered.has(f) || f.startsWith('captcha/cage/'), f).toBe(true);
   });
 
+  it('every file listed in the ledger exists', () => {
+    for (const f of covered) expect(existsSync(join(PUBLIC, f)), f).toBe(true);
+  });
+
   it('licensed Cage photos (if ever added) each carry license + author', () => {
     const photos = walk(join(PUBLIC, 'captcha', 'cage')).map((f) => relative(PUBLIC, f));
     for (const p of photos) {

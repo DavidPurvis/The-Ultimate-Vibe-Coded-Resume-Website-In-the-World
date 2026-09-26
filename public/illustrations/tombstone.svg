@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 420" width="360" height="420">
+  <title>A tombstone</title>
+  <ellipse cx="180" cy="400" rx="170" ry="18" fill="#3F6B2E"/>
+  <path d="M50 396 V150 Q50 40 180 40 Q310 40 310 150 V396 Z" fill="#9CA3AF" stroke="#1A1A2E" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M70 390 V156 Q70 62 180 62 Q290 62 290 156 V390" fill="none" stroke="#B8BEC6" stroke-width="4"/>
+  <path d="M250 110 L262 142 L250 160 L266 190" fill="none" stroke="#6B7280" stroke-width="3" stroke-linecap="round"/>
+  <g fill="#4E8A43" stroke="#1A1A2E" stroke-width="3" stroke-linejoin="round">
+    <path d="M40 398 L52 360 L60 392 L70 350 L80 396 Z"/>
+    <path d="M280 398 L290 356 L298 394 L310 364 L318 398 Z"/>
+    <path d="M150 400 L158 376 L166 400 Z"/>
+  </g>
+</svg>

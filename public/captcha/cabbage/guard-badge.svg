@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <title>Nicolas Cabbage wearing a museum guard’s badge and cap</title>
+  <rect width="240" height="240" fill="#F4EEE2"/>
+  <g stroke="#1A1A2E" stroke-width="5" stroke-linejoin="round">
+    <path d="M40 150 Q30 96 76 74 Q98 52 124 62 Q164 50 190 88 Q214 120 200 162 Q186 206 124 212 Q60 214 40 150 Z" fill="#5E9E4F"/>
+    <path d="M58 150 Q54 104 92 90 Q120 74 150 90 Q184 108 182 150 Q176 192 124 196 Q66 196 58 150 Z" fill="#8CC474"/>
+    <path d="M80 146 Q80 116 108 106 Q134 98 156 116 Q170 132 160 158 Q148 180 118 180 Q84 178 80 146 Z" fill="#B7DB94"/>
+  </g>
+  <g stroke="#4E8A43" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M60 140 Q82 128 90 104"/><path d="M178 136 Q160 126 152 100"/><path d="M122 196 Q122 186 122 178"/>
+  </g>
+  <g fill="#1A1A2E"><circle cx="104" cy="138" r="6"/><circle cx="140" cy="138" r="6"/></g>
+  <path d="M108 160 Q122 170 136 160" stroke="#1A1A2E" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <g stroke="#1A1A2E" stroke-width="4" stroke-linejoin="round">
+    <path d="M70 84 Q120 40 172 84 Z" fill="#1E3A8A"/>
+    <path d="M62 86 H184 Q192 96 176 98 H70 Q54 96 62 86 Z" fill="#1E3A8A"/>
+    <path d="M150 88 Q180 94 194 104 L150 100 Z" fill="#0F1F4D"/>
+    <circle cx="122" cy="66" r="8" fill="#E8B923"/>
+    <path d="M168 178 l6 12 13 2 -9 9 2 13 -12 -6 -12 6 2 -13 -9 -9 13 -2 Z" fill="#E8B923"/>
+  </g>
+</svg>
