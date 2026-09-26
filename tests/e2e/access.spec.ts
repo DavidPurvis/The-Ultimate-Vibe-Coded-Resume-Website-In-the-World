@@ -42,8 +42,8 @@ test.describe('access', () => {
       context.waitForEvent('page'),
       page.getByRole('link', { name: 'View résumé' }).click({ modifiers: ['ControlOrMeta'] }),
     ]);
-    await popup.waitForLoadState();
-    expect(popup.url()).toMatch(/\/resume\/$/);
+    // A new tab starts at about:blank; wait for the navigation itself, not just a load state.
+    await expect(popup).toHaveURL(/\/resume\/$/);
     await expect(page.locator('#case')).toBeHidden();
     const stored = await page.evaluate(() => sessionStorage.getItem('uvcr:case'));
     expect(JSON.parse(stored ?? '{"events":[]}').events).toEqual([]);
