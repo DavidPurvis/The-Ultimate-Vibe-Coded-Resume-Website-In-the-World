@@ -297,7 +297,7 @@ export const matrix: MatrixRow[] = [
     liability: {
       id: 'l-python',
       text: 'Automated away 125 hours of tedium per year and refuses to say what he did with them.',
-      status: 'verified',
+      status: 'fictional',
       blockRefs: ['A2'],
     },
   },
@@ -312,7 +312,7 @@ export const matrix: MatrixRow[] = [
     liability: {
       id: 'l-ps',
       text: 'Has provisioned 150+ machines and apologized to none of them.',
-      status: 'verified',
+      status: 'fictional',
       blockRefs: ['B1'],
     },
   },
@@ -327,7 +327,7 @@ export const matrix: MatrixRow[] = [
     liability: {
       id: 'l-xml',
       text: 'Has seen 100+ ways to spell the same field. Cannot unsee them.',
-      status: 'verified',
+      status: 'fictional',
       blockRefs: ['C1'],
     },
   },

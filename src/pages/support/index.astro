@@ -1,0 +1,101 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import { ROUTES } from '../../content/copy/meta';
+import { causes, causesCopy as C } from '../../content/copy/causes';
+import { url } from '../../lib/paths';
+---
+
+<Base route={ROUTES.support}>
+  <PageHero kicker={C.kicker} title={C.h1} sub={C.sub} />
+
+  <div class="gravity-controls chaos-only">
+    <button type="button" class="btn btn--danger" data-gravity-trigger>
+      <Icon set="fluent" name="bomb" />
+      <span data-label>{C.gravityButton}</span>
+    </button>
+    <p class="fine" data-gravity-note aria-live="polite"></p>
+  </div>
+
+  <ol class="causes" role="list">
+    {causes.map((c, i) => (
+      <li class="card cause" data-gravity>
+        <p class="card__form-id">CAUSE {String(i + 1).padStart(2, '0')}</p>
+        <h2 class="cause__title">
+          {c.icon && <Icon set="fluent" name={c.icon} size={32} />}
+          {c.text}
+        </h2>
+        <p class="cause__plan">
+          <strong>{C.planLabel}:</strong> {c.plan}
+        </p>
+        {c.kevin && (
+          <div class="kevin">
+            <button type="button" class="btn btn--small" data-kevin>
+              {C.kevinButton}
+            </button>
+            <p class="fine" data-kevin-result aria-live="polite" />
+          </div>
+        )}
+      </li>
+    ))}
+  </ol>
+
+  <button type="button" class="btn btn--primary gravity-rebuild" data-gravity-rebuild hidden>
+    <Icon name="rotate-ccw" />
+    {C.gravityRebuild}
+  </button>
+  <span hidden data-gravity-copy={JSON.stringify(C)}></span>
+
+  <p class="section">
+    <a class="btn btn--primary" href={url('/legal/')} data-playful>
+      Continue to Legally Binding Vibes →
+    </a>
+  </p>
+</Base>
+
+<script>
+  import '../../scenes/gravity';
+</script>
+
+<style>
+  .gravity-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    align-items: center;
+    margin-bottom: var(--s-5);
+  }
+  .causes {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--s-4);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  }
+  .cause {
+    will-change: auto;
+  }
+  .cause__title {
+    font: 600 1.2rem/1.35 var(--font-body);
+    display: flex;
+    gap: var(--s-2);
+    align-items: flex-start;
+  }
+  .cause__title :global(svg) {
+    flex: none;
+  }
+  .cause__plan {
+    color: var(--ink-2);
+    margin: 0;
+  }
+  .kevin {
+    margin-top: var(--s-3);
+  }
+  .gravity-rebuild {
+    position: fixed;
+    top: var(--s-4);
+    right: var(--s-4);
+    z-index: calc(var(--z-gravity) + 1);
+  }
+</style>
