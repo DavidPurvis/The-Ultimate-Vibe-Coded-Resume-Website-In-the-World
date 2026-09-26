@@ -783,3 +783,10 @@ html.gravity-lock body {
 .stamp[data-rotate='5'] {
   --stamp-rotate: 5deg;
 }
+
+/* Evasive controls animate their transform; reduced motion keeps them still. */
+.runaway {
+  transition: transform var(--dur-2) var(--ease-out);
+  position: relative;
+  z-index: 1;
+}
