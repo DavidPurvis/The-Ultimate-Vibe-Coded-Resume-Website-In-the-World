@@ -67,15 +67,24 @@ test.describe('the Access Request', () => {
     await page.getByRole('button', { name: 'Request full document' }).click();
     await expect(heading(page)).toHaveText('Behavioral review');
 
-    // The control slides away from the approaching pointer, twice, then holds still.
+    // With a fine pointer and motion allowed, the control slides away from the approaching
+    // pointer, twice, then holds still. (Some headless browsers report no fine pointer; there the
+    // same three activations are clicks, and the dodge is covered by the Chromium run.)
     const control = releaseControl(page);
+    const dodges = await page.evaluate(
+      () =>
+        matchMedia('(pointer: fine)').matches &&
+        !matchMedia('(prefers-reduced-motion: reduce)').matches,
+    );
     const start = await control.boundingBox();
-    await control.hover();
+    if (dodges) await control.hover();
+    else await control.click();
     await expect(control).toHaveText('Release document (under review)');
     await expect(page.locator('#announcer')).toHaveText('Request reassigned to Window 2.');
-    expect(await control.boundingBox()).not.toEqual(start);
+    if (dodges) expect(await control.boundingBox()).not.toEqual(start);
     await page.mouse.move(0, 0); // the pointer crosses the desk on its way back
-    await control.hover();
+    if (dodges) await control.hover();
+    else await control.click();
     await expect(control).toHaveText('Release document (reassigned)');
     await control.click();
 
