@@ -1,0 +1,207 @@
+{
+  "id": "emb",
+  "code": "EMB",
+  "label": "Embedded software",
+  "path": "/resume/for/emb/",
+  "pdf": "resume-emb.pdf",
+  "pdfName": "David-Purvis-Resume-Embedded.pdf",
+  "order": [
+    "summary",
+    "skills",
+    "education",
+    "projects",
+    "experience"
+  ],
+  "summary": {
+    "block": "SUM-EMB-SHORT",
+    "text": "Software engineer pivoting to embedded, with a completed digital logic and microprocessors sequence, two years of production Python and systems automation, and personal embedded Linux work in D-Bus, systemd, and USB HID."
+  },
+  "skills": [
+    {
+      "label": "Languages",
+      "items": "Python, Bash, JavaScript, SQL; C, PIC24 assembly (coursework)"
+    },
+    {
+      "label": "Embedded & Systems",
+      "items": "USB HID, Linux, systemd, D-Bus, udev, Docker, Proxmox VE; I2C/SPI/UART and digital logic design (coursework)"
+    },
+    {
+      "label": "Practices",
+      "items": "Git, CI/CD, unattended job design, technical documentation"
+    }
+  ],
+  "education": [
+    {
+      "block": "E1",
+      "school": "University of Colorado Boulder",
+      "line": "MS, Computer Science (Professional) · Expected May 2028"
+    },
+    {
+      "block": "E2",
+      "school": "Mississippi State University",
+      "line": "BS, Computer Science, AI Concentration · May 2023 · Magna Cum Laude · 3.76 GPA",
+      "notes": [
+        {
+          "block": "E4",
+          "text": "Began in Computer Engineering and completed the digital logic and microprocessors sequence before transferring into Computer Science."
+        },
+        {
+          "block": "CW2",
+          "text": "Relevant coursework: Microprocessors (PIC24 assembly and C, I2C/SPI/UART, single-board bring-up), Digital Devices and Logic Design, Operating Systems, Programming Language Implementation."
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "P1",
+      "anchor": "car-thing",
+      "name": "Car Thing Media Controller",
+      "stack": "Python, aiohttp, dbus-next, systemd, MPRIS",
+      "bullets": [
+        {
+          "block": "P1",
+          "text": "Repurposed a discontinued Spotify Car Thing (embedded Linux touch device) into a desk media controller. Wrote a Python service bridging MPRIS over D-Bus and an HTTP control API, auto-detecting the active player and serving a touch-optimized 800x480 frontend to the device. Packaged with an install script and a systemd user unit."
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "anchor": "stream-deck",
+      "name": "Stream Deck + Bring-Up on Linux",
+      "stack": "USB HID, udev, PipeWire",
+      "bullets": [
+        {
+          "block": "P2",
+          "text": "Brought a USB HID control surface (Stream Deck +) up on Fedora-based Linux without vendor software; diagnosed a device-enumeration failure through differential testing across two open-source host implementations, and built per-application audio routing through PipeWire."
+        }
+      ]
+    },
+    {
+      "id": "P3",
+      "anchor": "homelab",
+      "name": "Self-Hosted Service Infrastructure",
+      "stack": "Proxmox VE, Docker, Python, CI/CD",
+      "bullets": [
+        {
+          "block": "P3",
+          "text": "Built a CI/CD pipeline from pull request through build to deployment for containerized services on a Proxmox host, including a self-hosted OpenSpeedTest instance and a Python scraper that monitors rafting availability and posts notifications to Discord."
+        }
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "id": "aspen-sfa",
+      "title": "Salesforce Administrator",
+      "org": "City of Aspen, Strategy & Innovation Office",
+      "location": "Aspen, CO",
+      "dates": "Apr 2025 – May 2026",
+      "start": "2025-04",
+      "bullets": [
+        {
+          "block": "A1",
+          "text": "Served as the sole technical resource for the city’s Salesforce org, the system of record for permitting and financial operations across 22 departments in a 300+ employee municipal government."
+        },
+        {
+          "block": "A2",
+          "text": "Built a Python integration extracting financial data via the Salesforce REST API and loading daily journal entries into Oracle, deployed as an unattended scheduled job with automated reporting of run status and error conditions; eliminated ~125 hours of annual manual entry and a recurring transcription error path."
+        },
+        {
+          "block": "A3",
+          "text": "Isolated and corrected a runtime order-of-execution defect surfaced during a full platform migration of the org’s automation inventory ahead of a vendor retirement deadline."
+        }
+      ]
+    },
+    {
+      "id": "aspen-it",
+      "title": "IT Support Specialist",
+      "org": "City of Aspen",
+      "location": "Aspen, CO",
+      "dates": "Oct 2024 – Apr 2025",
+      "start": "2024-10",
+      "bullets": [
+        {
+          "block": "B1",
+          "text": "Automated workstation imaging and setup with a PowerShell provisioning script, deploying and configuring 150+ machines in six months."
+        }
+      ]
+    },
+    {
+      "id": "cspire",
+      "title": "Software Developer Intern, Fiber Billing",
+      "org": "C Spire",
+      "location": "Ridgeland, MS",
+      "dates": "Jun 2021 – Jul 2021",
+      "start": "2021-06",
+      "bullets": [
+        {
+          "block": "C1",
+          "text": "Developed an adaptive XML parser handling 100+ schema variants for the Fiber Billing system, sustaining a throughput of 1,000 files per minute."
+        },
+        {
+          "block": "C2",
+          "text": "Automated SFTP transfer and parsing between Linux hosts; integrated the pipeline into the existing continuous integration process."
+        }
+      ]
+    }
+  ],
+  "selection": {
+    "selected": [
+      "ID (full contact line, no phone)",
+      "SUM-EMB-SHORT",
+      "S2 (coursework-only skills labelled)",
+      "E1",
+      "E2",
+      "E4",
+      "Coursework C2 (compressed embedded)",
+      "P1 (long framing)",
+      "P2 (long framing)",
+      "P3 (first sentence, verb-first)",
+      "A1 (verb-first, written from the FACT line)",
+      "A2 (embedded/reliability framing)",
+      "A3 (debugging-forward)",
+      "B1 (automation-forward)",
+      "C1 (throughput framing)",
+      "C2 (as written)"
+    ],
+    "cut": [
+      {
+        "block": "D1 and the rafting header",
+        "reason": "Cut-order #7: the page ran five lines over."
+      },
+      {
+        "block": "S1",
+        "reason": "Compressed to S2 (cut-order #8), after which the page fits."
+      },
+      {
+        "block": "SUM-EMB",
+        "reason": "Used SUM-EMB-SHORT: the long form lists C and PIC24 assembly beside production work without the coursework label (pack §4)."
+      },
+      {
+        "block": "A4, A5, A6, A7",
+        "reason": "Not part of the EMB composition (A5 is weak for EMB)."
+      },
+      {
+        "block": "B2–B5",
+        "reason": "Not part of the EMB composition."
+      },
+      {
+        "block": "E3, E5",
+        "reason": "EMB composition uses E1+E2+E4+C2."
+      },
+      {
+        "block": "P4–P7",
+        "reason": "Not in EMB; P4 is on the /projects/ Case Files page."
+      },
+      {
+        "block": "O1–O4",
+        "reason": "Optional sections; cut-order #1."
+      },
+      {
+        "block": "MSU Teaching Assistant",
+        "reason": "Pack: incomplete record, never write a bullet."
+      }
+    ]
+  }
+}

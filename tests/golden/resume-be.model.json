@@ -1,0 +1,190 @@
+{
+  "id": "be",
+  "code": "BE",
+  "label": "Backend and distributed systems",
+  "path": "/resume/for/be/",
+  "pdf": "resume-be.pdf",
+  "pdfName": "David-Purvis-Resume-Backend.pdf",
+  "order": [
+    "summary",
+    "experience",
+    "projects",
+    "skills",
+    "education"
+  ],
+  "summary": {
+    "block": "SUM-BE",
+    "text": "Software engineer with two years of production integration work — REST API extraction, scheduled batch loading into a financial system of record, and high-throughput parsing across 100+ schema variants. MS in Computer Science in progress at CU Boulder, focused on network and distributed systems."
+  },
+  "experience": [
+    {
+      "id": "aspen-sfa",
+      "title": "Salesforce Administrator",
+      "org": "City of Aspen, Strategy & Innovation Office",
+      "location": "Aspen, CO",
+      "dates": "Apr 2025 – May 2026",
+      "start": "2025-04",
+      "bullets": [
+        {
+          "block": "A1",
+          "text": "Served as the sole technical resource for the city’s Salesforce org, the system of record for permitting and financial operations across 22 departments in a 300+ employee municipal government."
+        },
+        {
+          "block": "A2",
+          "text": "Built a daily batch integration extracting financial records via REST and loading journal entries into Oracle Financials, with automated status and failure reporting; eliminated ~125 hours of annual manual data entry."
+        },
+        {
+          "block": "A3",
+          "text": "Migrated the org’s full inventory of legacy automation to the current platform framework ahead of a vendor retirement deadline, isolating and correcting a runtime order-of-execution defect introduced by the transition."
+        }
+      ]
+    },
+    {
+      "id": "aspen-it",
+      "title": "IT Support Specialist",
+      "org": "City of Aspen",
+      "location": "Aspen, CO",
+      "dates": "Oct 2024 – Apr 2025",
+      "start": "2024-10",
+      "bullets": []
+    },
+    {
+      "id": "rafting",
+      "title": "Whitewater Rafting Guide / Instructor",
+      "org": "Whitewater Rafting, LLC",
+      "location": "Glenwood Springs, CO",
+      "dates": "May 2022 – Nov 2024 (seasonal)",
+      "start": "2022-05",
+      "bullets": [
+        {
+          "block": "D1",
+          "text": "Led trips of up to 20 rafts and 120 customers; trained new guides on technique and safety protocol."
+        }
+      ]
+    },
+    {
+      "id": "cspire",
+      "title": "Software Developer Intern, Fiber Billing",
+      "org": "C Spire",
+      "location": "Ridgeland, MS",
+      "dates": "Jun 2021 – Jul 2021",
+      "start": "2021-06",
+      "bullets": [
+        {
+          "block": "C1",
+          "text": "Developed an adaptive parser that normalized 100+ schema variants into a single billing ingest path, sustaining 1,000 files per minute."
+        },
+        {
+          "block": "C2",
+          "text": "Automated SFTP transfer and parsing between Linux hosts; integrated the pipeline into the existing continuous integration process."
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "P3",
+      "anchor": "homelab",
+      "name": "Self-Hosted Service Infrastructure",
+      "stack": "Proxmox VE, Docker, Python, CI/CD",
+      "bullets": [
+        {
+          "block": "P3",
+          "text": "Built a CI/CD pipeline from pull request through build to deployment for containerized services on a Proxmox host, including a self-hosted OpenSpeedTest instance and a Python scraper that monitors rafting availability and posts notifications to Discord."
+        }
+      ]
+    },
+    {
+      "id": "P4",
+      "anchor": "dashboard",
+      "name": "Match Analytics Dashboard",
+      "stack": "React, REST API integration",
+      "bullets": [
+        {
+          "block": "P4",
+          "text": "Built a React dashboard over a third-party match-statistics API, extracting 459 opening-duel events and 258 clutch events across 21 matches into six tabs of performance metrics; documented zeroed percentage fields in the primary endpoint and computed them from a secondary array endpoint."
+        }
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "label": "Languages",
+      "items": "Python, JavaScript, SQL, Bash; Java, C (coursework)"
+    },
+    {
+      "label": "Backend",
+      "items": "REST API integration, batch and scheduled data pipelines, high-throughput parsing, schema normalization"
+    },
+    {
+      "label": "Infrastructure",
+      "items": "Linux, Docker, Proxmox VE, CI/CD, Git"
+    }
+  ],
+  "education": [
+    {
+      "block": "E1",
+      "school": "University of Colorado Boulder",
+      "line": "MS, Computer Science (Professional) · Expected May 2028",
+      "notes": [
+        {
+          "block": "E3",
+          "text": "Coursework: Network Systems, Graduate Algorithms"
+        }
+      ]
+    },
+    {
+      "block": "E2",
+      "school": "Mississippi State University",
+      "line": "BS, Computer Science, AI Concentration · May 2023 · Magna Cum Laude · 3.76 GPA",
+      "notes": [
+        {
+          "block": "CW4",
+          "text": "Coursework: Operating Systems, Algorithms, Software Architecture and Design, Software Testing and QA, Programming Language Implementation."
+        }
+      ]
+    }
+  ],
+  "selection": {
+    "selected": [
+      "ID (full contact line, no phone)",
+      "SUM-BE",
+      "A1 (verb-first, written from the FACT line)",
+      "A2 (backend framing)",
+      "A3 (migration-forward)",
+      "IT Support Specialist header only",
+      "C1 (robustness framing)",
+      "C2 (as written)",
+      "D1",
+      "P3 (first sentence, verb-first)",
+      "P4 (API-inconsistency detail, game unnamed)",
+      "S4 (coursework-only languages labelled)",
+      "E1",
+      "E2",
+      "E3",
+      "Coursework C4"
+    ],
+    "cut": [
+      {
+        "block": "B1–B5",
+        "reason": "Pack: for BE, keep the IT Support header only."
+      },
+      {
+        "block": "A4–A7",
+        "reason": "Not part of the BE composition."
+      },
+      {
+        "block": "P1, P2, P5–P7",
+        "reason": "Not in BE; P1 and P2 are on the /projects/ Case Files page."
+      },
+      {
+        "block": "O1–O4",
+        "reason": "Optional sections; cut-order #1."
+      },
+      {
+        "block": "MSU Teaching Assistant",
+        "reason": "Pack: incomplete record, never write a bullet."
+      }
+    ]
+  }
+}
