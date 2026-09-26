@@ -30,7 +30,9 @@ const csp = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'none'",
-  'upgrade-insecure-requests',
+  // No upgrade-insecure-requests: Pages is HTTPS-only and every subresource is same-origin and
+  // path-relative (scan-dist enforces it), so it adds nothing — and WebKit applies it to plain-HTTP
+  // localhost, breaking local and CI runs.
 ].join('; ');
 const isProd = import.meta.env.PROD;
 ---
