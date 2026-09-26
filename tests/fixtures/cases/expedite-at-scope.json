@@ -1,0 +1,45 @@
+{
+  "name": "expedite-at-scope",
+  "seed": 1,
+  "events": [
+    {
+      "t": "RESUME_REQUESTED",
+      "via": "cta"
+    },
+    {
+      "t": "BYPASS_REQUESTED"
+    },
+    {
+      "t": "RESUME_REQUESTED",
+      "via": "full-document"
+    }
+  ],
+  "expect": {
+    "phase": "authorized",
+    "via": "expedited",
+    "index": 2,
+    "accepted": 2,
+    "resisted": 0,
+    "ack": "pending",
+    "lane": null,
+    "findings": {},
+    "caseNumber": "DRV-114220",
+    "risk": {
+      "value": "0.4399",
+      "primary": null
+    },
+    "ceremonyIndexOf4": 2,
+    "disposition": {
+      "caseNumber": "DRV-114220",
+      "route": "expedited",
+      "lane": "gen",
+      "statedScope": null,
+      "lines": [],
+      "resistance": {
+        "used": 0,
+        "permitted": 2
+      },
+      "requests": 1
+    }
+  }
+}

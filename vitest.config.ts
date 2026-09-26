@@ -3,10 +3,10 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     environment: 'node',
-    include: ['tests/unit/**/*.test.ts'],
+    include: ['tests/{unit,property,replay}/**/*.test.ts'],
     coverage: {
       provider: 'v8',
-      include: ['src/lib/**/*.ts', 'src/scenes/**/logic.ts'],
+      include: ['src/lib/**/*.ts', 'src/scenes/**/logic.ts', 'src/domain/**/*.ts'],
       // DOM wiring (dialogs, toasts, live regions, pointer chases, mode transactions, test hooks)
       // runs in real browsers under Playwright; the unit gate measures the pure logic only.
       exclude: [
@@ -22,7 +22,12 @@ export default defineConfig({
         'src/lib/testHooks.ts',
         'src/lib/toast.ts',
       ],
-      thresholds: { lines: 90, branches: 85 },
+      thresholds: {
+        lines: 90,
+        branches: 85,
+        // The case's pure core carries the progress and fairness proofs: hold it higher.
+        'src/domain/**': { lines: 95, branches: 90 },
+      },
     },
   },
 });

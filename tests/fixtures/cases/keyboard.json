@@ -1,0 +1,88 @@
+{
+  "name": "keyboard",
+  "seed": 4242,
+  "events": [
+    {
+      "t": "RESUME_REQUESTED",
+      "via": "cta"
+    },
+    {
+      "t": "RESUME_REQUESTED",
+      "via": "cta"
+    },
+    {
+      "t": "SCOPE_STATED",
+      "lane": "plt"
+    },
+    {
+      "t": "ACKNOWLEDGED"
+    },
+    {
+      "t": "RESUME_REQUESTED",
+      "via": "full-document"
+    },
+    {
+      "t": "RELEASE_ATTEMPTED"
+    },
+    {
+      "t": "RELEASE_ATTEMPTED"
+    },
+    {
+      "t": "RELEASE_ATTEMPTED"
+    },
+    {
+      "t": "STEP_COMPLETED",
+      "step": "ceremony"
+    },
+    {
+      "t": "STEP_COMPLETED",
+      "step": "findings"
+    },
+    {
+      "t": "ACKNOWLEDGED"
+    },
+    {
+      "t": "ACKNOWLEDGED"
+    }
+  ],
+  "expect": {
+    "phase": "authorized",
+    "via": "adjudicated",
+    "index": 10,
+    "accepted": 10,
+    "resisted": 2,
+    "ack": "acknowledged",
+    "lane": "plt",
+    "findings": {
+      "REPEATED_REQUEST": 1,
+      "PERSISTENCE": 2
+    },
+    "caseNumber": "DRV-682998",
+    "risk": {
+      "value": "0.7743",
+      "primary": "PERSISTENCE"
+    },
+    "ceremonyIndexOf4": 0,
+    "disposition": {
+      "caseNumber": "DRV-682998",
+      "route": "adjudicated",
+      "lane": "plt",
+      "statedScope": "plt",
+      "lines": [
+        {
+          "finding": "REPEATED_REQUEST",
+          "count": 1
+        },
+        {
+          "finding": "PERSISTENCE",
+          "count": 2
+        }
+      ],
+      "resistance": {
+        "used": 2,
+        "permitted": 2
+      },
+      "requests": 2
+    }
+  }
+}

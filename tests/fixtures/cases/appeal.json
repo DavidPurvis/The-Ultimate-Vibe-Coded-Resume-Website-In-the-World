@@ -1,0 +1,92 @@
+{
+  "name": "appeal",
+  "seed": 6,
+  "events": [
+    {
+      "t": "NOTICE_DISMISSED"
+    },
+    {
+      "t": "RESUME_REQUESTED",
+      "via": "cta"
+    },
+    {
+      "t": "SCOPE_STATED",
+      "lane": "unspecified"
+    },
+    {
+      "t": "RESUME_REQUESTED",
+      "via": "full-document"
+    },
+    {
+      "t": "RELEASE_ATTEMPTED"
+    },
+    {
+      "t": "RELEASE_ATTEMPTED"
+    },
+    {
+      "t": "RELEASE_ATTEMPTED"
+    },
+    {
+      "t": "STEP_COMPLETED",
+      "step": "ceremony"
+    },
+    {
+      "t": "STEP_COMPLETED",
+      "step": "findings"
+    },
+    {
+      "t": "ACKNOWLEDGED"
+    },
+    {
+      "t": "APPEAL_REQUESTED"
+    },
+    {
+      "t": "ACKNOWLEDGED"
+    }
+  ],
+  "expect": {
+    "phase": "authorized",
+    "via": "appeal-reconciled",
+    "index": 12,
+    "accepted": 12,
+    "resisted": 2,
+    "ack": "appealed",
+    "lane": "unspecified",
+    "findings": {
+      "ACKNOWLEDGMENT_DECLINED": 1,
+      "REPEATED_REQUEST": 1,
+      "PERSISTENCE": 2
+    },
+    "caseNumber": "DRV-433606",
+    "risk": {
+      "value": "0.8111",
+      "primary": "PERSISTENCE"
+    },
+    "ceremonyIndexOf4": 0,
+    "disposition": {
+      "caseNumber": "DRV-433606",
+      "route": "appeal-reconciled",
+      "lane": "gen",
+      "statedScope": "unspecified",
+      "lines": [
+        {
+          "finding": "REPEATED_REQUEST",
+          "count": 1
+        },
+        {
+          "finding": "PERSISTENCE",
+          "count": 2
+        },
+        {
+          "finding": "ACKNOWLEDGMENT_DECLINED",
+          "count": 1
+        }
+      ],
+      "resistance": {
+        "used": 2,
+        "permitted": 2
+      },
+      "requests": 2
+    }
+  }
+}
