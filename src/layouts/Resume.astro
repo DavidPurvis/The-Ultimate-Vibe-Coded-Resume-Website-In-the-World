@@ -1,8 +1,11 @@
 ---
-/** Layout R — the résumé. No chaos layer. Calm, fast, print-perfect. */
+/**
+ * Layout R: the résumé. No case runtime, no institutional copy, no storage access (its boot
+ * script only marks data-js). Calm, fast, print-perfect.
+ */
 import '../styles/fonts';
 import '../styles/tokens.css';
-import '../styles/base.css';
+import '../styles/core.css';
 import '../styles/print.css';
 import Head from '../components/Head.astro';
 import type { RouteMeta } from '../content/copy/meta';
@@ -14,13 +17,14 @@ const { route } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" data-mode="chaos" data-layout="resume">
+<html lang="en" data-layout="resume">
   <head>
     <Head
       title={route.title}
       description={route.description}
       path={route.path}
       preloadDisplay={false}
+      boot="resume"
     />
     <slot name="head" />
   </head>

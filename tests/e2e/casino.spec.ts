@@ -163,7 +163,7 @@ test.describe('link roulette', () => {
   test('responsible gambling goes straight to the résumé', async ({ page }) => {
     await page.goto('casino/');
     await page.getByRole('link', { name: '1-800-JUST-READ-THE-RESUME' }).click();
-    await expect(page).toHaveURL(/\/resume\/\?mode=recruiter$/);
+    await expect(page).toHaveURL(/\/resume\/$/);
   });
 });
 

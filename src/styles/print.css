@@ -21,8 +21,15 @@
     min-height: 0;
     background-image: none !important;
   }
-  /* Gag pages print their hidden résumé copy; the résumé page prints its <main>. Nothing else. */
-  body.layout-g > :not(.print-only) {
+  /* The case page (and the old gag pages) print their hidden résumé copy; the résumé page prints its
+     <main>; other plain pages print themselves without the site chrome. */
+  body.layout-g > :not(.print-only),
+  body.layout-s[data-print-resume] > :not(.print-only) {
+    display: none !important;
+  }
+  body.layout-s > .skip-link,
+  body.layout-s > .site-bar,
+  body.layout-s > .site-foot {
     display: none !important;
   }
   body.layout-r > :not(main) {

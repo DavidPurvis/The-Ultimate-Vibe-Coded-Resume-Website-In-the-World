@@ -4,6 +4,7 @@
  * Every bullet traces to a block ID; framings are pack-provided (or written from the FACT line).
  */
 import type { BlockId } from './types';
+import { EMAIL, identity } from './identity';
 
 export interface Bullet {
   block: BlockId;
@@ -27,16 +28,7 @@ export interface Project {
   bullets: Bullet[];
 }
 
-export const EMAIL = 'davidpurvis647@gmail.com';
-
-export const identity = {
-  name: 'David Purvis',
-  headline: 'Software Engineer',
-  location: 'Broomfield, CO',
-  email: EMAIL,
-  linkedin: { href: 'https://www.linkedin.com/in/dgp0', display: 'linkedin.com/in/dgp0' },
-  github: { href: 'https://github.com/DavidPurvis', display: 'github.com/DavidPurvis' },
-} as const;
+export { EMAIL, identity };
 
 export const summary: Bullet = {
   block: 'SUM-GEN',

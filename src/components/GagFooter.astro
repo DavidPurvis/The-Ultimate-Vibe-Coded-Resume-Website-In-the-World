@@ -1,0 +1,31 @@
+---
+import ModeToggle from './ModeToggle.astro';
+import Memo from './Memo.astro';
+import { exits, footer } from '../content/copy/global';
+import { adsCopy } from '../content/copy/ads';
+import { memos } from '../content/copy/memos';
+import { url } from '../lib/paths';
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <div class="site-footer__row">
+      <div class="hatch-arena" data-hatch-arena>
+        <a class="hatch" href={url('/resume/')} data-escape data-hatch>
+          {exits.hatch}
+        </a>
+      </div>
+      <ModeToggle />
+    </div>
+    <div class="site-footer__row">
+      {footer.links.map((l) => (
+        <a href={url(l.path)}>{l.label}</a>
+      ))}
+    </div>
+    <p class="fine">{footer.tagline}</p>
+    <p class="fine chaos-only">{adsCopy.blockerNote}</p>
+    <p class="fine">{footer.copyright}</p>
+  </div>
+  <Memo text={memos.konami} />
+  <Memo text={memos.resumeHint(url('/resume/'))} />
+</footer>

@@ -47,7 +47,6 @@ test.describe('résumé page @smoke', () => {
     await page.emulateMedia({ media: 'print' });
     await expect(page.locator('main .resume')).toBeVisible();
     await expect(page.locator('.resume-tools')).toBeHidden();
-    await expect(page.locator('.resume-fine')).toBeHidden();
   });
 
   test('Download PDF links to a real one-page PDF', async ({ page, request }) => {
@@ -59,47 +58,11 @@ test.describe('résumé page @smoke', () => {
     expect(res.headers()['content-type']).toContain('application/pdf');
   });
 
-  test('Hire chain completes by keyboard and ends at a real mailto', async ({ page }) => {
+  test('the email button is a plain mailto, with nothing else attached', async ({ page }) => {
     await page.goto('resume/');
-    await page.getByRole('button', { name: 'Hire David' }).focus();
-    await page.keyboard.press('Enter');
-    const dialog = page.getByRole('dialog');
-    await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole('heading', { level: 2 })).toHaveText('Hire David?');
-    await dialog.getByRole('button', { name: 'Yes', exact: true }).press('Enter');
-    await expect(dialog.getByRole('heading', { level: 2 })).toHaveText('Are you double sure?');
-    await dialog.getByRole('button', { name: 'Double yes' }).press('Enter');
-    await expect(dialog.getByRole('heading', { level: 2 })).toHaveText(
-      'Have you consulted Claude?',
-    );
-    await dialog.getByRole('button', { name: 'No, I’m a professional' }).press('Enter');
-    await expect(dialog.getByRole('heading', { level: 2 })).toHaveText('Claude says yes.');
-    const mail = dialog.getByRole('link', { name: 'Open email to David →' });
-    await expect(mail).toHaveAttribute('href', /^mailto:davidpurvis647@gmail\.com\?subject=/);
-    await page.keyboard.press('Escape');
-    await expect(dialog).toBeHidden();
-    await expect(page.getByRole('button', { name: 'Hire David' })).toBeFocused();
-  });
-
-  test('declining the Hire chain is respected', async ({ page }) => {
-    await page.goto('resume/');
-    await page.getByRole('button', { name: 'Hire David' }).click();
-    await page.getByRole('dialog').getByRole('button', { name: 'No', exact: true }).click();
-    await expect(page.getByRole('dialog')).toContainText(
-      'Understandable. The résumé will be here.',
-    );
-  });
-
-  test('?mode=recruiter shows the recruiter bar and persists', async ({ page }) => {
-    await page.goto('resume/?mode=recruiter');
-    await expect(page.locator('html')).toHaveAttribute('data-mode', 'recruiter');
-    await expect(
-      page.getByText('Recruiter Mode is on. The Department has stood down.'),
-    ).toBeVisible();
-    const prefs = await page.evaluate(() => localStorage.getItem('uvcr:prefs'));
-    expect(JSON.parse(prefs ?? '{}').mode).toBe('recruiter');
-    await page.getByRole('button', { name: 'Re-enable chaos' }).click();
-    await expect(page.locator('html')).toHaveAttribute('data-mode', 'chaos');
+    const mail = page.getByRole('link', { name: 'Email David' });
+    await expect(mail).toHaveAttribute('href', 'mailto:davidpurvis647@gmail.com');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
   });
 });
 

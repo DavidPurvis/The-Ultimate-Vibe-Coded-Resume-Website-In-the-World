@@ -59,3 +59,27 @@ The "Phase" column says when the file changes.
 - `subway.spec.ts` (`subwayVideos`).
 
 Both specs are obsolete, so the hooks and the second build are deleted in P4A/P4B. After that, E2E runs on the production `dist`.
+
+## Changes made in P2
+
+`/` is now the Access Request, so it no longer carries the old gag layer (header menus, threat meter, ads, the cookie banner). Specs that tested that layer through `/` now open a legacy page that still has it:
+- `chaos.spec.ts` and `ads.spec.ts` go to `about/`;
+- `personnel.spec.ts` (menu test) goes to `about/`;
+- `a11y.spec.ts` and `privacy.spec.ts` first visit to `about/`.
+
+These specs are still deleted with the legacy layer (P4A/P4B).
+
+**New in P2:**
+
+| File | Covers |
+| --- | --- |
+| `tests/dom/lifecycle.test.ts` | `Scope`, `mountPage` (ported from `scene.test.ts`) |
+| `tests/dom/imports.test.ts` | No module-scope side effects in `src/{runtime,steps,domain}` |
+| `tests/dom/persistence.test.ts` | `uvcr:case` load, save, corrupt input, legacy cleanup, throwing storage |
+| `tests/dom/signals.test.ts` | Visibility, copy and print adapters; GPC; listener types |
+| `tests/dom/kernel.test.ts` | CTA intercept (A8), fail-open (A7), `?mode=recruiter`, the notice, restore without focus theft |
+| `tests/dom/steps.test.ts` | Each step renderer: its beat, its events, nothing left after dispose |
+| `tests/unit/csp.test.ts` | `buildCsp`, `ENGINE_CSP` equals `play.html`, boot scripts |
+| `tests/e2e/narrative.spec.ts` | Journeys J1–J3, J5–J8, J10, J11 (slice form until P3) |
+| `tests/e2e/boundary.spec.ts` | `/resume/` stays clean while a case is open in the same tab |
+| `tests/e2e/access.spec.ts` | Skip link, direct link and expedite at every step, modified clicks, 44 px, J9 |

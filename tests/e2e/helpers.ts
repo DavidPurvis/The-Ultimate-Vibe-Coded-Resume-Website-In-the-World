@@ -44,6 +44,33 @@ export async function seedPrefs(
   );
 }
 
+/**
+ * Pre-seed the Access Request case in sessionStorage (the production code path: a stored case).
+ * The seed makes every cosmetic choice reproducible; `events` restores a case mid-flow.
+ */
+export async function seedCase(
+  page: Page,
+  { seed = 4242, events = [] as unknown[] }: { seed?: number; events?: unknown[] } = {},
+): Promise<void> {
+  const flag = `__case:${seed}:${JSON.stringify(events)}`;
+  await page.addInitScript(
+    ([s, ev, f]) => {
+      try {
+        if (sessionStorage.getItem(f as string)) return;
+        const opened = (ev as { t: string }[]).some((e) => e.t === 'RESUME_REQUESTED');
+        sessionStorage.setItem(
+          'uvcr:case',
+          JSON.stringify({ v: 2, seed: s, events: ev, hint: opened ? 'open' : 'arrival' }),
+        );
+        sessionStorage.setItem(f as string, '1');
+      } catch {
+        /* ignore */
+      }
+    },
+    [seed, events, flag] as const,
+  );
+}
+
 /** Collect console errors, page errors and CSP violations for assertion at the end of a test. */
 export async function watchErrors(page: Page): Promise<() => Promise<void>> {
   const errors: string[] = [];

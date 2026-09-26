@@ -43,7 +43,7 @@ test.describe('parody ads that just say "ad"', () => {
   });
 
   test('grouped departments menu lists every division', async ({ page }) => {
-    await page.goto('./');
+    await page.goto('about/');
     await page.locator('[data-dept-menu] summary').click();
     const nav = page.getByRole('navigation', { name: 'Departments' });
     for (const g of ['The Gauntlet', 'Forms', 'Legal'])

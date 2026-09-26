@@ -1,19 +1,15 @@
 ---
 import Resume from '../../layouts/Resume.astro';
 import ResumeDocument from '../../components/ResumeDocument.astro';
-import SceneDialog from '../../components/SceneDialog.astro';
 import Icon from '../../components/Icon.astro';
-import Memo from '../../components/Memo.astro';
 import LaneSwitcher from '../../components/LaneSwitcher.astro';
 import '../../styles/resume.css';
 import { ROUTES } from '../../content/copy/meta';
-import { hireChain, resumeTools } from '../../content/copy/resumeExtras';
-import { recruiterBar } from '../../content/copy/global';
-import { memos } from '../../content/copy/memos';
+import { resumeTools } from '../../content/copy/resumeExtras';
 import { identity } from '../../content/resume';
 import { absoluteUrl, entityEncode, url } from '../../lib/paths';
 
-const mailto = `mailto:${identity.email}?subject=${encodeURIComponent(hireChain.subject)}`;
+const mailto = `mailto:${identity.email}`;
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
@@ -36,15 +32,6 @@ const jsonLd = {
 
 <Resume route={ROUTES.resume}>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
-  <div class="recruiter-bar recruiter-only screen-only" slot="top">
-    <div class="container">
-      <span>{recruiterBar.text}</span>
-      <button type="button" class="btn btn--small" data-reenable-chaos>
-        {recruiterBar.button}
-      </button>
-    </div>
-  </div>
-
   <div class="resume-page">
     <div class="resume-sheet">
       <ResumeDocument />
@@ -54,57 +41,16 @@ const jsonLd = {
         <Icon name="download" />
         {resumeTools.download}
       </a>
-      <button type="button" class="btn" data-print>
+      <button type="button" class="btn js-only" data-print>
         <Icon name="printer" />
         {resumeTools.print}
       </button>
-      <button type="button" class="btn" data-hire>
-        <Icon set="fluent" name="crossed-fingers" />
-        {resumeTools.hire}
-      </button>
-    </div>
-    <p class="fine resume-fine screen-only">{resumeTools.fine}</p>
-    <LaneSwitcher current="gen" />
-  </div>
-
-  <SceneDialog id="hire" title={hireChain.steps[0]?.title ?? ''} closeLabel={hireChain.closeLabel}>
-    {hireChain.steps.map((s, i) => (
-      <div class="hire-step" data-step={i} hidden={i !== 0}>
-        <p>{s.body}</p>
-        <div class="btn-row">
-          <button type="button" class="btn btn--primary" data-yes>
-            {s.yes}
-          </button>
-          <button type="button" class="btn" data-no>
-            {s.no}
-          </button>
-        </div>
-      </div>
-    ))}
-    <div class="hire-step" data-step="final" hidden>
-      <p class="fine">{hireChain.final.fine}</p>
       <Fragment
-        set:html={`<a class="btn btn--primary" data-hire-mail href="${entityEncode(mailto)}">${hireChain.final.button}</a>`}
+        set:html={`<a class="btn" href="${entityEncode(mailto)}">${resumeTools.email}</a>`}
       />
     </div>
-    <div class="hire-step" data-step="declined" hidden>
-      <p>{hireChain.declined}</p>
-      <button type="button" class="btn" data-close>
-        Close
-      </button>
-    </div>
-    <span
-      hidden
-      data-hire-copy={JSON.stringify({
-        steps: hireChain.steps.map((s) => s.title),
-        final: hireChain.final.title,
-        consulting: hireChain.consulting,
-        declined: hireChain.declined,
-      })}
-    ></span>
-  </SceneDialog>
-
-  <Memo text={memos.resume} />
+    <LaneSwitcher current="gen" />
+  </div>
 </Resume>
 
 <script>

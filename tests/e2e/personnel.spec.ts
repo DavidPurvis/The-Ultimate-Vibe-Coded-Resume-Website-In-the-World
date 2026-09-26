@@ -83,7 +83,7 @@ test.describe('personnel, wishlist, Nintendo, tribute', () => {
   });
 
   test('new departments are in the menu', async ({ page }) => {
-    await page.goto('./');
+    await page.goto('about/');
     await page.locator('[data-dept-menu] summary').click();
     const personnel = page.getByRole('list', { name: 'Personnel' });
     for (const l of ['Personnel File', 'Wishlist', 'In Memoriam'])

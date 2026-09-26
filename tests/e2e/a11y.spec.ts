@@ -1,8 +1,30 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { HTML_ROUTES, seedPrefs } from './helpers';
+import { HTML_ROUTES, seedCase, seedPrefs } from './helpers';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
+
+const OPEN = { t: 'RESUME_REQUESTED', via: 'cta' };
+const TO_FINDINGS = [
+  OPEN,
+  { t: 'SCOPE_STATED', lane: 'plt' },
+  { t: 'RESUME_REQUESTED', via: 'full-document' },
+  { t: 'RELEASE_ATTEMPTED' },
+  { t: 'RELEASE_ATTEMPTED' },
+  { t: 'RELEASE_ATTEMPTED' },
+  { t: 'STEP_COMPLETED', step: 'ceremony' },
+];
+const TO_ACK = [...TO_FINDINGS, { t: 'STEP_COMPLETED', step: 'findings' }];
+/** Each state of the case on `/`, restored from a stored case, and what shows it is ready. */
+const CASE_STATES: [string, unknown[], string][] = [
+  ['arrival', [], 'View résumé'],
+  ['scope', [OPEN], 'Submit scope'],
+  ['preview', [OPEN, { t: 'SCOPE_STATED', lane: 'plt' }], 'Request full document'],
+  ['findings', TO_FINDINGS, 'Proceed to adjudication'],
+  ['acknowledgment', TO_ACK, 'Acknowledge'],
+  ['appeal', [...TO_ACK, { t: 'APPEAL_REQUESTED' }], 'Continue'],
+  ['disposition', [...TO_ACK, { t: 'ACKNOWLEDGED' }, { t: 'ACKNOWLEDGED' }], 'Open résumé'],
+];
 
 async function seriousViolations(page: Page, include?: string): Promise<string[]> {
   let b = new AxeBuilder({ page }).withTags(TAGS);
@@ -45,30 +67,39 @@ test.describe('accessibility', () => {
     expect(found).toEqual([]);
   });
 
-  test('open dialogs: identity, vendors, rickroll, hire', async ({ page }) => {
-    const found: string[] = [];
-    await page.goto('./');
-    await page.getByRole('button', { name: 'Begin identity verification' }).click();
-    await expect(page.locator('#identity')).toBeVisible();
-    found.push(...(await seriousViolations(page, '#identity')));
-    await page.keyboard.press('Escape');
+  for (const scheme of ['light', 'dark'] as const) {
+    test(`case on /, every step (${scheme}): no serious or critical axe violations`, async ({
+      context,
+    }) => {
+      const found: string[] = [];
+      for (const [name, events, ready] of CASE_STATES) {
+        // A new tab per state: sessionStorage (the case) is per tab.
+        const page = await context.newPage();
+        await page.emulateMedia({ colorScheme: scheme });
+        await seedCase(page, { events });
+        await page.goto('./');
+        const role = name === 'arrival' || name === 'disposition' ? 'link' : 'button';
+        await expect(page.getByRole(role, { name: ready }).first()).toBeVisible();
+        for (const v of await seriousViolations(page)) found.push(`${name} → ${v}`);
+        await page.close();
+      }
+      expect(found).toEqual([]);
+    });
+  }
 
+  test('open dialogs: rickroll', async ({ page }) => {
+    const found: string[] = [];
     await page.goto('rick/');
     await page.getByRole('button', { name: 'Begin due diligence' }).click();
     await expect(page.locator('#rickroll')).toBeVisible();
     found.push(...(await seriousViolations(page, '#rickroll')));
-
-    await page.goto('resume/');
-    await page.getByRole('button', { name: 'Hire David' }).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-    found.push(...(await seriousViolations(page, 'dialog[open]')));
     expect(found).toEqual([]);
   });
 
   test('first visit: cookie banner and the 3,000-partner dialog', async ({ page, context }) => {
     await context.clearCookies();
     const fresh = await context.newPage();
-    await fresh.goto('./');
+    await fresh.goto('about/');
     await expect(fresh.locator('#cookie-consent-overlay')).toBeVisible();
     const found = await seriousViolations(fresh, '#cookie-consent-overlay');
     await fresh.getByRole('button', { name: 'Manage Detailed Settings' }).click();

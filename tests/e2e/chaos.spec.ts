@@ -3,25 +3,23 @@ import { seedPrefs, watchErrors } from './helpers';
 
 test.describe('global chaos layer', () => {
   test.beforeEach(async ({ page }) => {
-    // The identity checkpoint is covered in landing.spec; keep it from interrupting these.
     await seedPrefs(page, {}, { identityPrompted: true });
   });
 
-  test('skip link is the first Tab stop and reaches the résumé in Recruiter Mode @smoke', async ({
-    page,
-  }) => {
-    await page.goto('./');
+  test('skip link is the first Tab stop and reaches the résumé @smoke', async ({ page }) => {
+    await page.goto('about/');
     await page.keyboard.press('Tab');
     const skip = page.getByRole('link', { name: 'Skip the gauntlet → résumé' });
     await expect(skip).toBeFocused();
     await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(/\/resume\/\?mode=recruiter$/);
-    await expect(page.locator('html')).toHaveAttribute('data-mode', 'recruiter');
+    await expect(page).toHaveURL(/\/resume\/$/);
+    // The résumé has no modes: it is always the plain document.
+    await expect(page.locator('html')).not.toHaveAttribute('data-mode', /./);
   });
 
   test('Konami toggles Recruiter Mode, but not while typing', async ({ page }) => {
     const done = await watchErrors(page);
-    await page.goto('./');
+    await page.goto('about/');
     const seq = [
       'ArrowUp',
       'ArrowUp',
@@ -47,17 +45,17 @@ test.describe('global chaos layer', () => {
   });
 
   test('Recruiter Mode switch persists across pages', async ({ page }) => {
-    await page.goto('./');
+    await page.goto('about/');
     await page.getByRole('switch', { name: 'Recruiter Mode' }).click();
     await expect(page.locator('html')).toHaveAttribute('data-mode', 'recruiter');
-    await page.goto('./');
+    await page.goto('about/');
     await expect(page.locator('html')).toHaveAttribute('data-mode', 'recruiter');
   });
 
   test('theme cycles, persists, and Lights Out masks everything but the flashlight', async ({
     page,
   }) => {
-    await page.goto('./');
+    await page.goto('about/');
     const btn = page.locator('[data-theme-cycle]');
     await expect(btn).toContainText('Theme: Dark →');
     await btn.click();
@@ -93,7 +91,7 @@ test.describe('global chaos layer', () => {
 
   test('switching to Recruiter Mode during Lights Out restores the page', async ({ page }) => {
     await seedPrefs(page, { theme: 'lights-out' });
-    await page.goto('./');
+    await page.goto('about/');
     await expect(page.locator('[data-lights-out]')).toHaveCount(1);
     await page.getByRole('switch', { name: 'Recruiter Mode' }).click();
     await expect(page.locator('[data-lights-out]')).toHaveCount(0);
@@ -101,7 +99,7 @@ test.describe('global chaos layer', () => {
   });
 
   test('tab guilt swaps title and favicon while hidden, then restores', async ({ page }) => {
-    await page.goto('./');
+    await page.goto('about/');
     const original = await page.title();
     const setHidden = (hidden: boolean) =>
       page.evaluate((h) => {
@@ -121,7 +119,7 @@ test.describe('global chaos layer', () => {
   });
 
   test('escape hatch dodges the mouse exactly twice, then surrenders', async ({ page }) => {
-    await page.goto('./');
+    await page.goto('about/');
     const hatch = page.locator('[data-hatch]');
     await hatch.scrollIntoViewIfNeeded();
     for (let i = 0; i < 2; i++) {
@@ -136,14 +134,14 @@ test.describe('global chaos layer', () => {
     await page.waitForTimeout(250);
     expect(await hatch.boundingBox()).toEqual(before);
     await hatch.click();
-    await expect(page).toHaveURL(/\/resume\/\?mode=recruiter$/);
+    await expect(page).toHaveURL(/\/resume\/$/);
   });
 
   test('escape hatch works first try by keyboard', async ({ page }) => {
-    await page.goto('./');
+    await page.goto('about/');
     await page.locator('[data-hatch]').focus();
     await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(/\/resume\/\?mode=recruiter$/);
+    await expect(page).toHaveURL(/\/resume\/$/);
   });
 
   test('console greeting appears once', async ({ page }) => {
@@ -151,13 +149,13 @@ test.describe('global chaos layer', () => {
     page.on('console', (m) => {
       if (m.text().includes('DEPARTMENT OF RECRUITER VERIFICATION')) logs.push(m.text());
     });
-    await page.goto('./');
+    await page.goto('about/');
     await page.waitForTimeout(200);
     expect(logs).toHaveLength(1);
   });
 
   test('departments menu opens, closes with Escape and returns focus', async ({ page }) => {
-    await page.goto('./');
+    await page.goto('about/');
     const summary = page.locator('[data-dept-menu] summary');
     await summary.click();
     await expect(page.getByRole('navigation', { name: 'Departments' })).toBeVisible();
@@ -171,8 +169,8 @@ test.describe('mobile @mobile', () => {
   test('escape hatch is an ordinary link on touch', async ({ page, isMobile }) => {
     test.skip(!isMobile, 'touch only');
     await seedPrefs(page);
-    await page.goto('./');
+    await page.goto('about/');
     await page.locator('[data-hatch]').tap();
-    await expect(page).toHaveURL(/\/resume\/\?mode=recruiter$/);
+    await expect(page).toHaveURL(/\/resume\/$/);
   });
 });

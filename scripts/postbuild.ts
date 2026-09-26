@@ -1,7 +1,7 @@
 /**
  * Postbuild: print /resume/ to dist/resume.pdf (and each lane cut to dist/resume-{lane}.pdf) with
- * headless Chromium, stamp PDF metadata (including the one joke), then verify every file. Fails
- * the build if any résumé isn't exactly 1 page.
+ * headless Chromium, stamp plain PDF metadata, then verify every file. Fails the build if any
+ * résumé isn't exactly 1 page. PDFs get forwarded to people outside the joke: no fiction inside.
  */
 import { writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -17,7 +17,7 @@ const BASE = (
   process.env.BASE_PATH || '/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World'
 ).replace(/\/$/, '');
 const PORT = Number(process.env.POSTBUILD_PORT ?? 4399);
-export const PDF_SUBJECT = 'Printed from a website that asked if you were Claude.';
+export const PDF_SUBJECT = 'Résumé — Software Engineer';
 
 async function main(): Promise<void> {
   const server = await startServer(PORT);
@@ -38,7 +38,7 @@ async function main(): Promise<void> {
       doc.setAuthor('David Purvis');
       doc.setSubject(PDF_SUBJECT);
       doc.setKeywords(['Software Engineer', 'Résumé']);
-      doc.setCreator('Department of Recruiter Verification');
+      doc.setCreator('David Purvis');
       doc.setProducer('Astro + Playwright + pdf-lib');
       const bytes = await doc.save();
       const out = resolve(ROOT, 'dist', lane.pdf);

@@ -92,7 +92,7 @@ test.describe('Overkill HUD', () => {
 
     test('nothing scrolls sideways at 320px', async ({ page }) => {
       await page.setViewportSize({ width: 320, height: 640 });
-      for (const r of ['', 'about/', 'casino/', 'tailor/']) {
+      for (const r of ['skills/', 'about/', 'casino/', 'tailor/']) {
         await page.goto(r);
         await expect(page.locator('[data-hud]')).toBeVisible();
         expect(

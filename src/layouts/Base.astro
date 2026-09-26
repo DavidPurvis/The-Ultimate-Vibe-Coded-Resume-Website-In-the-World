@@ -4,12 +4,13 @@
  */
 import '../styles/fonts';
 import '../styles/tokens.css';
+import '../styles/core.css';
 import '../styles/base.css';
 import '../styles/print.css';
 import '../styles/ads.css';
 import Head from '../components/Head.astro';
-import SiteHeader from '../components/SiteHeader.astro';
-import SiteFooter from '../components/SiteFooter.astro';
+import GagHeader from '../components/GagHeader.astro';
+import GagFooter from '../components/GagFooter.astro';
 import ResumeDocument from '../components/ResumeDocument.astro';
 import RickrollDialog from '../components/RickrollDialog.astro';
 import CookieBanner from '../components/CookieBanner.astro';
@@ -50,10 +51,10 @@ const { route, ogTitle, bodyClass, noindex = false, sincere = false } = Astro.pr
     data-cursor={route.cursor}
     data-sincere={sincere ? '' : undefined}
   >
-    <a class="skip-link" href={`${url('/resume/')}?mode=recruiter`} data-escape>
+    <a class="skip-link" href={url('/resume/')} data-escape>
       {exits.skipLink}
     </a>
-    <SiteHeader currentPath={route.path} {...(route.formId ? { formId: route.formId } : {})} />
+    <GagHeader currentPath={route.path} {...(route.formId ? { formId: route.formId } : {})} />
     {!sincere && <ParodyAd placement="leaderboard" seed={route.path} />}
     <main id="main" tabindex="-1">
       <div class="container">
@@ -61,7 +62,7 @@ const { route, ogTitle, bodyClass, noindex = false, sincere = false } = Astro.pr
       </div>
     </main>
     {!sincere && <ParodyAd placement="banner" seed={route.path} />}
-    <SiteFooter />
+    <GagFooter />
     <span hidden data-parody-ads={JSON.stringify(PARODY_ADS)}></span>
     <div class="print-only" aria-hidden="true">
       <ResumeDocument idPrefix="print" embedded />

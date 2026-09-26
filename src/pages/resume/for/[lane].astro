@@ -11,7 +11,6 @@ import '../../../styles/resume.css';
 import { ROUTES, type RouteMeta } from '../../../content/copy/meta';
 import { LANES, TAILORED_LANES, type LaneId } from '../../../content/lanes';
 import { laneCopy, resumeTools } from '../../../content/copy/resumeExtras';
-import { recruiterBar } from '../../../content/copy/global';
 import { url } from '../../../lib/paths';
 
 export function getStaticPaths() {
@@ -28,15 +27,6 @@ const routes: Record<Exclude<LaneId, 'gen'>, RouteMeta> = {
 ---
 
 <Resume route={routes[laneId]}>
-  <div class="recruiter-bar recruiter-only screen-only" slot="top">
-    <div class="container">
-      <span>{recruiterBar.text}</span>
-      <button type="button" class="btn btn--small" data-reenable-chaos>
-        {recruiterBar.button}
-      </button>
-    </div>
-  </div>
-
   <div class="resume-page">
     <div class="lane-bar screen-only">
       <p class="lane-bar__kicker">{laneCopy.kicker(lane.label)}</p>
@@ -50,7 +40,7 @@ const routes: Record<Exclude<LaneId, 'gen'>, RouteMeta> = {
         <Icon name="download" />
         {resumeTools.download}
       </a>
-      <button type="button" class="btn" data-print>
+      <button type="button" class="btn js-only" data-print>
         <Icon name="printer" />
         {resumeTools.print}
       </button>

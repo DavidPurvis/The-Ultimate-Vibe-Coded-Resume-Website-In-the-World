@@ -1,0 +1,33 @@
+---
+/**
+ * The Access Request panel. The kernel fills it; its static content is the fail-open message
+ * shown if a case is open (data-case) but the page's scripts never start.
+ */
+import { panel } from '../content/institution/case';
+import { url } from '../lib/paths';
+---
+
+<section id="case" class="case" aria-labelledby="case-heading" data-step="static">
+  <p class="case__label">
+    {panel.label} ·{' '}
+    <span class="case__number" data-case-number>
+      {panel.caseLabel}
+    </span>
+  </p>
+  <h2 id="case-heading" tabindex="-1">
+    {panel.staticHeading}
+  </h2>
+  <div id="case-status" class="case__status" role="status"></div>
+  <div id="case-body" class="case__body" data-evidence="case">
+    <p>{panel.staticBody}</p>
+  </div>
+  <div class="case__foot">
+    <button type="button" class="btn btn--small case-btn js-only" data-case-expedite>
+      {panel.expedite}
+    </button>
+    <a class="case__direct" href={url('/resume/')}>
+      {panel.direct}
+    </a>
+    <span class="fine">{panel.directNote}</span>
+  </div>
+</section>

@@ -25,8 +25,8 @@ test('full chaos journey: no cookies, no third parties, no CSP violations @smoke
     );
   });
 
-  // First visit: the banner appears; accept it the way a visitor would.
-  await page.goto('./');
+  // First visit to an old gag page: the banner appears; accept it the way a visitor would.
+  await page.goto('about/');
   await page.getByRole('button', { name: /Accept All Cookies/ }).click();
   for (const r of HTML_ROUTES) {
     await page.goto(r);

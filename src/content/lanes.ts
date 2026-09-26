@@ -10,7 +10,9 @@
 import * as gen from './resume';
 import type { Bullet, EducationEntry, Project, Role } from './resume';
 
-export type LaneId = 'gen' | 'emb' | 'plt' | 'be';
+import { LANE_META, type LaneId } from './laneIndex';
+
+export type { LaneId };
 export type SectionKey = 'summary' | 'experience' | 'projects' | 'skills' | 'education';
 
 export interface LaneResume {
@@ -100,11 +102,7 @@ const TA_CUT = {
 export const LANES: Record<LaneId, LaneResume> = {
   gen: {
     id: 'gen',
-    code: 'GEN',
-    label: 'General software engineering',
-    path: '/resume/',
-    pdf: 'resume.pdf',
-    pdfName: 'David-Purvis-Resume.pdf',
+    ...LANE_META.gen,
     order: ['summary', 'experience', 'projects', 'skills', 'education'],
     summary: gen.summary,
     experience: gen.experience,
@@ -116,11 +114,7 @@ export const LANES: Record<LaneId, LaneResume> = {
 
   emb: {
     id: 'emb',
-    code: 'EMB',
-    label: 'Embedded software',
-    path: '/resume/for/emb/',
-    pdf: 'resume-emb.pdf',
-    pdfName: 'David-Purvis-Resume-Embedded.pdf',
+    ...LANE_META.emb,
     // Pack: education sits high because the ECE sequence is the credential the work history lacks.
     order: ['summary', 'skills', 'education', 'projects', 'experience'],
     summary: {
@@ -223,11 +217,7 @@ export const LANES: Record<LaneId, LaneResume> = {
 
   plt: {
     id: 'plt',
-    code: 'PLT',
-    label: 'Platform, DevOps and SRE',
-    path: '/resume/for/plt/',
-    pdf: 'resume-plt.pdf',
-    pdfName: 'David-Purvis-Resume-Platform.pdf',
+    ...LANE_META.plt,
     order: ['summary', 'experience', 'projects', 'skills', 'education'],
     summary: {
       block: 'SUM-PLT',
@@ -299,11 +289,7 @@ export const LANES: Record<LaneId, LaneResume> = {
 
   be: {
     id: 'be',
-    code: 'BE',
-    label: 'Backend and distributed systems',
-    path: '/resume/for/be/',
-    pdf: 'resume-be.pdf',
-    pdfName: 'David-Purvis-Resume-Backend.pdf',
+    ...LANE_META.be,
     order: ['summary', 'experience', 'projects', 'skills', 'education'],
     summary: {
       block: 'SUM-BE',

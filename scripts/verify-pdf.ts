@@ -1,6 +1,6 @@
 /**
  * Verifies a résumé PDF against the pack's hard requirements: exactly one US Letter page,
- * a selectable text layer, the integrity rules, and the joke confined to metadata.
+ * a selectable text layer, the integrity rules, and no fiction anywhere (text layer or metadata).
  * Writes reports/resume-report.json (GEN) or reports/resume-{lane}-report.json for the PR body.
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -11,9 +11,10 @@ import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { checkResumeText, formatViolations } from '../src/lib/integrity';
 import { LANE_IDS, LANES, type LaneId } from '../src/content/lanes';
 import { selection } from '../src/content/resume';
+import { institutionStrings } from '../src/content/institution/strings';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const SUBJECT = 'Printed from a website that asked if you were Claude.';
+const SUBJECT = 'Résumé — Software Engineer';
 
 interface TextItemLike {
   str: string;
@@ -26,6 +27,7 @@ export async function extractPdf(path: string): Promise<{
   width: number;
   height: number;
   subject: string | undefined;
+  meta: string;
 }> {
   const buf = await readFile(path);
   const doc = await PDFDocument.load(buf);
@@ -61,6 +63,9 @@ export async function extractPdf(path: string): Promise<{
     width: first.width,
     height: first.height,
     subject: doc.getSubject(),
+    meta: [doc.getTitle(), doc.getAuthor(), doc.getSubject(), doc.getCreator(), doc.getProducer()]
+      .concat(doc.getKeywords() ?? '')
+      .join('\n'),
   };
 }
 
@@ -70,7 +75,7 @@ export async function verifyPdf(
 ): Promise<boolean> {
   const lane = LANES[laneId];
   const name = lane.pdf;
-  const { pages, lines, width, height, subject } = await extractPdf(path);
+  const { pages, lines, width, height, subject, meta } = await extractPdf(path);
   const text = lines.join('\n');
   const problems: string[] = [];
   if (pages !== 1) problems.push(`PDF has ${pages} pages; the pack requires exactly one.`);
@@ -87,9 +92,10 @@ export async function verifyPdf(
   const violations = checkResumeText(text, 'pdf');
   if (violations.length) problems.push(`Integrity violations:\n${formatViolations(violations)}`);
   if (subject !== SUBJECT)
-    problems.push(`PDF Subject metadata is "${subject}", expected the joke.`);
-  if (/asked if you were Claude/.test(text))
-    problems.push('The metadata joke leaked into the text layer.');
+    problems.push(`PDF Subject metadata is "${subject}", expected "${SUBJECT}".`);
+  for (const s of institutionStrings())
+    if (text.includes(s) || meta.includes(s))
+      problems.push(`Institutional copy in the PDF: "${s.slice(0, 60)}"`);
 
   const renderedLines = lines.length;
   const report = {

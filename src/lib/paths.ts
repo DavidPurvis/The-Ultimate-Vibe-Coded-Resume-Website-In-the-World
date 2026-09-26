@@ -1,6 +1,6 @@
 /** Base-path-aware URLs. Nothing in the site hardcodes '/' — everything goes through url(). */
 import type { DestId } from '../content/types';
-import { EMAIL } from '../content/resume';
+import { EMAIL } from '../content/identity';
 
 const rawBase: string = import.meta.env.BASE_URL ?? '/';
 /** Always ends with exactly one '/'. */

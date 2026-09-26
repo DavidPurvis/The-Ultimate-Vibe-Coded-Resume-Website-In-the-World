@@ -3,10 +3,15 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     environment: 'node',
-    include: ['tests/{unit,property,replay}/**/*.test.ts'],
+    include: ['tests/{unit,property,replay,dom}/**/*.test.ts'],
     coverage: {
       provider: 'v8',
-      include: ['src/lib/**/*.ts', 'src/scenes/**/logic.ts', 'src/domain/**/*.ts'],
+      include: [
+        'src/lib/**/*.ts',
+        'src/scenes/**/logic.ts',
+        'src/domain/**/*.ts',
+        'src/runtime/persistence.ts',
+      ],
       // DOM wiring (dialogs, toasts, live regions, pointer chases, mode transactions, test hooks)
       // runs in real browsers under Playwright; the unit gate measures the pure logic only.
       exclude: [

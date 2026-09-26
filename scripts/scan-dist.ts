@@ -23,21 +23,24 @@ const TEST_BUILD = process.env.PUBLIC_TEST_HOOKS === '1';
  * pages get 14 KB; the résumé page stays nearly JS-free.
  */
 const JS_BUDGET_KB: Record<string, number> = {
-  '': 22,
-  'verify/': 20,
-  'legal/': 16,
-  'support/': 15,
-  'casino/': 20,
-  'contact/': 16,
+  // The Access Request case (kernel + domain + first-step copy); steps load lazily.
+  '': 12,
+  'verify/': 22,
+  'legal/': 18,
+  'support/': 17,
+  'casino/': 22,
+  'contact/': 18,
   // The full-size DOOM player's wiring; the engine itself is a separate frame, fetched on Play.
-  'doom/': 15,
+  'doom/': 17,
   'resume/': 3,
   'resume/for/emb/': 3,
   'resume/for/plt/': 3,
   'resume/for/be/': 3,
   'og-card/': 0,
 };
-const DEFAULT_JS_BUDGET_KB = 14;
+// Legacy gag pages: +2 KB while they share small chunks with the case kernel (Rollup splits the
+// shared modules, costing gzip overhead). They are deleted in P4A, and this table with them.
+const DEFAULT_JS_BUDGET_KB = 16;
 const CSS_BUDGET_KB = 20;
 const LAZY_CHUNK_BUDGET_KB = 35;
 /** three.js and the tungsten cube scene: lazy, loaded only by /cube/ and the wishlist hero. */

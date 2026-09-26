@@ -3,8 +3,6 @@ import { checkGroundedCopy } from '../../src/lib/integrity';
 import { ABSENT_TECH, FACTS, GO_LANG, REAL_EMPLOYERS } from '../../src/content/facts';
 import * as meta from '../../src/content/copy/meta';
 import * as global from '../../src/content/copy/global';
-import * as identity from '../../src/content/copy/identity';
-import * as robots from '../../src/content/copy/robots';
 import * as cookies from '../../src/content/copy/cookies';
 import * as captcha from '../../src/content/copy/captcha';
 import * as greenFlags from '../../src/content/copy/greenFlags';
@@ -38,8 +36,6 @@ import * as doom from '../../src/content/copy/doom';
 const modules = {
   meta,
   global,
-  identity,
-  robots,
   cookies,
   captcha,
   greenFlags,
@@ -178,14 +174,6 @@ describe('copy deck hygiene', () => {
 });
 
 describe('specific copy invariants', () => {
-  it('every identity has confirmation, stamp and result copy', () => {
-    for (const id of ['chatgpt', 'claude', 'gemini', 'human', 'clippy', 'other'] as const) {
-      const c = identity.identities[id];
-      expect(c.label && c.confirm && c.stamp && c.result).toBeTruthy();
-      expect(identity.callbackLabels[id]).toBeTruthy();
-    }
-  });
-
   it('research positions skip 7 and increase', () => {
     const ns = beliefs.positions.map((p) => p.n);
     expect(ns).not.toContain(7);
@@ -232,12 +220,6 @@ describe('specific copy invariants', () => {
       'HYPERLINK',
       'RICKROLL',
     ]);
-  });
-
-  it('robot notes only ask for identity', () => {
-    for (const n of robots.robotNotes) {
-      expect(n.text).not.toMatch(/\b(rate|rank|score|praise|recommend|hire)\b/i);
-    }
   });
 
   it('every route has a description that leads with David or the site, never a fabricated metric', () => {

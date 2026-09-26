@@ -118,7 +118,7 @@ test.describe('404', () => {
     );
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
     await page.getByRole('link', { name: 'Résumé', exact: true }).click();
-    await expect(page).toHaveURL(/\/resume\/\?mode=recruiter$/);
+    await expect(page).toHaveURL(/\/resume\/$/);
   });
 
   test('"Go home (fast)" dodges the mouse at most three times, then works', async ({ page }) => {
