@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { HTML_ROUTES, seedCase, seedPrefs } from './helpers';
+import { HTML_ROUTES, seedCase } from './helpers';
 
 const OPEN = { t: 'RESUME_REQUESTED', via: 'cta' };
 const AT_RELEASE = [
@@ -21,7 +21,6 @@ const CASE_STEPS: [string, unknown[], string][] = [
 
 for (const width of [320, 390]) {
   test(`no horizontal scrolling at ${width}px on any page`, async ({ page }) => {
-    await seedPrefs(page, {}, { identityPrompted: true });
     await page.setViewportSize({ width, height: 800 });
     const wide: string[] = [];
     for (const r of HTML_ROUTES) {
@@ -50,23 +49,7 @@ for (const width of [320, 390]) {
   });
 }
 
-test('dialogs fit a small phone with Close visible @mobile', async ({ page }) => {
-  await seedPrefs(page, {}, { identityPrompted: true });
-  await page.setViewportSize({ width: 320, height: 640 });
-  await page.route('https://www.youtube-nocookie.com/**', (r) =>
-    r.fulfill({ contentType: 'text/html', body: '<!doctype html><title>stub</title>' }),
-  );
-  await page.goto('rick/');
-  await page.getByRole('button', { name: 'Begin due diligence' }).click();
-  const d = page.locator('#rickroll');
-  await expect(d).toBeVisible();
-  const box = await d.boundingBox();
-  expect(box && box.width <= 320).toBe(true);
-  await expect(d.getByRole('button', { name: 'Close', exact: true })).toBeInViewport();
-});
-
-test('no layout shift on load for pages with JS-only instruments', async ({ page }) => {
-  await seedPrefs(page, {}, { identityPrompted: true });
+test('no layout shift on load for pages with scripts', async ({ page }) => {
   await page.addInitScript(() => {
     (window as unknown as { __cls: number }).__cls = 0;
     new PerformanceObserver((list) => {
@@ -77,7 +60,7 @@ test('no layout shift on load for pages with JS-only instruments', async ({ page
         if (!e.hadRecentInput) (window as unknown as { __cls: number }).__cls += e.value;
     }).observe({ type: 'layout-shift', buffered: true });
   });
-  for (const r of ['casino/', 'contact/', 'legal/', '']) {
+  for (const r of ['', 'privacy/', 'doom/', 'resume/']) {
     await page.goto(r);
     await page.waitForTimeout(800);
     const cls = await page.evaluate(() => (window as unknown as { __cls: number }).__cls);

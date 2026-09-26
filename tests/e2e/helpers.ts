@@ -1,48 +1,9 @@
 import { expect, type Page } from '@playwright/test';
+import { ROUTES } from '../../src/content/copy/meta';
 
 export const BASE = (
   process.env.BASE_PATH || '/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World'
 ).replace(/\/$/, '');
-
-/**
- * Pre-seed prefs so the cookie banner / identity dialog don't interrupt unrelated tests.
- * Each call has its own "already applied" flag, so stacked seeds apply in order exactly once and
- * later navigations keep whatever state the page itself wrote.
- */
-export async function seedPrefs(
-  page: Page,
-  prefs: Record<string, unknown> = {},
-  session: Record<string, unknown> | null = null,
-): Promise<void> {
-  const flag = `__seeded:${JSON.stringify([prefs, session])}`;
-  await page.addInitScript(
-    ([p, s, f]) => {
-      try {
-        if (!sessionStorage.getItem(f)) {
-          const prev = JSON.parse(localStorage.getItem('uvcr:prefs') || '{}') as object;
-          localStorage.setItem(
-            'uvcr:prefs',
-            JSON.stringify({
-              v: 1,
-              mode: 'chaos',
-              theme: 'system',
-              cookieBanner: 'accepted',
-              notified: false,
-              sound: false,
-              ...prev,
-              ...p,
-            }),
-          );
-          if (s) sessionStorage.setItem('uvcr:session', JSON.stringify({ v: 1, ...s }));
-          sessionStorage.setItem(f, '1');
-        }
-      } catch {
-        /* ignore */
-      }
-    },
-    [prefs, session, flag] as const,
-  );
-}
 
 /**
  * Pre-seed the Access Request case in sessionStorage (the production code path: a stored case).
@@ -94,41 +55,8 @@ export async function watchErrors(page: Page): Promise<() => Promise<void>> {
 }
 
 /** Every prerendered HTML route, relative to the base (no leading slash). */
-export const HTML_ROUTES = [
-  '',
-  'verify/',
-  'about/',
-  'skills/',
-  'beliefs/',
-  'support/',
-  'legal/',
-  'casino/',
-  'contact/',
-  'projects/',
-  'how-it-was-built/',
-  'credits/',
-  'personnel-file/',
-  'wishlist/',
-  'cube/',
-  'doom/',
-  'nintendo/',
-  'tribute/',
-  'sell-your-data/',
-  'confess/',
-  'presentation/',
-  'tailor/',
-  'resume/for/emb/',
-  'resume/for/plt/',
-  'resume/for/be/',
-  'blog/',
-  'blog/zipper-merge/',
-  'blog/national-security/',
-  'blog/thermite-mute/',
-  'blog/goldfish/',
-  'blog/ordained/',
-  'rick/',
-  'r/oracle-integration/',
-  'r/xml-parser/',
-  'r/car-thing/',
-  'resume/',
-] as const;
+/** Every HTML page, relative to the base path (derived from the route table, 404 excluded). */
+export const HTML_ROUTES: readonly string[] = Object.values(ROUTES)
+  .map((r) => r.path)
+  .filter((p) => p !== '/404.html')
+  .map((p) => p.slice(1));

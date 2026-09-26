@@ -8,25 +8,14 @@ export default defineConfig({
       provider: 'v8',
       include: [
         'src/lib/**/*.ts',
-        'src/scenes/**/logic.ts',
         'src/domain/**/*.ts',
+        'src/doom/logic.ts',
         'src/runtime/persistence.ts',
+        'src/runtime/activation.ts',
       ],
-      // DOM wiring (dialogs, toasts, live regions, pointer chases, mode transactions, test hooks)
-      // runs in real browsers under Playwright; the unit gate measures the pure logic only.
-      exclude: [
-        'src/lib/icons.ts',
-        'src/lib/dom.ts',
-        'src/lib/announce.ts',
-        'src/lib/boot.ts',
-        'src/lib/dialog.ts',
-        'src/lib/identityCallback.ts',
-        'src/lib/mode.ts',
-        'src/lib/motion.ts',
-        'src/lib/runaway.ts',
-        'src/lib/testHooks.ts',
-        'src/lib/toast.ts',
-      ],
+      // Build-time helpers (icon inlining, the inline boot strings) are exercised by the build and
+      // the scanner, not by unit tests.
+      exclude: ['src/lib/icons.ts', 'src/lib/boot.ts'],
       thresholds: {
         lines: 90,
         branches: 85,

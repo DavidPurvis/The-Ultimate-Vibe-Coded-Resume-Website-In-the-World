@@ -1,11 +1,11 @@
 ---
-/** Sincere page. No jokes, no gags, and it stays exactly the same in Recruiter Mode. */
-import Base from '../../layouts/Base.astro';
+/** Sincere page. No jokes and no institution: the Department does not operate here. */
+import Site from '../../layouts/Site.astro';
 import { ROUTES } from '../../content/copy/meta';
-import { tributeCopy as T } from '../../content/copy/tribute';
+import { tributeCopy as T } from '../../content/site/tribute';
 ---
 
-<Base route={ROUTES.tribute} sincere>
+<Site route={ROUTES.tribute}>
   <article class="temple" aria-labelledby="tribute-h">
     <div class="temple__screen">
       <p class="temple__kicker">{T.kicker}</p>
@@ -28,7 +28,7 @@ import { tributeCopy as T } from '../../content/copy/tribute';
       </p>
     </div>
   </article>
-</Base>
+</Site>
 
 <style>
   /* An EGA-palette frame in the spirit of a 640×480, 16-colour screen. Original CSS; no TempleOS assets. */

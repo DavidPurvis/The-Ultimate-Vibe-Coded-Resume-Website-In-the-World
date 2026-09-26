@@ -1,23 +1,20 @@
 ---
-/** DRV-24: DOOM, embedded. The engine downloads (from this site) only after Play. */
-import Base from '../../layouts/Base.astro';
+/** DOOM, embedded (an optional enclave, linked from the colophon). Downloads only after Play. */
+import Site from '../../layouts/Site.astro';
 import PageHero from '../../components/PageHero.astro';
 import DoomPlayer from '../../components/DoomPlayer.astro';
 import '../../styles/doom.css';
 import { ROUTES } from '../../content/copy/meta';
-import { doomCopy as C } from '../../content/copy/doom';
+import { doomCopy as C } from '../../content/site/doom';
 import { url } from '../../lib/paths';
 ---
 
-<Base route={ROUTES.doom}>
+<Site route={ROUTES.doom}>
   <PageHero kicker={C.kicker} title={C.h1} lede={C.lede} />
 
-  <div class="doom-page chaos-only" data-doom-page>
+  <div class="doom-page" data-doom-page>
     <DoomPlayer />
   </div>
-  <p class="callout card recruiter-only">
-    DOOM is paused while HR is in the building. The demons will be here when they leave.
-  </p>
 
   <section class="doom-specs card" aria-labelledby="doom-specs">
     <h2 id="doom-specs">{C.specsTitle}</h2>
@@ -41,25 +38,19 @@ import { url } from '../../lib/paths';
     </p>
   </section>
 
-  <p class="doom-note">
-    {C.sueLine} <a href={url('/nintendo/')}>{C.sueLink}</a>.
-  </p>
+  <p class="doom-note">{C.sueLine}</p>
   <p class="doom-note">
     {C.tribute} <a href={url('/tribute/')}>{C.tributeLink}</a>.
   </p>
-</Base>
+</Site>
 
 <script>
-  import '../../scenes/doom/page';
+  import '../../scripts/doom-page';
 </script>
 
 <style>
   .doom-page {
     max-width: 60rem;
-  }
-  .callout {
-    max-width: 44rem;
-    padding: var(--s-3) var(--s-4);
   }
   .doom-specs {
     max-width: 44rem;

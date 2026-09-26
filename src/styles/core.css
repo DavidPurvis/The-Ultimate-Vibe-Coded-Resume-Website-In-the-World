@@ -227,6 +227,22 @@ main {
   margin: 0;
 }
 
+/* ---------- plain pages: hero, sections, cards ---------- */
+.page-hero {
+  margin-bottom: var(--s-6);
+}
+.section {
+  margin-top: var(--s-8);
+}
+.card {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  padding: var(--s-5);
+  box-shadow: var(--sh-1);
+}
+
 /* ---------- buttons ---------- */
 .btn {
   --btn-bg: var(--card);

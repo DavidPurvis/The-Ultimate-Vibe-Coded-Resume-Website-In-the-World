@@ -11,8 +11,8 @@ export function buildCsp(bootHash: string): string {
     "img-src 'self' data:",
     "font-src 'self'",
     "connect-src 'self'",
-    // 'self' is DOOM's own frame (/doom-engine/). YouTube leaves with its features (P4A).
-    "frame-src 'self' https://www.youtube-nocookie.com",
+    // The only frame is DOOM's engine, on this site (/doom-engine/).
+    "frame-src 'self'",
     "media-src 'none'",
     "object-src 'none'",
     "base-uri 'self'",

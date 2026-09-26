@@ -13,10 +13,10 @@ import { BUDGET, type StepId } from '../domain/steps';
 import { caseNumber, processingMs } from '../domain/assessment';
 import { newFindings, type FindingId } from '../domain/findings';
 import { consoleLine, findingLines } from '../content/institution/case';
-import { isPlainActivation } from '../lib/links';
+import { isPlainActivation } from './activation';
 import { url } from '../lib/paths';
 import { isAbort, Scope } from './lifecycle';
-import { load, save } from './persistence';
+import { cleanupLegacy, load, save } from './persistence';
 import { modality } from './modality';
 import { announce } from './announce';
 import { installSignals } from './signals';
@@ -71,6 +71,7 @@ export function boot(doc: Document = document): Scope {
   const els = elements(doc);
   if (!els) return scope;
 
+  cleanupLegacy(); // the previous site's keys (privacy page says so)
   const loaded = load();
   const { seed } = loaded;
   let state = loaded.state;

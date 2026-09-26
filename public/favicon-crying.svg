@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <title>DRV (crying)</title>
-  <g transform="rotate(-10 32 32)">
-    <circle cx="32" cy="32" r="28" fill="#FFFDF8" stroke="#A8201A" stroke-width="5" stroke-dasharray="40 4 60 3"/>
-    <circle cx="32" cy="32" r="21" fill="none" stroke="#A8201A" stroke-width="2"/>
-    <text x="32" y="38.5" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="17" fill="#A8201A">DRV</text>
-  </g>
-  <path d="M50 36 Q56 46 50 52 Q44 46 50 36 Z" fill="#3B82F6" stroke="#1E3A8A" stroke-width="1.5"/>
-</svg>

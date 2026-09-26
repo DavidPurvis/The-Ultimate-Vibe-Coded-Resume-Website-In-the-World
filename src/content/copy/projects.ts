@@ -1,15 +1,13 @@
-/** Case Files — P1–P4 from their FACT lines. Integrity rules run on this page's rendered text. */
+/** Projects — P1–P4 from their FACT lines. Integrity rules run on this page's rendered text. */
 import type { BlockId } from '../types';
 
 export const projectsCopy = {
-  kicker: 'FORM DRV-11 · CASE FILES',
-  h1: 'Case Files',
-  sub: 'Projects, described under the same integrity rules as the résumé.',
+  kicker: 'Projects',
+  h1: 'Projects',
+  sub: 'Described under the same integrity rules as the résumé.',
   stackLabel: 'Stack',
   knownIssueLabel: 'Known issue',
-  footer:
-    'Source code for individual projects isn’t linked here yet. David’s GitHub profile is available at the casino.',
-  footerLink: 'Gamble for the GitHub link',
+  footer: 'Source code for individual projects isn’t linked here yet. David’s GitHub profile:',
 };
 
 export interface CaseFile {

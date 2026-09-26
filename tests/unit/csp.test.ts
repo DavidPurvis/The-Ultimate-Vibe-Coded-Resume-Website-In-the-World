@@ -38,8 +38,9 @@ describe('boot scripts', () => {
     expect(BOOT_RESUME.length).toBeLessThan(80);
   });
 
-  it('the site boot reads only the case hint (and the legacy prefs until P4B)', () => {
+  it('the site boot reads only the case hint', () => {
     expect(BOOT_SITE).toContain("sessionStorage.getItem('uvcr:case')");
+    expect(BOOT_SITE).not.toMatch(/localStorage|data-mode|data-theme/);
     expect(BOOT_SITE).not.toMatch(/setItem|removeItem/);
     expect(BOOT_SITE).not.toMatch(/fetch|XMLHttpRequest|sendBeacon/);
   });

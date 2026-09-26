@@ -94,6 +94,7 @@ describe('kernel', () => {
 
   it('a boot failure before the intercept leaves the CTA a working link (A7)', async () => {
     vi.doMock('../../src/runtime/persistence', () => ({
+      cleanupLegacy: () => {},
       load: () => {
         throw new Error('storage exploded');
       },

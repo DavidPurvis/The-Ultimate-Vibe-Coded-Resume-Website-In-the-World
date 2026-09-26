@@ -1,5 +1,5 @@
 ---
-import Base from '../../layouts/Base.astro';
+import Site from '../../layouts/Site.astro';
 import PageHero from '../../components/PageHero.astro';
 import { ROUTES } from '../../content/copy/meta';
 import {
@@ -14,8 +14,6 @@ import { url } from '../../lib/paths';
 const byKind = (k: LedgerEntry['kind']) => LEDGER.filter((e) => e.kind === k);
 const iconSetFor: Record<string, keyof typeof ICON_MANIFEST> = {
   'icons-lucide': 'lucide',
-  'icons-fluent': 'fluent',
-  'icons-game': 'game',
 };
 const groups: { heading: string; kind: LedgerEntry['kind'] }[] = [
   { heading: C.sections.fonts, kind: 'font' },
@@ -26,7 +24,7 @@ const groups: { heading: string; kind: LedgerEntry['kind'] }[] = [
 ];
 ---
 
-<Base route={ROUTES.credits}>
+<Site route={ROUTES.credits}>
   <PageHero kicker={C.kicker} title={C.h1} sub={C.sub} />
 
   {groups.map((g) => (
@@ -84,7 +82,7 @@ const groups: { heading: string; kind: LedgerEntry['kind'] }[] = [
   </section>
 
   <p class="section fine">{C.footer}</p>
-</Base>
+</Site>
 
 <style>
   .ledger {

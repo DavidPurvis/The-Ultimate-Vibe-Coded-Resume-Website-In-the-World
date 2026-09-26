@@ -1,33 +1,27 @@
 ---
-import Base from '../../layouts/Base.astro';
+import Site from '../../layouts/Site.astro';
 import PageHero from '../../components/PageHero.astro';
-import DestLink from '../../components/DestLink.astro';
 import Icon from '../../components/Icon.astro';
 import { ROUTES } from '../../content/copy/meta';
 import { caseFiles, projectsCopy as P } from '../../content/copy/projects';
+import { identity } from '../../content/identity';
 ---
 
-<Base route={ROUTES.projects}>
+<Site route={ROUTES.projects}>
   <PageHero kicker={P.kicker} title={P.h1} sub={P.sub} />
 
-  <div class="cases" data-case-files>
+  <div class="projects">
     {caseFiles.map((c) => (
-      <article class="card case" id={c.id} aria-labelledby={`${c.id}-h`}>
-        <p class="card__form-id">
-          CASE FILE DRV-11/{String(c.n).padStart(2, '0')} · {c.block}
-        </p>
-        <h2 id={`${c.id}-h`}>
-          <Icon set="fluent" name="file-cabinet" size={32} />
-          {c.name}
-        </h2>
-        <p class="case__stack">
+      <article class="card project" id={c.id} aria-labelledby={`${c.id}-h`}>
+        <h2 id={`${c.id}-h`}>{c.name}</h2>
+        <p class="project__stack">
           <strong>{P.stackLabel}:</strong> {c.stack}
         </p>
         {c.body.map((b) => (
           <p>{b}</p>
         ))}
         {c.knownIssue && (
-          <p class="case__issue">
+          <p class="project__issue">
             <Icon name="triangle-alert" />
             <span>
               <strong>{P.knownIssueLabel}:</strong> {c.knownIssue}
@@ -39,40 +33,41 @@ import { caseFiles, projectsCopy as P } from '../../content/copy/projects';
   </div>
 
   <p class="section fine">
-    {P.footer} <DestLink dest="github">{P.footerLink}</DestLink>.
+    {P.footer}{' '}
+    <a href={identity.github.href} rel="noopener noreferrer">
+      {identity.github.display}
+    </a>
+    .
   </p>
-</Base>
+</Site>
 
 <style>
-  .cases {
+  .projects {
     display: grid;
     gap: var(--s-5);
   }
   @media (min-width: 64rem) {
-    .cases {
+    .projects {
       grid-template-columns: 1fr 1fr;
     }
   }
-  .case {
+  .project {
     padding: var(--s-5);
     scroll-margin-top: 6rem;
   }
-  .case:target {
+  .project:target {
     box-shadow:
       0 0 0 3px var(--focus),
       var(--sh-2);
   }
-  .case h2 {
-    display: flex;
-    gap: var(--s-2);
-    align-items: center;
+  .project h2 {
     font-size: 1.4rem;
   }
-  .case__stack {
+  .project__stack {
     font: 400 0.9rem/1.5 var(--font-mono);
     color: var(--ink-2);
   }
-  .case__issue {
+  .project__issue {
     display: flex;
     gap: var(--s-2);
     align-items: flex-start;

@@ -7,7 +7,7 @@ import { isSeed, newSeed } from '../domain/random';
 import { parseEvent, type CaseEvent } from '../domain/events';
 import { replay, type CaseState } from '../domain/case';
 import { BUDGET } from '../domain/steps';
-import { listKeys, readRaw, removeRaw, writeRaw } from '../lib/storage';
+import { readRaw, writeRaw } from '../lib/storage';
 
 export const CASE_KEY = 'uvcr:case';
 
@@ -60,10 +60,4 @@ export function save(seed: number, log: readonly CaseEvent[], state: CaseState):
   writeRaw('session', CASE_KEY, JSON.stringify(rec));
 }
 
-/** Keys from the old site (prefs, gag session, biscotti). Deleted on load from P4B on. */
-export function cleanupLegacy(): void {
-  for (const { area, key } of listKeys()) {
-    if (key === 'uvcr:prefs' || key === 'uvcr:session' || key.startsWith('uvcr:biscotti:'))
-      removeRaw(area, key);
-  }
-}
+export { cleanupLegacy } from './legacy';

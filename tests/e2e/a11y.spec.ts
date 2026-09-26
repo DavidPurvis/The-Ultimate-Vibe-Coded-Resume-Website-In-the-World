@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { HTML_ROUTES, seedCase, seedPrefs } from './helpers';
+import { HTML_ROUTES, seedCase } from './helpers';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
@@ -45,13 +45,6 @@ async function seriousViolations(page: Page, include?: string): Promise<string[]
 }
 
 test.describe('accessibility', () => {
-  test.beforeEach(async ({ page }) => {
-    await seedPrefs(page, {}, { identityPrompted: true });
-    await page.route('https://www.youtube-nocookie.com/**', (r) =>
-      r.fulfill({ contentType: 'text/html', body: '<!doctype html><title>stub</title>' }),
-    );
-  });
-
   // One test per page: each gets its own timeout (axe is slow on WebKit) and names its page.
   for (const r of HTML_ROUTES) {
     test(`${r || '/'}: no serious or critical axe violations @smoke`, async ({ page }) => {
@@ -60,10 +53,10 @@ test.describe('accessibility', () => {
     });
   }
 
-  test('dark theme and reduced motion', async ({ page }) => {
+  test('every page in dark mode with reduced motion', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
     const found: string[] = [];
-    for (const r of ['', 'verify/', 'casino/', 'legal/', 'resume/', 'skills/']) {
+    for (const r of HTML_ROUTES) {
       await page.goto(r);
       for (const v of await seriousViolations(page)) found.push(`${r || '/'} → ${v}`);
     }
@@ -90,30 +83,8 @@ test.describe('accessibility', () => {
     });
   }
 
-  test('open dialogs: rickroll', async ({ page }) => {
-    const found: string[] = [];
-    await page.goto('rick/');
-    await page.getByRole('button', { name: 'Begin due diligence' }).click();
-    await expect(page.locator('#rickroll')).toBeVisible();
-    found.push(...(await seriousViolations(page, '#rickroll')));
-    expect(found).toEqual([]);
-  });
-
-  test('first visit: cookie banner and the 3,000-partner dialog', async ({ page, context }) => {
-    await context.clearCookies();
-    const fresh = await context.newPage();
-    await fresh.goto('about/');
-    await expect(fresh.locator('#cookie-consent-overlay')).toBeVisible();
-    const found = await seriousViolations(fresh, '#cookie-consent-overlay');
-    await fresh.getByRole('button', { name: 'Manage Detailed Settings' }).click();
-    await expect(fresh.locator('#vendors')).toBeVisible();
-    found.push(...(await seriousViolations(fresh, '#vendors')));
-    expect(found).toEqual([]);
-    void page;
-  });
-
   test('interactive controls in main are at least 44×44 CSS px', async ({ page }) => {
-    // Measure layout, not a control caught mid-transition (Résumé.ppt spins its slides in).
+    // Measure layout, not a control caught mid-transition.
     await page.emulateMedia({ reducedMotion: 'reduce' });
     const small: string[] = [];
     for (const r of HTML_ROUTES) {

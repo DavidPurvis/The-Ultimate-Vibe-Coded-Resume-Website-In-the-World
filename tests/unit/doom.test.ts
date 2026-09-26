@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import {
-  DOCK_SIZES,
-  engineSrc,
-  nextSize,
-  parseMessage,
-  progressPct,
-} from '../../src/scenes/doom/logic';
+import { engineSrc, parseMessage, progressPct } from '../../src/doom/logic';
 import { PINNED } from '../../scripts/vendor-doom';
 
 describe('DOOM player', () => {
@@ -41,11 +35,6 @@ describe('DOOM player', () => {
     expect(engineSrc('/base/', true)).toBe('/base/doom-engine/play.html?sound=1');
     expect(engineSrc('/base', false)).toBe('/base/doom-engine/play.html?sound=0');
     expect(engineSrc('/', false)).toBe('/doom-engine/play.html?sound=0');
-  });
-
-  it('cycles the dock through three sizes', () => {
-    expect(DOCK_SIZES).toHaveLength(3);
-    expect([0, 1, 2].map(nextSize)).toEqual([1, 2, 0]);
   });
 });
 

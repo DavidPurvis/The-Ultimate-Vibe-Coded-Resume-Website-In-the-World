@@ -14,37 +14,28 @@ const BASE = (
   process.env.BASE_PATH || '/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World'
 ).replace(/\/$/, '');
 const SITE = new URL(process.env.SITE_URL || 'https://davidpurvis.github.io').origin;
-const TEST_BUILD = process.env.PUBLIC_TEST_HOOKS === '1';
 
 /**
  * Route (relative to dist, directory style) → max gzipped JS in KB, counting each page's module
- * scripts plus their static imports (lazy chunks excluded). The shared chaos layer measures
- * ~11.6 KB (storage validation, mode, threat, runaway exits, rickroll dialog, global copy), so gag
- * pages get 14 KB; the résumé page stays nearly JS-free.
+ * scripts plus their static imports (lazy chunks excluded). Pages not listed get no JS at all.
  */
 const JS_BUDGET_KB: Record<string, number> = {
   // The Access Request case (kernel + domain + first-step copy); steps load lazily.
   '': 12,
-  'verify/': 22,
-  'legal/': 18,
-  'support/': 17,
-  'casino/': 22,
-  'contact/': 18,
-  // The full-size DOOM player's wiring; the engine itself is a separate frame, fetched on Play.
-  'doom/': 17,
-  'resume/': 3,
-  'resume/for/emb/': 3,
-  'resume/for/plt/': 3,
-  'resume/for/be/': 3,
-  'og-card/': 0,
+  // The storage table and its Reset button.
+  'privacy/': 4,
+  // The DOOM player's wiring; the engine itself is a separate frame, fetched on Play.
+  'doom/': 12,
+  // Only the Print button.
+  'resume/': 2,
+  'resume/for/emb/': 2,
+  'resume/for/plt/': 2,
+  'resume/for/be/': 2,
 };
-// Legacy gag pages: +2 KB while they share small chunks with the case kernel (Rollup splits the
-// shared modules, costing gzip overhead). They are deleted in P4A, and this table with them.
-const DEFAULT_JS_BUDGET_KB = 16;
-const CSS_BUDGET_KB = 20;
-const LAZY_CHUNK_BUDGET_KB = 35;
-/** three.js and the tungsten cube scene: lazy, loaded only by /cube/ and the wishlist hero. */
-const THREE_BUDGET_KB = 200;
+const DEFAULT_JS_BUDGET_KB = 0;
+/** Each lazily loaded chunk (the case's steps) stays small. */
+const LAZY_CHUNK_BUDGET_KB = 6;
+const CSS_BUDGET_KB = 16;
 
 const FORBIDDEN: [RegExp, string][] = [
   [/verify you are human/i, 'real-CAPTCHA phrasing'],
@@ -63,8 +54,15 @@ const FORBIDDEN: [RegExp, string][] = [
   ],
   [/<form[\s>]/i, '<form> element (parody forms must have no submit path)'],
 ];
-/** Test hooks must never ship. */
-const PROD_ONLY: [RegExp, string][] = [[/__uvcr/, 'test hook in production build']];
+/** Nothing ships that could transmit, fingerprint or prompt (the DOOM engine is its own frame). */
+const APP_JS_FORBIDDEN: [RegExp, string][] = [
+  [/__uvcr|PUBLIC_TEST_HOOKS/, 'test hook in production build'],
+  [/\bNotification\b|geolocation|getUserMedia|permissions\.query/, 'permission prompt API'],
+  [/sendBeacon|XMLHttpRequest|\bWebSocket\b|\bEventSource\b/, 'transmit API'],
+  [/hardwareConcurrency|deviceMemory/, 'fingerprinting API'],
+  [/clipboardData|navigator\.clipboard/, 'clipboard access'],
+  [/Math\.random\(/, 'unseeded randomness'],
+];
 
 const problems: string[] = [];
 const fail = (file: string, msg: string) => problems.push(`${relative(DIST, file) || '.'}: ${msg}`);
@@ -114,7 +112,10 @@ const rows: [string, string, string][] = [];
 for (const f of [...htmlFiles, ...jsFiles, ...files.filter((f) => /\.(md|txt|xml)$/.test(f))]) {
   const text = readFileSync(f, 'utf8');
   for (const [re, why] of FORBIDDEN) if (re.test(text)) fail(f, `forbidden pattern ${re} (${why})`);
-  if (!TEST_BUILD) for (const [re, why] of PROD_ONLY) if (re.test(text)) fail(f, why);
+}
+for (const f of jsFiles.filter((f) => !relative(DIST, f).startsWith('doom-engine/'))) {
+  const text = readFileSync(f, 'utf8');
+  for (const [re, why] of APP_JS_FORBIDDEN) if (re.test(text)) fail(f, `${why}: ${re}`);
 }
 
 /* ---------- third-party references in JS and CSS ---------- */
@@ -122,19 +123,14 @@ for (const f of jsFiles) {
   const text = readFileSync(f, 'utf8');
   for (const m of text.matchAll(/https?:\/\/[^\s"'`)<>]+/g)) {
     const u = m[0];
-    // Only the click-to-play YouTube embed, this site's own origin (console links; the dev
-    // fallback in absoluteUrl), and plain link targets rendered as <a href>.
+    // This site's own origin (the dev fallback in absoluteUrl), plain link targets rendered as
+    // <a href>, and the SVG namespace.
     const allowed =
       u.startsWith(SITE) ||
       u === 'http://localhost' ||
-      u.startsWith('https://www.youtube-nocookie.com/embed/') ||
-      u.startsWith('https://www.youtube.com/watch') ||
       u.startsWith('https://github.com/DavidPurvis') ||
       u.startsWith('https://www.linkedin.com/in/dgp0') ||
       u.startsWith('http://www.w3.org/') ||
-      u.startsWith('https://tosdr.org') ||
-      // A paper cited in a comment inside one of three.js's GLSL shader strings; never fetched.
-      u === 'https://jcgt.org/published/0007/04/01/' ||
       // Part of an Emscripten error message in the vendored DOOM engine; never fetched.
       u === 'https://github.com/emscripten-core/emscripten/wiki/Linking';
     if (!allowed) fail(f, `unexpected external URL in script: ${u}`);
@@ -240,29 +236,13 @@ for (const f of htmlFiles) {
   if (total > budget * 1024) fail(f, `JS ${kb(total)} KB gz over budget ${budget} KB`);
 }
 
-/* ---------- lazy chunks (matter-js) must stay lazy and bounded ---------- */
-for (const f of jsFiles) {
-  const src = readFileSync(f, 'utf8');
-  if (
-    /matter-js|Matter\.Engine|MouseConstraint/.test(src) &&
-    /Engine\.create|Composite\.add/.test(src)
-  ) {
-    if (staticallyReachable.has(f)) fail(f, 'physics engine is statically reachable from a page');
-    if (gz(src) > LAZY_CHUNK_BUDGET_KB * 1024)
-      fail(f, `lazy chunk over ${LAZY_CHUNK_BUDGET_KB} KB gz`);
-  }
+/* ---------- lazy chunks (the case's steps): never in a page's static bundle, each small ---------- */
+for (const f of jsFiles.filter((f) => !relative(DIST, f).startsWith('doom-engine/'))) {
+  if (staticallyReachable.has(f)) continue;
+  const size = gz(readFileSync(f));
+  if (size > LAZY_CHUNK_BUDGET_KB * 1024)
+    fail(f, `lazy chunk ${kb(size)} KB gz over ${LAZY_CHUNK_BUDGET_KB} KB`);
 }
-
-/* ---------- three.js must stay lazy (never in a page's static bundle) and bounded ---------- */
-const threeChunks = jsFiles.filter((f) =>
-  /isWebGLRenderer|isMeshPhysicalMaterial|isInstancedMesh/.test(readFileSync(f, 'utf8')),
-);
-for (const f of threeChunks)
-  if (staticallyReachable.has(f)) fail(f, 'three.js is statically reachable from a page');
-const threeTotal = threeChunks.reduce((n, f) => n + gz(readFileSync(f)), 0);
-if (threeTotal > THREE_BUDGET_KB * 1024)
-  fail(DIST, `three.js chunks total ${kb(threeTotal)} KB gz, over ${THREE_BUDGET_KB} KB`);
-rows.push(['(lazy) three.js + cube', kb(threeTotal), String(THREE_BUDGET_KB)]);
 
 /* ---------- report ---------- */
 const w = Math.max(...rows.map((r) => r[0].length), 5);

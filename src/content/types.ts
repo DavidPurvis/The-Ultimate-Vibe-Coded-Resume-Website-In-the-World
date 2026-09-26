@@ -44,5 +44,3 @@ export interface CopyRecord {
   status: ContentStatus;
   blockRefs?: readonly BlockId[];
 }
-
-export type DestId = 'github' | 'linkedin' | 'email' | 'pdf' | 'repo';

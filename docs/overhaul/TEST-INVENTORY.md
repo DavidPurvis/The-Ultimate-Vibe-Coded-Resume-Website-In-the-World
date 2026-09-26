@@ -92,3 +92,29 @@ These specs are still deleted with the legacy layer (P4A/P4B).
 - `tests/dom/steps.test.ts` covers the release step in each performance (keyboard, touch, mouse, reduced motion, a mid-review preference change, restore) and the ceremony (budget, skip, reduced motion, a mid-run preference change, focus).
 - `narrative.spec.ts` runs the full pipeline: J1 (mouse), J2 (keyboard), J3 (reduced motion) end on identical disposition lines; J4 (touch, mobile project); J8 reloads mid-release; J10 aborts the ceremony chunk.
 - `access.spec.ts`, `layout.spec.ts` and `a11y.spec.ts` now check every case step: escapes present, 44 px targets, no sideways scrolling at 320/390 px, axe clean in light and dark.
+
+## Changes made in P4A
+
+The anthology and the whole legacy gag layer are gone, and their tests with them. DOOM moved onto `Site.astro` and `Scope` in this phase (planned for P4B), because keeping `/doom/` on the old layout would have meant editing `chaos.ts` only to delete it later.
+
+**Deleted:**
+- e2e: `ads`, `blog`, `captcha`, `casino`, `chaos`, `cube`, `forms`, `hud`, `legal`, `personnel`, `presentation`, `review`, `subway`, `tailor` (its lane-page tests moved into `resume.spec.ts`);
+- unit: `aem`, `blog`, `cage-photos`, `captcha`, `casino`, `contact`, `cube`, `forms`, `hud`, `landing-logic`, `legal`, `presentation`, `progress`, `scene`, `subway`, `tailor`.
+
+**Rewritten:**
+- `helpers.ts`: `HTML_ROUTES` is derived from `ROUTES`; `seedPrefs` removed.
+- `routes.spec.ts` checks that the route table is exactly the set of built pages.
+- `pages.spec.ts` covers the plain projects, colophon, credits and 404 pages, and checks that plain pages carry no institutional copy.
+- `print.spec.ts`: `/` prints the résumé; every other page prints itself.
+- `privacy.spec.ts`: a whole visit makes no third-party request, sets no cookie and stores one key; under GPC the Department records nothing ambient.
+- `doom.spec.ts` drops the dock and Recruiter Mode tests, and adds "leaving the page ends the game".
+- `a11y.spec.ts` and `layout.spec.ts` run on the surviving routes only.
+- `machine-text.test.ts`: `llms.txt` and `robots.txt` are plain.
+- `copy.test.ts` covers the surviving copy.
+- `credits.test.ts` checks every file in `public/`.
+- `storage.test.ts` covers the primitives only.
+- `small-libs.test.ts` keeps the activation truth table, paths and identity.
+
+**New:** `privacy-page.spec.ts` (the storage table, Reset, legacy-key cleanup, no JS).
+
+E2E now runs on the production build: the test-hook build is gone from CI.

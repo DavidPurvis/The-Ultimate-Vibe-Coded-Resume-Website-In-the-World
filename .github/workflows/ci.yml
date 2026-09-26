@@ -39,16 +39,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium firefox webkit
-      - name: Production build (no test hooks) + scan
+      - name: Production build + scan
         run: npm run build && npm run scan
-      - name: Keep the production artifact
-        run: cp -r dist dist-prod
-      - name: Test build (with test hooks)
-        run: PUBLIC_TEST_HOOKS=1 npm run build:site && npx tsx scripts/postbuild.ts
-      - run: npx playwright test
-      - name: Restore production artifact for Lighthouse
-        if: always()
-        run: rm -rf dist && mv dist-prod dist || true
+      - name: E2E on the production build
+        run: npx playwright test
       - uses: actions/upload-artifact@v7
         if: always()
         with:

@@ -1,6 +1,6 @@
 /**
- * Rasterize original SVG art into the PNGs browsers still want (favicons, apple-touch icon,
- * Safari-safe cursors) and render the Open Graph card. Outputs are committed; re-run when the
+ * Rasterize the favicon SVG into the PNGs browsers still want (favicons, apple-touch icon) and
+ * render the Open Graph card. Outputs are committed; re-run when the
  * art or the card changes:  npm run rasterize
  */
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
@@ -45,9 +45,6 @@ async function main(): Promise<void> {
   await svgToPng(page, 'favicon.svg', 'generated/icon-192.png', 192);
   await svgToPng(page, 'favicon.svg', 'generated/icon-512.png', 512);
   await svgToPng(page, 'favicon.svg', 'generated/apple-touch-icon.png', 180, '#F6F1E7');
-  for (const c of ['cabbage', 'paddle', 'crosshair']) {
-    await svgToPng(page, `cursors/${c}.svg`, `generated/cursors/${c}-32.png`, 32);
-  }
 
   const server = await startServer(4398);
   try {

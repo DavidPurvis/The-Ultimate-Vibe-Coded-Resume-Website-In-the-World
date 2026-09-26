@@ -1,0 +1,97 @@
+---
+import Site from '../../layouts/Site.astro';
+import PageHero from '../../components/PageHero.astro';
+import { ROUTES } from '../../content/copy/meta';
+import { privacyCopy as C } from '../../content/site/privacy';
+---
+
+<Site route={ROUTES.privacy}>
+  <PageHero kicker={C.kicker} title={C.h1} lede={C.lede} />
+
+  <div class="prose">
+    <section aria-labelledby="stored-h">
+      <h2 id="stored-h">{C.storedHeading}</h2>
+      {C.storedBody.map((p) => (
+        <p>{p}</p>
+      ))}
+      <div class="js-only" data-storage>
+        <table class="storage-table">
+          <caption>{C.tableCaption}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{C.columns.key}</th>
+              <th scope="col">{C.columns.area}</th>
+              <th scope="col">{C.columns.size}</th>
+            </tr>
+          </thead>
+          <tbody data-storage-rows></tbody>
+        </table>
+        <p class="fine" data-storage-empty hidden>
+          {C.empty}
+        </p>
+        <p>
+          <button type="button" class="btn" data-storage-reset>
+            {C.reset}
+          </button>
+        </p>
+      </div>
+      <noscript>
+        <p>{C.noscript}</p>
+      </noscript>
+    </section>
+
+    <section class="section" aria-labelledby="noticed-h">
+      <h2 id="noticed-h">{C.noticedHeading}</h2>
+      <ul>
+        {C.noticed.map((n) => (
+          <li>{n}</li>
+        ))}
+      </ul>
+      <p>{C.gpc}</p>
+    </section>
+
+    <section class="section" aria-labelledby="never-h">
+      <h2 id="never-h">{C.neverHeading}</h2>
+      <ul>
+        {C.never.map((n) => (
+          <li>{n}</li>
+        ))}
+      </ul>
+      <p>{C.doom}</p>
+      <p class="fine">{C.legacy}</p>
+    </section>
+  </div>
+
+  <span hidden data-storage-copy={JSON.stringify({ areas: C.areas, cleared: C.cleared })}></span>
+</Site>
+
+<script>
+  import '../../scripts/privacy';
+</script>
+
+<style>
+  .prose {
+    max-width: 42rem;
+  }
+  .storage-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--s-3) 0;
+    font-size: 0.9rem;
+  }
+  .storage-table caption {
+    text-align: left;
+    font-weight: 600;
+    padding-bottom: var(--s-2);
+  }
+  .storage-table th,
+  .storage-table td {
+    text-align: left;
+    padding: var(--s-1) var(--s-2);
+    border-bottom: 1px solid var(--rule);
+    overflow-wrap: anywhere;
+  }
+  .storage-table td:first-child {
+    font-family: var(--font-mono);
+  }
+</style>
