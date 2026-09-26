@@ -149,6 +149,13 @@ export const ROUTES = {
       'A tribute from David Purvis to Terry A. Davis, who built TempleOS, its compiler and its programming language, alone. Anything is possible.',
     formId: 'DRV-23',
   },
+  blog: {
+    path: '/blog/',
+    title: 'The Department Newsletter · David Purvis',
+    description:
+      'Blog posts by David Purvis: a manifesto against the zipper merge, the goldfish incident, national security through job applications, and Rainbow Six as a teamwork philosophy.',
+    formId: 'DRV-28',
+  },
   notFound: {
     path: '/404.html',
     title: '404: Failed the CAPTCHA · David Purvis',

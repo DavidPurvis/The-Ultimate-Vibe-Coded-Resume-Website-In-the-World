@@ -1,11 +1,11 @@
 /**
  * Résumé integrity guard — the Résumé Context Pack's §8 constraints, made executable.
- * Runs over the rendered résumé HTML text, the PDF text layer, resume.md, llms.txt, page metadata
- * and the /projects/ page. Any violation fails tests / the build.
+ * Runs over the rendered résumé HTML text, the PDF text layer, resume.md, llms.txt, page metadata,
+ * the /projects/ page and blog posts. Any violation fails tests / the build.
  */
 import { ABSENT_TECH, GO_LANG, VERIFIED_NUMBERS } from '../content/facts';
 
-export type Scope = 'resume' | 'pdf' | 'md' | 'llms' | 'meta' | 'projects';
+export type Scope = 'resume' | 'pdf' | 'md' | 'llms' | 'meta' | 'projects' | 'blog';
 
 export interface Violation {
   rule: string;
@@ -13,7 +13,8 @@ export interface Violation {
   index: number;
 }
 
-const ALL: readonly Scope[] = ['resume', 'pdf', 'md', 'llms', 'meta', 'projects'];
+/** Blog posts get the claim rules (no invented tech, titles or honors), not the number whitelist. */
+const ALL: readonly Scope[] = ['resume', 'pdf', 'md', 'llms', 'meta', 'projects', 'blog'];
 const RESUME_LIKE: readonly Scope[] = ['resume', 'pdf', 'md'];
 
 /** Numbers allowed per scope in addition to VERIFIED_NUMBERS and years. */

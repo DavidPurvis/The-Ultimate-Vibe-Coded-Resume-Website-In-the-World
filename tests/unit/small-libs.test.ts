@@ -177,3 +177,20 @@ describe('runaway geometry', () => {
     expect(shouldDodge(false, false, 0, 1000, 250)).toBe(false);
   });
 });
+
+describe('newsletter form numbers', () => {
+  it('skip 7 like every other form', async () => {
+    const { postFormId } = await import('../../src/lib/blog.pure');
+    const ids = Array.from({ length: 12 }, (_, i) => postFormId(i));
+    expect(ids.slice(0, 7)).toEqual([
+      'DRV-28/01',
+      'DRV-28/02',
+      'DRV-28/03',
+      'DRV-28/04',
+      'DRV-28/05',
+      'DRV-28/06',
+      'DRV-28/08',
+    ]);
+    expect(ids.some((id) => /\/\d*7\d*$/.test(id))).toBe(false);
+  });
+});

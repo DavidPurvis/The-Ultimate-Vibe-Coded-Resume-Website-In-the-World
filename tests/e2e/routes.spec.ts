@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { BASE, HTML_ROUTES } from './helpers';
+import { readdirSync } from 'node:fs';
 import { ROUTES, DECOYS } from '../../src/content/copy/meta';
 
 test.describe('routes', () => {
@@ -8,6 +9,11 @@ test.describe('routes', () => {
       .map((r) => r.path)
       .filter((p) => p !== '/404.html')
       .concat(DECOYS.map((d) => `/r/${d.slug}/`))
+      .concat(
+        readdirSync('src/blog')
+          .filter((f) => f.endsWith('.md'))
+          .map((f) => `/blog/${f.replace(/\.md$/, '')}/`),
+      )
       .map((p) => p.slice(1))
       .sort();
     expect([...HTML_ROUTES].sort()).toEqual(fromMeta);

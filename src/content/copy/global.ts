@@ -42,6 +42,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { path: '/personnel-file/', label: 'Personnel File' },
       { path: '/wishlist/', label: 'Wishlist' },
+      { path: '/blog/', label: 'Newsletter' },
       { path: '/tribute/', label: 'In Memoriam' },
     ],
   },

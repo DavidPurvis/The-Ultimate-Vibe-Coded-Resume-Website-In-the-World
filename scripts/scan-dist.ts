@@ -101,7 +101,7 @@ const staticallyReachable = new Set<string>();
 const rows: [string, string, string][] = [];
 
 /* ---------- text scans ---------- */
-for (const f of [...htmlFiles, ...jsFiles, ...files.filter((f) => /\.(md|txt)$/.test(f))]) {
+for (const f of [...htmlFiles, ...jsFiles, ...files.filter((f) => /\.(md|txt|xml)$/.test(f))]) {
   const text = readFileSync(f, 'utf8');
   for (const [re, why] of FORBIDDEN) if (re.test(text)) fail(f, `forbidden pattern ${re} (${why})`);
   if (!TEST_BUILD) for (const [re, why] of PROD_ONLY) if (re.test(text)) fail(f, why);
