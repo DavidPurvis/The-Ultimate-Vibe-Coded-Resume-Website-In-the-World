@@ -32,13 +32,26 @@ import { arm } from '../unload';
 import { CAP, CONTINUE_AFTER_MS, nextProgress, STATUS_MS, TICK_MS } from '../progress/logic';
 
 const root = document.querySelector<HTMLElement>('[data-captcha]');
+// Licensed photos replace the cabbages only when the build shipped enough credited ones.
+const photoTiles = ((): CaptchaTile[] | null => {
+  const raw = document.querySelector<HTMLElement>('[data-cage-photos]')?.dataset.cagePhotos;
+  try {
+    return raw ? (JSON.parse(raw) as CaptchaTile[]) : null;
+  } catch {
+    return null;
+  }
+})();
+const cageTiles = photoTiles ?? cabbageTiles;
 const copy: Copy = {
   windows: { headlines: rounds.windows.headlines, sublines: rounds.windows.sublines },
-  cage: { headlines: rounds.cage.headlines, sublines: rounds.cage.sublines },
+  cage: {
+    headlines: photoTiles ? rounds.cage.photo.headlines : rounds.cage.headlines,
+    sublines: rounds.cage.sublines,
+  },
   linux: { pass: rounds.linux.pass },
   audioPass: audio.result,
 };
-const ctx = { windowTiles, cageCount: cabbageTiles.length, copy };
+const ctx = { windowTiles, cageCount: cageTiles.length, copy };
 const rng = makeRng();
 const FEEDBACK_LOCK_MS = () => (reducedMotion() ? 300 : 900);
 
@@ -72,7 +85,7 @@ function restore(): void {
       headline: state.method === 'audio' ? audio.result : rounds.linux.pass,
       subline: '',
     };
-  if (state.round === 'cage') order = shuffle(cabbageTiles);
+  if (state.round === 'cage') order = shuffle(cageTiles);
 }
 
 function persist(): void {
@@ -154,12 +167,15 @@ function renderGrid(stagger = false): void {
 
 function renderPrompt(): void {
   if (state.round === 'windows') setPrompt(rounds.windows.prompt, rounds.windows.sub);
-  else if (state.round === 'cage')
+  else if (state.round === 'cage') {
+    const flippedSub = photoTiles ? rounds.cage.photo.flipped : rounds.cage.flipped;
     setPrompt(
       state.promptVariant === 'B' ? rounds.cage.promptB : rounds.cage.prompt,
-      state.flipped ? rounds.cage.flipped : rounds.cage.sub,
+      state.flipped ? flippedSub : rounds.cage.sub,
     );
-  else setPrompt(rounds.linux.prompt, rounds.linux.footnote);
+  } else setPrompt(rounds.linux.prompt, rounds.linux.footnote);
+  const caption = $('[data-cn-photo-caption]');
+  if (caption) caption.hidden = state.round !== 'cage';
 }
 
 function renderFeedback(): void {
@@ -207,7 +223,7 @@ function dispatch(e: CaptchaEvent): void {
     root?.querySelectorAll('.cn__tile').forEach((t) => t.classList.add('is-fading'));
     setTimeout(() => {
       const advancing = state.advanceTo;
-      if (advancing === 'cage') order = shuffle(cabbageTiles);
+      if (advancing === 'cage') order = shuffle(cageTiles);
       else if (!advancing) order = shuffle(order);
       dispatch({ t: 'FEEDBACK_DONE' });
       verify?.removeAttribute('aria-disabled');

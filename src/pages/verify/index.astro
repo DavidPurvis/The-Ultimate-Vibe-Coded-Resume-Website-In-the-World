@@ -13,6 +13,9 @@ import {
 } from '../../content/copy/captcha';
 import { memos } from '../../content/copy/memos';
 import { url } from '../../lib/paths';
+import { cagePhotoTiles } from '../../content/cagePhotos';
+
+const cagePhotos = cagePhotoTiles();
 import '../../styles/captcha.css';
 ---
 
@@ -54,6 +57,12 @@ import '../../styles/captcha.css';
           </button>
         ))}
       </div>
+      {cagePhotos && (
+        <p class="fine cn__caption" data-cn-photo-caption hidden>
+          {rounds.cage.photo.caption}
+        </p>
+      )}
+      {cagePhotos && <span hidden data-cage-photos={JSON.stringify(cagePhotos)} />}
       <div class="cn__empty" data-cn-empty hidden>
         <img src={url('/illustrations/empty-grid.svg')} alt="" width="240" height="240" />
         <p>{rounds.linux.empty}</p>

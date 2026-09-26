@@ -138,6 +138,17 @@ export const rounds = {
     prompt: ['Select all images of ', 'Nicolas Cage', '.'],
     sub: 'Our attorneys have replaced every celebrity photograph with a legally nervous rectangle.',
     flipped: 'Update: legal has approved cabbages. Please continue selecting Nicolas Cage.',
+    /** Used instead when licensed photos are dropped in (see src/content/cagePhotos.ts). */
+    photo: {
+      flipped:
+        'Update: legal has approved the photographs. Please continue selecting Nicolas Cage.',
+      headlines: {
+        none: 'You’ve selected no Nicolas Cages. Mr. Cage noticed.',
+        all: 'Nicolas Cage detected in 9/9 tiles. That is a lot of Cage.',
+        some: 'You missed one. It was Nicolas Cage. They were all Nicolas Cage.',
+      },
+      caption: 'No endorsement implied. Mr. Cage has not reviewed this résumé. Yet.',
+    },
     promptB: [
       'Select all individuals who have successfully liberated the ',
       'Declaration of Independence',

@@ -11,8 +11,11 @@ import {
   realWorld,
   stickers,
   tos,
+  metaSnippets,
 } from '../../content/copy/legal';
 import { url } from '../../lib/paths';
+// Real platforms' terms, quoted only after David checks each against the live page.
+const verifiedSnippets = metaSnippets.filter((q) => q.status === 'verified');
 ---
 
 <Base route={ROUTES.legal}>
@@ -139,6 +142,23 @@ import { url } from '../../lib/paths';
       </a>
       .
     </p>
+    {verifiedSnippets.length > 0 && (
+      <div class="snippets" data-meta-snippets>
+        {verifiedSnippets.map((q) => (
+          <figure class="snippet card">
+            <blockquote cite={q.url}>
+              <p>“{q.text}”</p>
+            </blockquote>
+            <figcaption>
+              <a href={q.url} rel="noopener noreferrer">
+                {q.source}
+              </a>
+              . <em>{q.commentary}</em>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    )}
   </section>
 
   <p class="section">
@@ -234,6 +254,19 @@ import { url } from '../../lib/paths';
     min-height: 44px;
     display: flex;
     align-items: center;
+  }
+  .snippets {
+    display: grid;
+    gap: var(--s-4);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  }
+  .snippet {
+    margin: 0;
+    padding: var(--s-4);
+  }
+  .snippet blockquote {
+    margin: 0 0 var(--s-2);
+    font: italic 400 1.05rem/1.4 var(--font-display);
   }
   .stickers__header {
     font: 700 1.2rem var(--font-display);
