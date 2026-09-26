@@ -58,6 +58,7 @@ test.describe('the Access Request', () => {
       if (m.type() === 'info') infos.push(m.text());
     });
     await page.goto('./');
+    await expect(page).toHaveTitle('David Purvis — Software Engineer');
     await expect(page.locator('#case')).toBeHidden();
     await toPreview(page);
     await expect(page.locator('#case')).toContainText(CASE_NO);
