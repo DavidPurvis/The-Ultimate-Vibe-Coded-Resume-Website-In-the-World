@@ -104,6 +104,9 @@ export const modes = {
   label: 'Modes',
   hud: 'Overkill HUD',
   hudHint: 'Crowds every edge with gaming UI. The middle stays readable.',
+  subway: 'Attention-Span Mode',
+  subwayHint:
+    'Summons Subway Surfers gameplay, picture-in-picture style, for the modern attention span. Up to 12.',
 };
 
 export const modeToasts = {

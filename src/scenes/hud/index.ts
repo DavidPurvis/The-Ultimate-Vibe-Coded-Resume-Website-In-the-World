@@ -377,4 +377,4 @@ function mount({ d }: SceneCtx): void {
 
 register({ id: 'hud', major: false, start: mount });
 
-export const startHud = (): Promise<boolean> => start('hud');
+export const startScene = (): Promise<boolean> => start('hud');

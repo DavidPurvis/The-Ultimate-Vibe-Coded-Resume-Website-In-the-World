@@ -144,27 +144,48 @@ function initMenus(): void {
     });
 }
 
-/* ---------- Modes: Overkill HUD (the HUD itself is a lazy chunk) ---------- */
+/* ---------- Modes: Overkill HUD, Attention-Span Mode (each a lazy chunk, loaded when on) ---------- */
 function initModes(): void {
-  const sw = document.querySelector<HTMLButtonElement>('[data-hud-toggle]');
   const sincere = document.body.hasAttribute('data-sincere');
-  const on = () => readPrefs().hud === 'overkill';
-  const sync = () => sw?.setAttribute('aria-checked', String(on()));
-  const apply = () => {
-    sync();
-    if (on() && isChaos() && !sincere) void import('../scenes/hud').then((m) => m.startHud());
-  };
-  sw?.addEventListener('click', () => {
-    writePrefs({ hud: on() ? 'off' : 'overkill' });
-    if (on()) apply();
-    else stop('hud', 'complete');
-    sync();
-  });
-  document.addEventListener('uvcr:hud', sync);
-  onModeChange((m) => {
-    if (m === 'chaos') apply();
-  });
-  apply();
+  interface ModeSwitch {
+    id: string;
+    on(): boolean;
+    set(v: boolean): void;
+    load(): Promise<{ startScene(fromClick?: boolean): Promise<unknown> }>;
+  }
+  const modes: ModeSwitch[] = [
+    {
+      id: 'hud',
+      on: () => readPrefs().hud === 'overkill',
+      set: (v: boolean) => writePrefs({ hud: v ? 'overkill' : 'off' }),
+      load: () => import('../scenes/hud'),
+    },
+    {
+      id: 'subway',
+      on: () => readSession().subway.on,
+      set: (v: boolean) => writeSession({ subway: { on: v, count: 0 } }),
+      load: () => import('../scenes/subway'),
+    },
+  ];
+  for (const m of modes) {
+    const sw = document.querySelector<HTMLButtonElement>(`[data-${m.id}-toggle]`);
+    const sync = () => sw?.setAttribute('aria-checked', String(m.on()));
+    const apply = (fromClick = false) => {
+      sync();
+      if (m.on() && isChaos() && !sincere) void m.load().then((x) => x.startScene(fromClick));
+    };
+    sw?.addEventListener('click', () => {
+      m.set(!m.on());
+      if (m.on()) apply(true);
+      else stop(m.id, 'complete');
+      sync();
+    });
+    document.addEventListener(`uvcr:${m.id}`, sync);
+    onModeChange((mode) => {
+      if (mode === 'chaos') apply();
+    });
+    apply();
+  }
 }
 
 /* ---------- Console greeting ---------- */

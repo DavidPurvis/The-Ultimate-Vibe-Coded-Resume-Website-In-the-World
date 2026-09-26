@@ -57,6 +57,7 @@ export const feedLines: Record<ThreatReason, [string, string]> = {
   biscotti: ['You', 'Fifty biscotti'],
   lightsOut: ['You', 'The lights'],
   appendix: ['You', 'The Appendix'],
+  summon: ['Subway Surfers', 'Your attention span'],
 };
 
 export const feedSeed: [string, string][] = [

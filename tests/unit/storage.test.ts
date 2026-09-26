@@ -107,11 +107,16 @@ describe('session', () => {
       [2.9, 2],
       ['lots', 0],
     ] as const) {
-      session.setItem('uvcr:session', JSON.stringify({ v: 1, subway: { count: raw } }));
+      session.setItem('uvcr:session', JSON.stringify({ v: 1, subway: { on: true, count: raw } }));
       expect(readSession().subway.count).toBe(want);
     }
     session.setItem('uvcr:session', JSON.stringify({ v: 1, subway: 'yes' }));
-    expect(readSession().subway).toEqual({ count: 0 });
+    expect(readSession().subway).toEqual({ on: false, count: 0 });
+    // Players only exist while the mode is on.
+    session.setItem('uvcr:session', JSON.stringify({ v: 1, subway: { on: false, count: 4 } }));
+    expect(readSession().subway).toEqual({ on: false, count: 0 });
+    session.setItem('uvcr:session', JSON.stringify({ v: 1, subway: { on: 'yes', count: 4 } }));
+    expect(readSession().subway).toEqual({ on: false, count: 0 });
   });
 });
 

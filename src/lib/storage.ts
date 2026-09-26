@@ -46,6 +46,11 @@ export interface CaptchaSnapshot {
   method: 'persistence' | 'audio' | 'linux' | 'skipped' | null;
 }
 
+export interface SubwayState {
+  on: boolean;
+  count: number;
+}
+
 export interface SessionState {
   v: 1;
   identity: IdentitySnapshot | null;
@@ -59,8 +64,8 @@ export interface SessionState {
   appendixOpened: boolean;
   identityPrompted: boolean;
   loadBearingShown: boolean;
-  /** Attention-Span Mode: how many gameplay players were summoned this session. */
-  subway: { count: number };
+  /** Attention-Span Mode: switched on, and how many gameplay players are summoned. */
+  subway: SubwayState;
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -86,7 +91,7 @@ export const DEFAULT_SESSION: SessionState = {
   appendixOpened: false,
   identityPrompted: false,
   loadBearingShown: false,
-  subway: { count: 0 },
+  subway: { on: false, count: 0 },
 };
 
 type Area = 'local' | 'session';
@@ -284,11 +289,15 @@ export function validateSession(o: Record<string, unknown> | null): SessionState
 
 /** Subway players are capped (see scenes/subway/logic.ts); anything else resets to none. */
 export const SUBWAY_MAX = 12;
-function validateSubway(v: unknown): { count: number } {
-  const n = v && typeof v === 'object' ? (v as { count?: unknown }).count : 0;
+function validateSubway(v: unknown): SubwayState {
+  const o = v && typeof v === 'object' ? (v as { on?: unknown; count?: unknown }) : {};
+  const n = o.count;
+  const on = bool(o.on, false);
   return {
+    on,
+    // Players only exist while the mode is on.
     count:
-      typeof n === 'number' && Number.isFinite(n)
+      on && typeof n === 'number' && Number.isFinite(n)
         ? Math.min(SUBWAY_MAX, Math.max(0, Math.floor(n)))
         : 0,
   };

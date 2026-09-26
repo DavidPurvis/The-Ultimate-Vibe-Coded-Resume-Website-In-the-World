@@ -78,6 +78,20 @@ const formFor = (path: string) =>
             <p class="fine" id="modes-hud-hint">
               {modes.hudHint}
             </p>
+            <button
+              type="button"
+              class="switch"
+              role="switch"
+              aria-checked="false"
+              aria-describedby="modes-subway-hint"
+              data-subway-toggle
+            >
+              <span class="switch__track" aria-hidden="true"></span>
+              <span>{modes.subway}</span>
+            </button>
+            <p class="fine" id="modes-subway-hint">
+              {modes.subwayHint}
+            </p>
           </div>
         </div>
       </details>

@@ -16,6 +16,7 @@ export const POINTS = {
   biscotti: 1,
   lightsOut: 1,
   appendix: 1,
+  summon: 1,
 } as const;
 export type ThreatReason = keyof typeof POINTS;
 

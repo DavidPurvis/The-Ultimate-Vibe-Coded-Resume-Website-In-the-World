@@ -16,7 +16,7 @@ export const facts = {
   lines: [
     'This site sets no cookies. Not one. The cookie banner is a bit.',
     'No analytics, no advertising pixels, no session replay, no fingerprinting. Nothing is sent anywhere by this site’s code.',
-    'Fonts, icons and images are served from this site. Nothing loads from a third party until you choose to play the video in the casino or on the due-diligence page. Then YouTube’s privacy-enhanced player loads, and YouTube’s policies apply.',
+    'Fonts, icons and images are served from this site. Nothing loads from a third party until you choose to play the video in the casino or on the due-diligence page, or summon gameplay in Attention-Span Mode. Then YouTube’s privacy-enhanced player loads, and YouTube’s policies apply. Summoned players come back on each page until you dismiss them or switch the mode off.',
     'Résumé For You builds a link to claude.ai with your quiz answers and a cut of the résumé in it. Nothing goes to Claude unless you press that link. If you do, it opens in your own account and Anthropic’s terms apply.',
     'Your browser stores a few small things for this site, listed below. You can delete them all right now.',
   ],
@@ -26,7 +26,7 @@ export const facts = {
   purposes: {
     'uvcr:prefs': 'Your mode, theme, HUD setting and cookie-banner choice.',
     'uvcr:session':
-      'Your fictional identity, game progress and summoned players, for this tab only.',
+      'Your fictional identity, game progress, and whether Attention-Span Mode is on (and how many players you summoned), for this tab only.',
     'uvcr:biscotti': 'Fifty drawings of biscotti, only if you asked for them.',
   } as Record<string, string>,
   where: { local: 'localStorage (this browser)', session: 'sessionStorage (this tab)' },
