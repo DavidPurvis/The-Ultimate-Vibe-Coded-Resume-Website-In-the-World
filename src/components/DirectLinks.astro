@@ -1,0 +1,35 @@
+---
+/** David's real destinations, no wheel. Used where the house concedes (no JS, Recruiter Mode). */
+import { DEST, DEST_IDS, entityEncode } from '../lib/paths';
+
+const links = DEST_IDS.map((id) => {
+  const d = DEST[id];
+  const rel = d.external ? ' rel="noopener noreferrer"' : '';
+  // The email stays entity-encoded, like on the résumé.
+  const href = id === 'email' ? entityEncode(d.href) : d.href;
+  const text = id === 'email' ? entityEncode(d.display) : d.display;
+  return `<a href="${href}"${rel} data-direct="${id}">${d.label}: ${text}</a>`;
+});
+---
+
+<ul class="direct-links" role="list">
+  {links.map((l) => (
+    <li set:html={l} />
+  ))}
+</ul>
+
+<style>
+  .direct-links {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--s-4);
+    display: grid;
+    gap: var(--s-2);
+  }
+  .direct-links :global(a) {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    overflow-wrap: anywhere;
+  }
+</style>

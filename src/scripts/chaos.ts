@@ -32,6 +32,11 @@ function initModeToggle(): void {
   sync();
   sw?.addEventListener('click', () => setMode(isChaos() ? 'recruiter' : 'chaos'));
   onModeChange(sync);
+  // HR is in the building: close every gag dialog (closing the rickroll also removes the player).
+  onModeChange((m) => {
+    if (m !== 'recruiter') return;
+    document.querySelectorAll<HTMLDialogElement>('dialog[open]').forEach((d) => d.close('mode'));
+  });
 }
 
 /* ---------- Konami ---------- */

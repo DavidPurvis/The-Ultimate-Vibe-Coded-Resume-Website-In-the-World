@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import { ROUTES } from '../../content/copy/meta';
+import { rickPage as R } from '../../content/copy/rick';
+import { url } from '../../lib/paths';
+---
+
+<Base route={ROUTES.rick}>
+  <PageHero kicker={R.kicker} title={R.h1} lede={R.body} />
+  <div class="btn-row">
+    <button type="button" class="btn btn--primary" data-rick-begin data-continue="/projects/">
+      <Icon name="play" />
+      {R.begin}
+    </button>
+    <a class="btn" href={url('/projects/')}>
+      {R.skip}
+    </a>
+  </div>
+</Base>
+
+<script>
+  import '../../scenes/rickroll/page';
+</script>

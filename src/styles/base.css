@@ -363,6 +363,17 @@ main {
   --btn-ink: #fff;
   --btn-border: var(--stamp);
 }
+.btn--casino {
+  --btn-bg: var(--gold);
+  --btn-ink: #1a1a1a;
+  --btn-border: #1a1a1a;
+  font-size: 1.1rem;
+  box-shadow: 0 3px 0 #1a1a1a;
+}
+.btn--casino:hover {
+  --btn-bg: #f2d27a;
+  box-shadow: 0 3px 0 #1a1a1a;
+}
 .btn--small {
   font-size: 0.875rem;
   padding: var(--s-1) var(--s-3);
