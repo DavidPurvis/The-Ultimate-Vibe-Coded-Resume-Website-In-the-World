@@ -125,6 +125,10 @@ for (const f of cssFiles) {
   for (const m of text.matchAll(/url\(\s*['"]?([^'")]+)['"]?\s*\)/g)) {
     const ref = m[1] ?? '';
     if (/^(https?:)?\/\//.test(ref)) fail(f, `external url() in CSS: ${ref}`);
+    else if (!ref.startsWith('data:') && !ref.startsWith('#')) {
+      const p = toDistPath(ref, f);
+      if (p && !existsSync(p)) fail(f, `broken url() in CSS: ${ref}`);
+    }
   }
   if (gz(readFileSync(f)) > CSS_BUDGET_KB * 1024) fail(f, `CSS over ${CSS_BUDGET_KB} KB gz`);
 }
@@ -133,8 +137,8 @@ for (const f of cssFiles) {
 for (const f of htmlFiles) {
   const html = readFileSync(f, 'utf8');
   const route = relative(DIST, dirname(f)).replace(/\\/g, '/');
-  const routeKey = route ? `${route}/` : '';
   const is404 = f.endsWith('404.html');
+  const routeKey = is404 ? '404.html' : route ? `${route}/` : '';
   const isOgCard = routeKey === 'og-card/';
 
   if (!/<html[^>]*\slang="[a-z]{2}/.test(html)) fail(f, 'missing <html lang>');

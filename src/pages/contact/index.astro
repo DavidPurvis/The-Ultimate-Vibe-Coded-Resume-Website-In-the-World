@@ -1,0 +1,188 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import DestLink from '../../components/DestLink.astro';
+import Icon from '../../components/Icon.astro';
+import { ROUTES } from '../../content/copy/meta';
+import { contactCopy as C } from '../../content/copy/contact';
+import { PHONE_MAX, formatPhone } from '../../lib/format';
+import { DRUM_CHARS } from '../../scenes/contact/logic';
+---
+
+<Base route={ROUTES.contact}>
+  <PageHero kicker={C.kicker} title={C.h1} lede={C.lede} />
+
+  <div class="instruments">
+    <section class="card instrument" aria-labelledby="phone-h">
+      <h2 id="phone-h">{C.phone.heading}</h2>
+      <label for="phone" class="instrument__label">
+        {C.phone.label}
+      </label>
+      <output class="phone-readout mono" for="phone" data-phone-out>
+        {formatPhone(0)}
+      </output>
+      <input
+        id="phone"
+        type="range"
+        min="0"
+        max={PHONE_MAX}
+        step="1"
+        value="0"
+        aria-valuetext={formatPhone(0)}
+        aria-describedby="phone-hint"
+        data-phone
+      />
+      <p id="phone-hint" class="fine">
+        {C.phone.hint}
+      </p>
+      <button type="button" class="btn" data-phone-done>
+        {C.phone.close}
+      </button>
+      <p class="instrument__result" data-phone-result aria-live="polite"></p>
+    </section>
+
+    <section class="card instrument" aria-labelledby="drum-h" data-drum-section hidden>
+      <h2 id="drum-h">{C.drum.heading}</h2>
+      <p class="instrument__label" id="drum-label">
+        {C.drum.label}
+      </p>
+      <div class="drum-wrap">
+        <button type="button" class="btn btn--small" data-drum-up aria-label={C.drum.up}>
+          ▲
+        </button>
+        <div
+          class="drum"
+          role="spinbutton"
+          tabindex="0"
+          aria-labelledby="drum-label"
+          aria-valuemin="0"
+          aria-valuemax={DRUM_CHARS.length - 1}
+          aria-valuenow="0"
+          aria-valuetext="a"
+          data-drum
+        >
+          <div class="drum__ring" data-drum-ring aria-hidden="true">
+            {DRUM_CHARS.map((c) => (
+              <span class="drum__face">{c}</span>
+            ))}
+          </div>
+        </div>
+        <button type="button" class="btn btn--small" data-drum-down aria-label={C.drum.down}>
+          ▼
+        </button>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn" data-drum-add>
+          {C.drum.add}
+        </button>
+        <button type="button" class="btn btn--ghost" data-drum-del>
+          {C.drum.del}
+        </button>
+      </div>
+      <p>
+        <span class="fine">{C.drum.composed}:</span>
+        <output class="mono composed" data-drum-out aria-live="polite"></output>
+      </p>
+      <button type="button" class="btn btn--primary" data-drum-send>
+        <Icon name="mail" />
+        {C.drum.send}
+      </button>
+      <p class="instrument__result" data-drum-result aria-live="polite"></p>
+    </section>
+  </div>
+
+  <p class="section coward">
+    <DestLink dest="email">{C.coward}</DestLink>
+  </p>
+</Base>
+
+<script>
+  import '../../scenes/contact';
+</script>
+
+<style>
+  .instruments {
+    display: grid;
+    gap: var(--s-6);
+  }
+  @media (min-width: 64rem) {
+    .instruments {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .instrument {
+    padding: var(--s-5);
+  }
+  .instrument__label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: var(--s-2);
+  }
+  .phone-readout {
+    display: block;
+    font-size: clamp(1.6rem, 6vw, 2.4rem);
+    letter-spacing: 0.04em;
+    margin-bottom: var(--s-3);
+  }
+  input[type='range'] {
+    width: 100%;
+    min-height: 44px;
+    accent-color: var(--action);
+  }
+  .instrument__result {
+    min-height: 1.5em;
+    margin-top: var(--s-3);
+    font-weight: 600;
+  }
+  .drum-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-2);
+    margin: var(--s-3) 0 var(--s-4);
+  }
+  .drum {
+    position: relative;
+    width: 6rem;
+    height: 5rem;
+    perspective: 600px;
+    border: 2px solid var(--ink-2);
+    border-radius: var(--r-2);
+    background: linear-gradient(var(--paper), var(--card) 40%, var(--card) 60%, var(--paper));
+    overflow: hidden;
+  }
+  .drum:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+  }
+  .drum__ring {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transition: transform var(--dur-3) var(--ease-out);
+  }
+  .drum__face {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font: 700 2.4rem/1 var(--font-mono);
+    backface-visibility: hidden;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .drum__ring {
+      transform: none !important;
+    }
+    .drum__face {
+      display: none;
+      transform: none !important;
+    }
+    .drum__face.is-current {
+      display: grid;
+    }
+  }
+  .composed {
+    font-size: 1.2rem;
+    overflow-wrap: anywhere;
+  }
+</style>
