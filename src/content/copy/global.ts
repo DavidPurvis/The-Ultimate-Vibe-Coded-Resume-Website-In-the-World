@@ -99,6 +99,13 @@ export const footer = {
   tagline: 'Nothing on this site tracks you. Several things on this site judge you.',
 };
 
+/** Modes (a group in the Departments menu). Each mode is a lazy chunk, loaded when switched on. */
+export const modes = {
+  label: 'Modes',
+  hud: 'Overkill HUD',
+  hudHint: 'Crowds every edge with gaming UI. The middle stays readable.',
+};
+
 export const modeToasts = {
   recruiter: 'Recruiter Mode engaged. All jokes suspended. HR has re-entered the building.',
   chaos: 'Chaos restored. HR has left the building.',

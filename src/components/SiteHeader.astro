@@ -2,7 +2,7 @@
 import Icon from './Icon.astro';
 import ThreatMeter from './ThreatMeter.astro';
 import ThemeCycle from './ThemeCycle.astro';
-import { header, navGroups, callbacks } from '../content/copy/global';
+import { header, navGroups, callbacks, modes } from '../content/copy/global';
 import { ROUTES } from '../content/copy/meta';
 import { url } from '../lib/paths';
 
@@ -31,34 +31,55 @@ const formFor = (path: string) =>
     <div class="header-tools">
       <ThreatMeter />
       <ThemeCycle />
-      <details class="dept-menu" data-dept-menu>
+      <details class="dept-menu" data-menu data-dept-menu>
         <summary class="btn btn--small">
           <Icon name="menu" />
           <span>{header.navLabel}</span>
         </summary>
-        <nav class="dept-menu__panel" aria-label={header.navLabel}>
-          {navGroups.map((g) => (
-            <div class="dept-menu__group">
-              <p class="dept-menu__heading" id={`nav-${g.id}`}>
-                {g.label}
-              </p>
-              <ul aria-labelledby={`nav-${g.id}`}>
-                {g.items.map((item) => (
-                  <li>
-                    <a
-                      href={url(item.path)}
-                      aria-current={item.path === currentPath ? 'page' : undefined}
-                      data-playful
-                    >
-                      <span>{item.label}</span>
-                      <span class="form-id">{formFor(item.path)?.formId}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </nav>
+        <div class="dept-menu__panel">
+          <nav class="dept-menu__nav" aria-label={header.navLabel}>
+            {navGroups.map((g) => (
+              <div class="dept-menu__group">
+                <p class="dept-menu__heading" id={`nav-${g.id}`}>
+                  {g.label}
+                </p>
+                <ul aria-labelledby={`nav-${g.id}`}>
+                  {g.items.map((item) => (
+                    <li>
+                      <a
+                        href={url(item.path)}
+                        aria-current={item.path === currentPath ? 'page' : undefined}
+                        data-playful
+                      >
+                        <span>{item.label}</span>
+                        <span class="form-id">{formFor(item.path)?.formId}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+          <div class="dept-menu__modes chaos-only" role="group" aria-labelledby="nav-modes">
+            <p class="dept-menu__heading" id="nav-modes">
+              {modes.label}
+            </p>
+            <button
+              type="button"
+              class="switch"
+              role="switch"
+              aria-checked="false"
+              aria-describedby="modes-hud-hint"
+              data-hud-toggle
+            >
+              <span class="switch__track" aria-hidden="true"></span>
+              <span>{modes.hud}</span>
+            </button>
+            <p class="fine" id="modes-hud-hint">
+              {modes.hudHint}
+            </p>
+          </div>
+        </div>
       </details>
     </div>
   </div>

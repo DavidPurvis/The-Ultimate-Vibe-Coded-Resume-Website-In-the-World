@@ -33,7 +33,7 @@ export function level(score: number): string {
   return copy.levels[levelIndex(score)] ?? copy.levels[0] ?? 'LOW';
 }
 
-type Listener = (score: number, idx: number, changed: boolean) => void;
+type Listener = (score: number, idx: number, changed: boolean, reason: ThreatReason) => void;
 const listeners = new Set<Listener>();
 export function onThreat(cb: Listener): () => void {
   listeners.add(cb);
@@ -45,6 +45,6 @@ export function bump(reason: ThreatReason): number {
   const after = before + POINTS[reason];
   writeSession({ threat: after });
   const changed = levelIndex(after) !== levelIndex(before);
-  for (const l of listeners) l(after, levelIndex(after), changed);
+  for (const l of listeners) l(after, levelIndex(after), changed, reason);
   return after;
 }

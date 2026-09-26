@@ -288,6 +288,8 @@ html:not([data-mode='recruiter']) .recruiter-only {
   .dept-menu__panel {
     width: max-content;
     max-width: min(46rem, calc(100vw - 2rem));
+  }
+  .dept-menu__nav {
     display: grid;
     grid-template-columns: repeat(2, minmax(15rem, 1fr));
     column-gap: var(--s-4);
@@ -296,6 +298,17 @@ html:not([data-mode='recruiter']) .recruiter-only {
     border-top: 0;
     margin-top: 0;
   }
+}
+.dept-menu__modes {
+  border-top: 1px solid var(--rule);
+  margin-top: var(--s-2);
+  padding: 0 var(--s-2) var(--s-1);
+}
+.dept-menu__modes .fine {
+  margin: 0 var(--s-1);
+}
+body[data-sincere] .dept-menu__modes {
+  display: none;
 }
 .dept-menu__panel .form-id {
   font: 400 0.75rem var(--font-mono);

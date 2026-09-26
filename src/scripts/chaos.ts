@@ -4,9 +4,9 @@
  * Everything is bounded and switchable off; nothing here is required to read the résumé.
  */
 import { initMode, isChaos, onModeChange, setMode } from '../lib/mode';
-import { disposeAll, Disposer } from '../lib/scene';
+import { disposeAll, Disposer, stop } from '../lib/scene';
 import { trackModality } from '../lib/motion';
-import { readPrefs, readSession, writeSession } from '../lib/storage';
+import { readPrefs, readSession, writePrefs, writeSession } from '../lib/storage';
 import { announce } from '../lib/announce';
 import { level, levelIndex, onThreat, bump } from '../lib/threat';
 import { runaway } from '../lib/runaway';
@@ -129,19 +129,42 @@ function initHatch(): void {
   });
 }
 
-/* ---------- Departments menu ---------- */
-function initDeptMenu(): void {
-  const menu = document.querySelector<HTMLDetailsElement>('[data-dept-menu]');
-  if (!menu) return;
+/* ---------- Header menus (Departments, Modes) ---------- */
+function initMenus(): void {
+  const menus = [...document.querySelectorAll<HTMLDetailsElement>('details[data-menu]')];
   document.addEventListener('click', (e) => {
-    if (menu.open && !menu.contains(e.target as Node)) menu.open = false;
+    for (const m of menus) if (m.open && !m.contains(e.target as Node)) m.open = false;
   });
-  menu.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && menu.open) {
-      menu.open = false;
-      menu.querySelector('summary')?.focus();
-    }
+  for (const m of menus)
+    m.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && m.open) {
+        m.open = false;
+        m.querySelector('summary')?.focus();
+      }
+    });
+}
+
+/* ---------- Modes: Overkill HUD (the HUD itself is a lazy chunk) ---------- */
+function initModes(): void {
+  const sw = document.querySelector<HTMLButtonElement>('[data-hud-toggle]');
+  const sincere = document.body.hasAttribute('data-sincere');
+  const on = () => readPrefs().hud === 'overkill';
+  const sync = () => sw?.setAttribute('aria-checked', String(on()));
+  const apply = () => {
+    sync();
+    if (on() && isChaos() && !sincere) void import('../scenes/hud').then((m) => m.startHud());
+  };
+  sw?.addEventListener('click', () => {
+    writePrefs({ hud: on() ? 'off' : 'overkill' });
+    if (on()) apply();
+    else stop('hud', 'complete');
+    sync();
   });
+  document.addEventListener('uvcr:hud', sync);
+  onModeChange((m) => {
+    if (m === 'chaos') apply();
+  });
+  apply();
 }
 
 /* ---------- Console greeting ---------- */
@@ -187,7 +210,8 @@ initThreat();
 initTabGuilt();
 initHatch();
 renderIdentityCallback();
-initDeptMenu();
+initMenus();
+initModes();
 initPlayful();
 greet();
 // The banner (and its copy) only downloads for visitors who haven't dealt with it yet.
