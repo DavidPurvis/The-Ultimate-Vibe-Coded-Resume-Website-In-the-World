@@ -27,16 +27,13 @@ test.describe('accessibility', () => {
     );
   });
 
-  test('every page, default state: no serious or critical axe violations @smoke', async ({
-    page,
-  }) => {
-    const found: string[] = [];
-    for (const r of HTML_ROUTES) {
+  // One test per page: each gets its own timeout (axe is slow on WebKit) and names its page.
+  for (const r of HTML_ROUTES) {
+    test(`${r || '/'}: no serious or critical axe violations @smoke`, async ({ page }) => {
       await page.goto(r);
-      for (const v of await seriousViolations(page)) found.push(`${r || '/'} → ${v}`);
-    }
-    expect(found).toEqual([]);
-  });
+      expect(await seriousViolations(page)).toEqual([]);
+    });
+  }
 
   test('dark theme and reduced motion', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
