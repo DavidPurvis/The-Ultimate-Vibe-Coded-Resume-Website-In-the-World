@@ -10,8 +10,11 @@ import { entityEncode } from '../lib/paths';
 interface Props {
   /** Unique id prefix: the print-only copies must not duplicate heading ids. */
   idPrefix?: string;
+  /** Print-only copy on gag pages: the name is not a second <h1> for that page. */
+  embedded?: boolean;
 }
-const { idPrefix = 'r' } = Astro.props;
+const { idPrefix = 'r', embedded = false } = Astro.props;
+const NameTag = embedded ? 'p' : 'h1';
 const id = (s: string) => `${idPrefix}-${s}`;
 // Entity-encoded mailto (renders normally, works without JS, dodges naive scrapers).
 const mailLink = `<a href="${entityEncode(`mailto:${identity.email}`)}">${entityEncode(identity.email)}</a>`;
@@ -36,7 +39,9 @@ const contactHtml = [
 
 <article class="resume" aria-labelledby={id('name')}>
   <header class="resume__head">
-    <h1 id={id('name')}>{identity.name}</h1>
+    <NameTag id={id('name')} class="resume__name">
+      {identity.name}
+    </NameTag>
     <p class="contact" set:html={contactHtml} />
   </header>
 

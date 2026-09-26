@@ -1,16 +1,20 @@
 /** /resume/ — the only JS on the reward page: print, the Hire chain, and "re-enable chaos". */
-import { initMode, setMode } from '../lib/mode';
 import { closeDialog, focusIn, openDialog } from '../lib/dialog';
 import { announce } from '../lib/announce';
-import { trackModality } from '../lib/motion';
 
-trackModality();
-initMode();
+// The boot script already set data-mode before paint. The mode module (storage, toasts, copy)
+// loads only when there's something to persist or switch, keeping this page nearly JS-free.
+const loadMode = () =>
+  import('../lib/mode').then((m) => {
+    m.initMode();
+    return m;
+  });
+if (new URLSearchParams(location.search).has('mode')) void loadMode();
 
 document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
 
 document.querySelector('[data-reenable-chaos]')?.addEventListener('click', () => {
-  setMode('chaos');
+  void loadMode().then((m) => m.setMode('chaos'));
 });
 
 const dialog = document.getElementById('hire') as HTMLDialogElement | null;

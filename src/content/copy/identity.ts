@@ -1,6 +1,7 @@
 /** Landing page + Identity Checkpoint dialog copy. */
 
-export type IdentityId = 'chatgpt' | 'claude' | 'gemini' | 'human' | 'clippy' | 'other';
+import { callbackLabels, type IdentityId } from './identityLabels';
+export { callbackLabels, type IdentityId };
 
 export const landing = {
   kicker: 'FORM DRV-1 · IDENTITY CHECKPOINT',
@@ -61,15 +62,6 @@ export const identities: Record<
 };
 
 /** Short labels for callbacks ("Welcome back, self-declared Human."). */
-export const callbackLabels: Record<IdentityId, string> = {
-  chatgpt: 'ChatGPT',
-  claude: 'Claude',
-  gemini: 'Gemini',
-  human: 'Human',
-  clippy: 'Clippy',
-  other: 'Other AI',
-};
-
 export const identityDialog = {
   closeLabel: 'Close identity checkpoint',
   bonusRound: 'Checkpoint 3 of 2 (unannounced bonus round)',

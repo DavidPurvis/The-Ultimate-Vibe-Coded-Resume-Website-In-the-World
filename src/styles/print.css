@@ -67,7 +67,7 @@
     text-align: left;
     hyphens: manual;
   }
-  .resume h1 {
+  .resume .resume__name {
     font:
       700 18pt/1.1 'IBM Plex Sans',
       Arial,

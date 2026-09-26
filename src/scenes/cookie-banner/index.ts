@@ -15,9 +15,9 @@ import { runaway } from '../../lib/runaway';
 import { bump } from '../../lib/threat';
 import { announce } from '../../lib/announce';
 import { banner as copy, receipts, loadBearing } from '../../content/copy/cookies';
-import { openVendors } from '../vendors';
+import { BANNER_RESOLVED } from './events';
 
-export const BANNER_RESOLVED = 'uvcr:banner-resolved';
+export { BANNER_RESOLVED };
 
 function receiptEl(title: string, lines: readonly string[]): HTMLElement {
   const box = document.createElement('div');
@@ -86,7 +86,11 @@ register({
       const act = b.dataset.cb;
       if (act === 'accept' || act === 'accept-cookies') finish('accepted', receipts.accept);
       else if (act === 'reject') finish('rejected', receipts.reject);
-      else if (act === 'manage') openVendors(b, () => finish('managed', receipts.managed));
+      else if (act === 'manage')
+        // 3,000 fictional partners load only for the people who ask to manage them.
+        void import('../vendors').then((m) =>
+          m.openVendors(b, () => finish('managed', receipts.managed)),
+        );
     });
 
     const reject = el.querySelector<HTMLElement>('[data-cb="reject"]');

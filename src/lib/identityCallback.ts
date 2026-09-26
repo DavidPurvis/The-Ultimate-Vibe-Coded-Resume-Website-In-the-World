@@ -1,7 +1,7 @@
 /** Header callback: "Welcome back, self-declared Clippy." */
 import { readSession } from './storage';
 import { callbacks } from '../content/copy/global';
-import { callbackLabels, type IdentityId } from '../content/copy/identity';
+import { callbackLabels, type IdentityId } from '../content/copy/identityLabels';
 
 export function renderIdentityCallback(): void {
   const el = document.querySelector<HTMLElement>('[data-identity-callback]');

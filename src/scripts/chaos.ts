@@ -6,7 +6,7 @@
 import { initMode, isChaos, onModeChange, setMode } from '../lib/mode';
 import { disposeAll, Disposer } from '../lib/scene';
 import { trackModality } from '../lib/motion';
-import { readSession, writeSession } from '../lib/storage';
+import { readPrefs, readSession, writeSession } from '../lib/storage';
 import { announce } from '../lib/announce';
 import { level, levelIndex, onThreat, bump } from '../lib/threat';
 import { runaway } from '../lib/runaway';
@@ -16,7 +16,6 @@ import { forcedArmAll, installTestHooks, sample } from '../lib/testHooks';
 import { initTheme } from '../scenes/theme';
 import { isEditableTarget, matches, pushKey } from '../scenes/konami/logic';
 import { openRickroll } from '../scenes/rickroll';
-import { maybeStartBanner } from '../scenes/cookie-banner';
 import { exits, tabGuilt, threat as threatCopy } from '../content/copy/global';
 import { renderIdentityCallback } from '../lib/identityCallback';
 import { consoleGreeting } from '../content/copy/memos';
@@ -184,6 +183,8 @@ renderIdentityCallback();
 initDeptMenu();
 initPlayful();
 greet();
-void maybeStartBanner();
+// The banner (and its copy) only downloads for visitors who haven't dealt with it yet.
+if (readPrefs().cookieBanner === 'pending' && isChaos())
+  void import('../scenes/cookie-banner').then((m) => m.maybeStartBanner());
 
 window.addEventListener('pagehide', () => disposeAll('navigate'));

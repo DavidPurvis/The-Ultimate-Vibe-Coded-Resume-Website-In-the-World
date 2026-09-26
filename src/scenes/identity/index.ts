@@ -21,7 +21,7 @@ import {
   type IdentityEvent,
   type IdentityState,
 } from './logic';
-import { BANNER_RESOLVED } from '../cookie-banner';
+import { BANNER_RESOLVED } from '../cookie-banner/events';
 import { renderIdentityCallback } from '../../lib/identityCallback';
 
 const dialog = document.getElementById('identity') as HTMLDialogElement | null;
