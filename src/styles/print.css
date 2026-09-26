@@ -35,8 +35,20 @@
   dialog {
     display: none !important;
   }
-  main {
+  main,
+  .resume-page,
+  .resume-sheet,
+  .print-only {
     padding: 0 !important;
+    margin: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+  }
+  .resume .nb {
+    white-space: nowrap;
   }
   .resume {
     width: 100%;
@@ -65,14 +77,14 @@
   }
   .resume .contact {
     font-size: 9.5pt !important;
-    margin: 0 0 5pt !important;
+    margin: 0 0 7pt !important;
   }
   .resume h2 {
     font:
       700 10.5pt/1.2 'IBM Plex Sans',
       Arial,
       sans-serif !important;
-    margin: 6pt 0 3pt !important;
+    margin: 9pt 0 4pt !important;
     padding: 0 0 1.5pt !important;
     border-bottom: 0.75pt solid #1b1b1b !important;
     break-after: avoid;
@@ -98,7 +110,7 @@
     padding-left: 12pt !important;
   }
   .resume li {
-    margin: 0 0 1pt !important;
+    margin: 0 0 1.5pt !important;
   }
   .resume a {
     color: #000 !important;

@@ -13,23 +13,31 @@ interface Props {
 }
 const { idPrefix = 'r' } = Astro.props;
 const id = (s: string) => `${idPrefix}-${s}`;
-const mail = entityEncode(`mailto:${identity.email}`);
-const mailText = entityEncode(identity.email);
+// Entity-encoded mailto (renders normally, works without JS, dodges naive scrapers).
+const mailLink = `<a href="${entityEncode(`mailto:${identity.email}`)}">${entityEncode(identity.email)}</a>`;
+const ext = (href: string, text: string) =>
+  `<a href="${href}" rel="noopener noreferrer">${text}</a>`;
+/** Keep hyphenated words (D-Bus, order-of-execution…) whole: the pack forbids hyphen breaks. */
+const escapeHtml = (t: string) =>
+  t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const nb = (t: string) =>
+  escapeHtml(t).replace(
+    /[^\s]*[A-Za-z0-9]-[A-Za-z0-9][^\s]*/g,
+    (w) => `<span class="nb">${w}</span>`,
+  );
+// Built as one string so the contact line's text (and the PDF text layer) is exact.
+const contactHtml = [
+  identity.location,
+  mailLink,
+  ext(identity.linkedin.href, identity.linkedin.display),
+  ext(identity.github.href, identity.github.display),
+].join(' · ');
 ---
 
 <article class="resume" aria-labelledby={id('name')}>
   <header class="resume__head">
     <h1 id={id('name')}>{identity.name}</h1>
-    <p class="contact">
-      {identity.location} · <a href={mail} set:html={mailText} /> ·{' '}
-      <a href={identity.linkedin.href} rel="noopener noreferrer">
-        {identity.linkedin.display}
-      </a>{' '}
-      ·{' '}
-      <a href={identity.github.href} rel="noopener noreferrer">
-        {identity.github.display}
-      </a>
-    </p>
+    <p class="contact" set:html={contactHtml} />
   </header>
 
   <section aria-labelledby={id('summary')}>
@@ -46,7 +54,7 @@ const mailText = entityEncode(identity.email);
         </h3>
         <ul>
           {r.bullets.map((b) => (
-            <li>{b.text}</li>
+            <li set:html={nb(b.text)} />
           ))}
         </ul>
       </div>
@@ -62,7 +70,7 @@ const mailText = entityEncode(identity.email);
         </h3>
         <ul>
           {p.bullets.map((b) => (
-            <li>{b.text}</li>
+            <li set:html={nb(b.text)} />
           ))}
         </ul>
       </div>
