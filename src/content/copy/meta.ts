@@ -121,6 +121,20 @@ export const ROUTES = {
       'David Purvis’s wishlist: a tungsten cube, a second tungsten cube for symmetry, and quantities of everyday essentials that concern procurement.',
     formId: 'DRV-18',
   },
+  sellData: {
+    path: '/sell-your-data/',
+    title: 'Sell Your Data (For Free) · David Purvis',
+    description:
+      'A form on David Purvis’s site that asks whether you would like to sell your data for free. Nothing you type is stored or sent anywhere.',
+    formId: 'DRV-20',
+  },
+  confess: {
+    path: '/confess/',
+    title: 'Insider Trading Self-Assessment · David Purvis',
+    description:
+      'A satirical self-assessment on David Purvis’s site: are you anxious about any upcoming insider trades you might make? Answers go nowhere.',
+    formId: 'DRV-21',
+  },
   nintendo: {
     path: '/nintendo/',
     title: 'Dear Nintendo · David Purvis',

@@ -1,0 +1,16 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import ParodyForm from '../../components/ParodyForm.astro';
+import { ROUTES } from '../../content/copy/meta';
+import { sellData as F } from '../../content/copy/forms';
+---
+
+<Base route={ROUTES.sellData}>
+  <PageHero kicker={F.kicker} title={F.h1} lede={F.lede} />
+  <ParodyForm form={F} />
+</Base>
+
+<script>
+  import '../../scenes/parody-form';
+</script>

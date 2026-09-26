@@ -84,6 +84,8 @@ export const HTML_ROUTES = [
   'wishlist/',
   'nintendo/',
   'tribute/',
+  'sell-your-data/',
+  'confess/',
   'rick/',
   'r/oracle-integration/',
   'r/xml-parser/',

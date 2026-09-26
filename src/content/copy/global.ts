@@ -48,7 +48,11 @@ export const navGroups: NavGroup[] = [
   {
     id: 'forms',
     label: 'Forms',
-    items: [{ path: '/contact/', label: 'Contact' }],
+    items: [
+      { path: '/sell-your-data/', label: 'Sell Your Data (Free)' },
+      { path: '/confess/', label: 'Insider Self-Assessment' },
+      { path: '/contact/', label: 'Contact' },
+    ],
   },
   {
     id: 'legal',

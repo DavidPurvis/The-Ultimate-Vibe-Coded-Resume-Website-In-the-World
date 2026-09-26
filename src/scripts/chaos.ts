@@ -15,7 +15,6 @@ import { makeRng } from '../lib/rng';
 import { forcedArmAll, installTestHooks, sample } from '../lib/testHooks';
 import { initTheme } from '../scenes/theme';
 import { isEditableTarget, matches, pushKey } from '../scenes/konami/logic';
-import { openRickroll } from '../scenes/rickroll';
 import { exits, tabGuilt, threat as threatCopy } from '../content/copy/global';
 import { renderIdentityCallback } from '../lib/identityCallback';
 import { consoleGreeting } from '../content/copy/memos';
@@ -174,7 +173,10 @@ function initPlayful(): void {
     e.preventDefault();
     writeSession({ lastPlayfulWasRick: true });
     armed.clear(); // never twice in a row
-    openRickroll({ continueHref: a.href, opener: a });
+    // The player loads only for the visitor who actually gets rickrolled.
+    void import('../scenes/rickroll').then((m) =>
+      m.openRickroll({ continueHref: a.href, opener: a }),
+    );
   });
 }
 

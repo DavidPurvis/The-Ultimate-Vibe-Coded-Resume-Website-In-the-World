@@ -46,6 +46,12 @@ const FORBIDDEN: [RegExp, string][] = [
   [/g-recaptcha|recaptcha|turnstile|cf-challenge|hcaptcha/i, 'CAPTCHA vendor lookalike'],
   [/DRV-\d*7\d*\b/, 'Form numbers never contain a 7'],
   [/\[(EMAIL|PHONE|USERNAME)\]/, 'unfilled placeholder'],
+  [/<input[^>]+type="(password|email|tel)"/i, 'credential or contact input'],
+  [
+    /autocomplete="(cc-[a-z-]+|bday[a-z-]*|street-address|postal-code|tel[a-z-]*|email|current-password|new-password|one-time-code)"/i,
+    'sensitive autofill token',
+  ],
+  [/<form[\s>]/i, '<form> element (parody forms must have no submit path)'],
 ];
 /** Test hooks must never ship. */
 const PROD_ONLY: [RegExp, string][] = [[/__uvcr/, 'test hook in production build']];
