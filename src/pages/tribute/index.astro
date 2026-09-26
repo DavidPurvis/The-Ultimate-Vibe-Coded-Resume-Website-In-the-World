@@ -1,0 +1,94 @@
+---
+/** Sincere page. No jokes, no gags, and it stays exactly the same in Recruiter Mode. */
+import Base from '../../layouts/Base.astro';
+import { ROUTES } from '../../content/copy/meta';
+import { tributeCopy as T } from '../../content/copy/tribute';
+---
+
+<Base route={ROUTES.tribute} sincere>
+  <article class="temple" aria-labelledby="tribute-h">
+    <div class="temple__screen">
+      <p class="temple__kicker">{T.kicker}</p>
+      <h1 id="tribute-h">
+        {T.h1} <span class="temple__dates">({T.dates})</span>
+      </h1>
+      <p class="temple__tagline">{T.tagline}</p>
+      {T.body.map((p) => (
+        <p>{p}</p>
+      ))}
+      <h2>{T.whyHeading}</h2>
+      {T.why.map((p) => (
+        <p>{p}</p>
+      ))}
+      <p class="temple__care">{T.care}</p>
+      <p>
+        <a href={T.link.href} rel="noopener noreferrer">
+          {T.link.label}
+        </a>
+      </p>
+    </div>
+  </article>
+</Base>
+
+<style>
+  /* An EGA-palette frame in the spirit of a 640×480, 16-colour screen. Original CSS; no TempleOS assets. */
+  .temple {
+    --ega-blue: #0000aa;
+    --ega-cyan: #00aaaa;
+    --ega-white: #ffffff;
+    --ega-yellow: #ffff55;
+    --ega-grey: #aaaaaa;
+    --ega-red: #aa0000;
+    max-width: 48rem;
+    margin: var(--s-4) auto;
+    padding: 6px;
+    background: var(--ega-cyan);
+    border: 6px solid var(--ega-grey);
+    box-shadow: var(--sh-2);
+  }
+  .temple__screen {
+    aspect-ratio: auto;
+    background: var(--ega-blue);
+    color: var(--ega-white);
+    padding: clamp(var(--s-4), 4vw, var(--s-7));
+    font: 400 1rem/1.7 var(--font-mono);
+    border: 2px solid var(--ega-yellow);
+  }
+  .temple__kicker {
+    color: var(--ega-yellow);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+  }
+  .temple h1 {
+    font: 700 clamp(1.8rem, 5vw, 2.6rem) / 1.1 var(--font-mono);
+    color: var(--ega-white);
+    margin-bottom: var(--s-2);
+  }
+  .temple__dates {
+    color: var(--ega-yellow);
+    font-size: 0.6em;
+    white-space: nowrap;
+  }
+  .temple__tagline {
+    color: var(--ega-yellow);
+    font-weight: 700;
+    border-bottom: 2px solid var(--ega-cyan);
+    padding-bottom: var(--s-3);
+  }
+  .temple h2 {
+    font: 700 1.2rem var(--font-mono);
+    color: var(--ega-yellow);
+    margin-top: var(--s-5);
+  }
+  .temple__care {
+    margin-top: var(--s-5);
+    padding: var(--s-3);
+    border: 2px dashed var(--ega-cyan);
+  }
+  .temple a {
+    color: var(--ega-yellow);
+  }
+  .temple a:focus-visible {
+    outline-color: var(--ega-yellow);
+  }
+</style>

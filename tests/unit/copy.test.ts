@@ -21,6 +21,11 @@ import * as projects from '../../src/content/copy/projects';
 import * as rick from '../../src/content/copy/rick';
 import * as howBuilt from '../../src/content/copy/howBuilt';
 import * as credits from '../../src/content/credits';
+import * as ads from '../../src/content/copy/ads';
+import * as personnel from '../../src/content/copy/personnel';
+import * as wishlist from '../../src/content/copy/wishlist';
+import * as nintendo from '../../src/content/copy/nintendo';
+import * as tribute from '../../src/content/copy/tribute';
 
 const modules = {
   meta,
@@ -43,6 +48,11 @@ const modules = {
   rick,
   howBuilt,
   credits,
+  ads,
+  personnel,
+  wishlist,
+  nintendo,
+  tribute,
 };
 
 /** Every string reachable from the copy modules (functions are called with sample args). */
@@ -141,9 +151,13 @@ describe('copy deck hygiene', () => {
     }
   });
 
-  it('only the Meta excerpts are pending review', () => {
-    const pending = records.filter((r) => r.status === 'needs-review').map((r) => r.id);
-    expect(pending.sort()).toEqual(legal.metaSnippets.map((m) => m.id).sort());
+  it('only Meta excerpts and facts awaiting David are pending review', () => {
+    const pending = records.filter((r) => r.status === 'needs-review');
+    const meta = new Set(legal.metaSnippets.map((m) => m.id));
+    // Personal facts (they carry a `label`) wait for David and must stay empty until he fills them.
+    const personal = pending.filter((r) => 'label' in r);
+    for (const r of personal) expect(r.text, r.id).toBe('');
+    for (const r of pending) expect(meta.has(r.id) || 'label' in r, r.id).toBe(true);
   });
 });
 

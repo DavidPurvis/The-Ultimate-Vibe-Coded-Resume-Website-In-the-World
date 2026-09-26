@@ -37,6 +37,15 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
+    id: 'personnel',
+    label: 'Personnel',
+    items: [
+      { path: '/personnel-file/', label: 'Personnel File' },
+      { path: '/wishlist/', label: 'Wishlist' },
+      { path: '/tribute/', label: 'In Memoriam' },
+    ],
+  },
+  {
     id: 'forms',
     label: 'Forms',
     items: [{ path: '/contact/', label: 'Contact' }],
@@ -44,7 +53,10 @@ export const navGroups: NavGroup[] = [
   {
     id: 'legal',
     label: 'Legal',
-    items: [{ path: '/legal/', label: 'Legally Binding Vibes' }],
+    items: [
+      { path: '/legal/', label: 'Legally Binding Vibes' },
+      { path: '/nintendo/', label: 'Dear Nintendo' },
+    ],
   },
   {
     id: 'about-site',

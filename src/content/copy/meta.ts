@@ -107,6 +107,34 @@ export const ROUTES = {
     description:
       'David Purvis, Software Engineer. Two years owning a municipal system of record; BS Computer Science (Magna Cum Laude); MS Computer Science in progress at CU Boulder.',
   },
+  personnel: {
+    path: '/personnel-file/',
+    title: 'Personnel File · David Purvis',
+    description:
+      'David Purvis’s unauthorized personnel file: known aliases (Big Purv among them), an ordination obtained during math class, and instructions in case he is kidnapped.',
+    formId: 'DRV-16',
+  },
+  wishlist: {
+    path: '/wishlist/',
+    title: 'Wishlist · David Purvis',
+    description:
+      'David Purvis’s wishlist: a tungsten cube, a second tungsten cube for symmetry, and quantities of everyday essentials that concern procurement.',
+    formId: 'DRV-18',
+  },
+  nintendo: {
+    path: '/nintendo/',
+    title: 'Dear Nintendo · David Purvis',
+    description:
+      'An affectionate, preemptive open letter from David Purvis to Nintendo’s legal department. This website contains no plumbers.',
+    formId: 'DRV-22',
+  },
+  tribute: {
+    path: '/tribute/',
+    title: 'In Memoriam: Terry A. Davis · David Purvis',
+    description:
+      'A tribute from David Purvis to Terry A. Davis, who built TempleOS, its compiler and its programming language, alone. Anything is possible.',
+    formId: 'DRV-23',
+  },
   notFound: {
     path: '/404.html',
     title: '404: Failed the CAPTCHA · David Purvis',

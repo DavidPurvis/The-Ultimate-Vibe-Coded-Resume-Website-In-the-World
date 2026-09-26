@@ -25,8 +25,10 @@ interface Props {
   ogTitle?: string;
   bodyClass?: string;
   noindex?: boolean;
+  /** Sincere pages (the tribute): no parody ads, and global gags (HUD, Subway) stand down. */
+  sincere?: boolean;
 }
-const { route, ogTitle, bodyClass, noindex = false } = Astro.props;
+const { route, ogTitle, bodyClass, noindex = false, sincere = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -41,18 +43,22 @@ const { route, ogTitle, bodyClass, noindex = false } = Astro.props;
     />
     <slot name="head" />
   </head>
-  <body class:list={['layout-g', bodyClass]} data-cursor={route.cursor}>
+  <body
+    class:list={['layout-g', bodyClass]}
+    data-cursor={route.cursor}
+    data-sincere={sincere ? '' : undefined}
+  >
     <a class="skip-link" href={`${url('/resume/')}?mode=recruiter`} data-escape>
       {exits.skipLink}
     </a>
     <SiteHeader currentPath={route.path} {...(route.formId ? { formId: route.formId } : {})} />
-    <ParodyAd placement="leaderboard" seed={route.path} />
+    {!sincere && <ParodyAd placement="leaderboard" seed={route.path} />}
     <main id="main" tabindex="-1">
       <div class="container">
         <slot />
       </div>
     </main>
-    <ParodyAd placement="banner" seed={route.path} />
+    {!sincere && <ParodyAd placement="banner" seed={route.path} />}
     <SiteFooter />
     <span hidden data-parody-ads={JSON.stringify(PARODY_ADS)}></span>
     <div class="print-only" aria-hidden="true">

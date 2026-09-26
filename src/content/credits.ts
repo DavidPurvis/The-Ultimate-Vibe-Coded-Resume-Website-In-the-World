@@ -245,6 +245,7 @@ export const LEDGER: LedgerEntry[] = [
       'illustrations/felt-noise.svg',
       'illustrations/paper-noise.svg',
       'illustrations/stamp-ring.svg',
+      'illustrations/tungsten-cube.svg',
     ],
   },
   {
