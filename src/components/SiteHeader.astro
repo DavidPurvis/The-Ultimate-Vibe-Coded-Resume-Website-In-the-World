@@ -3,6 +3,7 @@ import Icon from './Icon.astro';
 import ThreatMeter from './ThreatMeter.astro';
 import ThemeCycle from './ThemeCycle.astro';
 import { header, navGroups, callbacks, modes } from '../content/copy/global';
+import { doomCopy } from '../content/copy/doom';
 import { ROUTES } from '../content/copy/meta';
 import { url } from '../lib/paths';
 
@@ -57,6 +58,11 @@ const formFor = (path: string) =>
                     </li>
                   ))}
                 </ul>
+                {g.id === 'recreation' && (
+                  <button type="button" class="dept-menu__action chaos-only" data-doom-dock>
+                    {doomCopy.dock.open}
+                  </button>
+                )}
               </div>
             ))}
           </nav>

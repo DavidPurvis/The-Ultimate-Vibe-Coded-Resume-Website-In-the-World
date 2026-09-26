@@ -9,8 +9,10 @@
     "node": ">=22.12"
   },
   "scripts": {
+    "predev": "tsx scripts/vendor-doom.ts",
     "dev": "astro dev",
     "typecheck": "astro check",
+    "prebuild:site": "tsx scripts/vendor-doom.ts",
     "build:site": "astro build",
     "build": "npm run typecheck && npm run build:site && tsx scripts/postbuild.ts",
     "postbuild:only": "tsx scripts/postbuild.ts",
@@ -22,7 +24,8 @@
     "test:e2e": "playwright test",
     "test:all": "npm run test && npm run build && npm run scan && npm run test:e2e",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "vendor:doom": "tsx scripts/vendor-doom.ts"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "5.3.0",
@@ -39,6 +42,7 @@
     "@iconify-json/fluent-emoji-flat": "1.2.6",
     "@iconify-json/game-icons": "1.2.4",
     "@iconify/utils": "3.1.7",
+    "@nicejsisverycool/tizendoom": "0.1.6",
     "@playwright/test": "1.56.1",
     "@types/matter-js": "0.20.2",
     "@types/node": "22.20.4",

@@ -25,7 +25,8 @@ const csp = [
   "img-src 'self' data:",
   "font-src 'self'",
   "connect-src 'self'",
-  'frame-src https://www.youtube-nocookie.com',
+  // 'self' is DOOM's own frame (/doom-engine/), the only place WebAssembly may compile.
+  "frame-src 'self' https://www.youtube-nocookie.com",
   "media-src 'none'",
   "object-src 'none'",
   "base-uri 'self'",

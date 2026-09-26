@@ -28,6 +28,7 @@ const MIME: Record<string, string> = {
   '.woff2': 'font/woff2',
   '.woff': 'font/woff',
   '.pdf': 'application/pdf',
+  '.wasm': 'application/wasm',
   '.md': 'text/markdown; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8',
   '.xml': 'application/xml; charset=utf-8',

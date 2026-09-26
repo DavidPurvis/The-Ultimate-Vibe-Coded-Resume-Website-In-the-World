@@ -33,6 +33,7 @@ import * as tailor from '../../src/content/copy/tailor';
 import * as hud from '../../src/content/copy/hud';
 import * as subway from '../../src/content/copy/subway';
 import * as cube from '../../src/content/copy/cube';
+import * as doom from '../../src/content/copy/doom';
 
 const modules = {
   meta,
@@ -67,6 +68,7 @@ const modules = {
   hud,
   subway,
   cube,
+  doom,
 };
 
 /** Every string reachable from the copy modules (functions are called with sample args). */

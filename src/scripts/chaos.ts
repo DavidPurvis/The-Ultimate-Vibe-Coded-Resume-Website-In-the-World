@@ -239,6 +239,12 @@ greet();
 if (readPrefs().cookieBanner === 'pending' && isChaos())
   void import('../scenes/cookie-banner').then((m) => m.maybeStartBanner());
 
+/* ---------- DOOM, docked: the player (and later the engine) loads on the click ---------- */
+document.addEventListener('click', (e) => {
+  const btn = (e.target as HTMLElement | null)?.closest<HTMLElement>('[data-doom-dock]');
+  if (btn && isChaos()) void import('../scenes/doom/dock').then((m) => m.openDock(btn));
+});
+
 /* ---------- Parody ads: "Skip this ad" skips to another ad (logic loads on first skip) ---------- */
 document.addEventListener('click', (e) => {
   const btn = (e.target as HTMLElement | null)?.closest<HTMLElement>('[data-ad-skip]');

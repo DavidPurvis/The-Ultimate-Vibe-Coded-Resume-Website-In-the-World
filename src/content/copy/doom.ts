@@ -1,0 +1,56 @@
+/** DOOM (/doom/ and the docked player). id Software's shareware episode, credited and unmodified. */
+export const doomCopy = {
+  kicker: 'FORM DRV-24 · RECREATION',
+  h1: 'DOOM',
+  lede: 'Episode 1 of the 1993 shareware release, running inside this page. Yes, the résumé can run DOOM.',
+  play: '▶ Play DOOM',
+  stop: '■ Stop',
+  fullscreen: 'Fullscreen',
+  sound: 'Sound effects',
+  poster: 'Press Play. Nothing downloads until you do.',
+  loading: 'Loading DOOM: about 7 MB, from this site.',
+  /** `{pct}` is replaced with the percentage loaded. */
+  progress: 'Loading DOOM… {pct}%',
+  ready: 'Knee-Deep in the Dead. Click the screen, then use the keys below.',
+  stopped: 'Stopped. The demons will wait.',
+  escaped: 'Keyboard returned to the page. Stop quits; clicking the screen resumes.',
+  error: 'DOOM didn’t start. This browser may be missing WebAssembly or WebGL.',
+  touch: 'DOOM requires a keyboard. On this device, the attract-mode demos still play.',
+  soundNext: 'Sound changes apply the next time you press Play.',
+  frameTitle: 'DOOM, shareware episode 1',
+  legendTitle: 'Controls',
+  legend: [
+    ['W / S', 'Move'],
+    ['A / D', 'Strafe'],
+    ['← / →', 'Turn'],
+    ['Space', 'Fire'],
+    ['E', 'Open doors, flip switches'],
+    ['Shift', 'Run'],
+    ['Esc', 'DOOM’s menu'],
+    ['Shift + Esc', 'Give the keyboard back to the page'],
+  ] as [string, string][],
+  specsTitle: 'Can this résumé run DOOM?',
+  specs: [
+    ['Answer', 'Yes.'],
+    ['Engine', 'Chocolate Doom, compiled to WebAssembly by Cloudflare (GPL-2.0)'],
+    ['Game', 'DOOM shareware episode 1, Knee-Deep in the Dead, unmodified'],
+    ['Download', 'About 7 MB, from this site, only after you press Play'],
+    ['Network', 'None. The multiplayer code is in there; the server isn’t.'],
+    ['Keyboard escape', 'Shift + Esc'],
+  ] as [string, string][],
+  sueLine:
+    'id Software, Bethesda: this is shareware episode 1, unmodified and free, exactly as the shareware licence intended. Please don’t sue me either.',
+  sueLink: 'See also: Dear Nintendo',
+  tribute:
+    'Someone once built an entire operating system alone. Running DOOM inside a résumé is the least this website could do.',
+  tributeLink: 'In memoriam: Terry A. Davis',
+  source: 'Engine source (GPL-2.0)',
+  dock: {
+    open: '▶ Play DOOM here (docked)',
+    title: 'DOOM',
+    close: 'Close DOOM',
+    /** `{size}` is S, M or L. */
+    size: 'Size: {size}',
+    full: 'Full page',
+  },
+};

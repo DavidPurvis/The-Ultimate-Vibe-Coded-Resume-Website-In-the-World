@@ -15,6 +15,8 @@ import RickrollDialog from '../components/RickrollDialog.astro';
 import CookieBanner from '../components/CookieBanner.astro';
 import VendorsDialog from '../components/VendorsDialog.astro';
 import ParodyAd from '../components/ParodyAd.astro';
+import DoomPlayer from '../components/DoomPlayer.astro';
+import { doomCopy } from '../content/copy/doom';
 import { PARODY_ADS } from '../content/copy/ads';
 import { exits } from '../content/copy/global';
 import type { RouteMeta } from '../content/copy/meta';
@@ -68,6 +70,14 @@ const { route, ogTitle, bodyClass, noindex = false, sincere = false } = Astro.pr
     <VendorsDialog />
     <RickrollDialog />
     <slot name="after" />
+    {!sincere && (
+      <>
+        <template data-doom-template>
+          <DoomPlayer compact />
+        </template>
+        <span hidden data-doom-dock-copy={JSON.stringify(doomCopy.dock)} />
+      </>
+    )}
     <div class="toast-stack" data-toasts role="region" aria-label="Notifications"></div>
     <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
   </body>

@@ -83,6 +83,7 @@ export const HTML_ROUTES = [
   'personnel-file/',
   'wishlist/',
   'cube/',
+  'doom/',
   'nintendo/',
   'tribute/',
   'sell-your-data/',

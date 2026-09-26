@@ -71,6 +71,7 @@
   /* Page overlays (HUD, summoned players) sit under the sticky header so its menus stay on top. */
   --z-hud: 7;
   --z-subway: 8;
+  --z-doom: 9;
   --z-header: 10;
   --z-threat: 20;
   --z-toast: 30;

@@ -29,6 +29,8 @@ const JS_BUDGET_KB: Record<string, number> = {
   'support/': 15,
   'casino/': 20,
   'contact/': 16,
+  // The full-size DOOM player's wiring; the engine itself is a separate frame, fetched on Play.
+  'doom/': 15,
   'resume/': 3,
   'resume/for/emb/': 3,
   'resume/for/plt/': 3,
@@ -129,7 +131,9 @@ for (const f of jsFiles) {
       u.startsWith('http://www.w3.org/') ||
       u.startsWith('https://tosdr.org') ||
       // A paper cited in a comment inside one of three.js's GLSL shader strings; never fetched.
-      u === 'https://jcgt.org/published/0007/04/01/';
+      u === 'https://jcgt.org/published/0007/04/01/' ||
+      // Part of an Emscripten error message in the vendored DOOM engine; never fetched.
+      u === 'https://github.com/emscripten-core/emscripten/wiki/Linking';
     if (!allowed) fail(f, `unexpected external URL in script: ${u}`);
   }
 }
@@ -153,12 +157,28 @@ for (const f of htmlFiles) {
   const is404 = f.endsWith('404.html');
   const routeKey = is404 ? '404.html' : route ? `${route}/` : '';
   const isOgCard = routeKey === 'og-card/';
+  const isEngine = relative(DIST, f).replace(/\\/g, '/').startsWith('doom-engine/');
 
   if (!/<html[^>]*\slang="[a-z]{2}/.test(html)) fail(f, 'missing <html lang>');
   if (!/<title>[^<]+<\/title>/.test(html)) fail(f, 'missing <title>');
   if (/\sstyle="/.test(html)) fail(f, 'inline style attribute (breaks style-src CSP)');
 
-  if (!isOgCard) {
+  const cspOf = (h: string) =>
+    h.match(/http-equiv="Content-Security-Policy"\s+content="([^"]+)"/)?.[1];
+  if (isEngine) {
+    // DOOM's own frame: the one document allowed to compile WebAssembly. No inline script at all.
+    const csp = cspOf(html);
+    if (!csp) fail(f, 'missing CSP meta');
+    else {
+      if (!csp.includes("'wasm-unsafe-eval'")) fail(f, 'engine CSP must allow wasm-unsafe-eval');
+      if (/'unsafe-inline'|'unsafe-eval'/.test(csp)) fail(f, 'CSP allows unsafe-*');
+    }
+    if (/<script(?![^>]*\bsrc=)[^>]*>/.test(html)) fail(f, 'inline script in the engine frame');
+  } else if (/wasm-unsafe-eval/.test(cspOf(html) ?? '')) {
+    fail(f, 'wasm-unsafe-eval outside the DOOM engine frame');
+  }
+
+  if (!isOgCard && !isEngine) {
     for (const [re, what] of [
       [/<meta name="description" content="[^"]{20,}"/, 'description'],
       [/<link rel="canonical" href="https?:\/\/[^"]+"/, 'canonical'],

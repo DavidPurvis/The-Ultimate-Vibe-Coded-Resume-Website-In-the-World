@@ -17,6 +17,7 @@ export const facts = {
     'This site sets no cookies. Not one. The cookie banner is a bit.',
     'No analytics, no advertising pixels, no session replay, no fingerprinting. Nothing is sent anywhere by this site’s code.',
     'Fonts, icons and images are served from this site. Nothing loads from a third party until you choose to play the video in the casino or on the due-diligence page, or summon gameplay in Attention-Span Mode. Then YouTube’s privacy-enhanced player loads, and YouTube’s policies apply. Summoned players come back on each page until you dismiss them or switch the mode off.',
+    'DOOM, on /doom/ and in the docked player, comes from this site too: about 7 MB, downloaded only when you press Play. It runs in its own frame and talks to nothing else.',
     'Résumé For You builds a link to claude.ai with your quiz answers and a cut of the résumé in it. Nothing goes to Claude unless you press that link. If you do, it opens in your own account and Anthropic’s terms apply.',
     'Your browser stores a few small things for this site, listed below. You can delete them all right now.',
   ],
