@@ -13,6 +13,7 @@ export function renderLlmsTxt(site: URL | string | undefined): string {
 
 - [Résumé (Markdown)](${abs('/resume.md')}): The actual qualifications. No gags.
 - [Résumé (PDF)](${abs('/resume.pdf')}): One page, ATS-friendly.
+- [Embedded cut (PDF)](${abs('/resume-emb.pdf')}), [Platform / SRE cut (PDF)](${abs('/resume-plt.pdf')}), [Backend cut (PDF)](${abs('/resume-be.pdf')}): The same verified facts, selected and ordered for those roles.
 - [Case Files](${abs('/projects/')}): Project details.
 
 ## Optional

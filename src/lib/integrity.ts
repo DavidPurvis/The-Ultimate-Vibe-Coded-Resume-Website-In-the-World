@@ -138,7 +138,7 @@ const RULES: Rule[] = [
     check: (t) => {
       const out: Violation[] = [];
       const edu = t.search(/\bEducation\b/);
-      for (const m of t.matchAll(/\bC\b(?!\+\+|#|\s+Spire)|\bassembly\b|\bPIC24\b/g)) {
+      for (const m of t.matchAll(/\bC\b(?!\+\+|#|\s+Spire)|\bJava\b|\bassembly\b|\bPIC24\b/g)) {
         const i = m.index ?? 0;
         const inEducation = edu >= 0 && i > edu;
         const labelled = /\(coursework\)/i.test(t.slice(i, i + 40));

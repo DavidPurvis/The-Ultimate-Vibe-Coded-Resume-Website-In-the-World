@@ -7,7 +7,9 @@
         "http://127.0.0.1:4321/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World/resume/",
         "http://127.0.0.1:4321/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World/",
         "http://127.0.0.1:4321/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World/verify/",
-        "http://127.0.0.1:4321/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World/casino/"
+        "http://127.0.0.1:4321/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World/casino/",
+        "http://127.0.0.1:4321/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World/presentation/",
+        "http://127.0.0.1:4321/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World/tailor/"
       ],
       "numberOfRuns": 3,
       "settings": { "chromeFlags": "--no-sandbox --headless=new" }
@@ -24,7 +26,7 @@
           }
         },
         {
-          "matchingUrlPattern": ".*/(verify|casino)?/?$",
+          "matchingUrlPattern": ".*/(verify|casino|presentation|tailor)?/?$",
           "assertions": {
             "categories:performance": ["warn", { "minScore": 0.85 }],
             "categories:accessibility": ["error", { "minScore": 0.95 }],

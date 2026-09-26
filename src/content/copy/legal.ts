@@ -17,6 +17,7 @@ export const facts = {
     'This site sets no cookies. Not one. The cookie banner is a bit.',
     'No analytics, no advertising pixels, no session replay, no fingerprinting. Nothing is sent anywhere by this site’s code.',
     'Fonts, icons and images are served from this site. Nothing loads from a third party until you choose to play the video in the casino or on the due-diligence page. Then YouTube’s privacy-enhanced player loads, and YouTube’s policies apply.',
+    'Résumé For You builds a link to claude.ai with your quiz answers and a cut of the résumé in it. Nothing goes to Claude unless you press that link. If you do, it opens in your own account and Anthropic’s terms apply.',
     'Your browser stores a few small things for this site, listed below. You can delete them all right now.',
   ],
   tableCaption: 'What this site stores in your browser',

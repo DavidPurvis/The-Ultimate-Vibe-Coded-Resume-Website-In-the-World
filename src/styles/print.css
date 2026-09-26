@@ -109,6 +109,9 @@
     margin: 0 !important;
     padding-left: 12pt !important;
   }
+  .resume .edu-note {
+    padding-left: 12pt !important;
+  }
   .resume li {
     margin: 0 0 1.5pt !important;
   }

@@ -20,7 +20,7 @@ export interface Role {
   bullets: Bullet[];
 }
 export interface Project {
-  id: 'P3' | 'P1';
+  id: 'P1' | 'P2' | 'P3' | 'P4';
   anchor: string;
   name: string;
   stack: string;
@@ -163,8 +163,16 @@ export const skills: { label: string; items: string }[] = [
   },
 ];
 
+export interface EducationEntry {
+  block: BlockId;
+  school: string;
+  line: string;
+  /** Extra lines under the entry (coursework, major history): lane résumés only. */
+  notes?: Bullet[];
+}
+
 /** E1 + E2. */
-export const education: { block: BlockId; school: string; line: string }[] = [
+export const education: EducationEntry[] = [
   {
     block: 'E1',
     school: 'University of Colorado Boulder',

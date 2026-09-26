@@ -84,3 +84,48 @@
 .resume :where(.resume__name, h2, h3, p, li) {
   text-wrap: wrap;
 }
+/* Lane résumés: coursework and major-history lines sit under their school. */
+.resume .edu-note {
+  padding-left: 1.25rem;
+}
+.lane-bar,
+.lane-switcher {
+  width: min(100% - 2rem, 8.5in);
+  margin-inline: auto;
+}
+.lane-bar {
+  margin-bottom: var(--s-4);
+}
+.lane-bar__kicker {
+  font: 600 0.8rem/1.3 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 var(--s-1);
+}
+.lane-switcher {
+  margin-top: var(--s-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+}
+.lane-switcher ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lane-switcher a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--s-3);
+  border: 1px solid currentColor;
+  border-radius: var(--r-1);
+}
+.lane-switcher a[aria-current='page'] {
+  font-weight: 700;
+  text-decoration: none;
+}

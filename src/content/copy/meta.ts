@@ -107,6 +107,24 @@ export const ROUTES = {
     description:
       'David Purvis, Software Engineer. Two years owning a municipal system of record; BS Computer Science (Magna Cum Laude); MS Computer Science in progress at CU Boulder.',
   },
+  resumeEmb: {
+    path: '/resume/for/emb/',
+    title: 'David Purvis — Software Engineer — Résumé (Embedded Software)',
+    description:
+      'David Purvis, Software Engineer: his résumé cut for embedded software roles. Embedded Linux projects, a completed digital logic and microprocessors sequence, and two years of production automation.',
+  },
+  resumePlt: {
+    path: '/resume/for/plt/',
+    title: 'David Purvis — Software Engineer — Résumé (Platform, DevOps and SRE)',
+    description:
+      'David Purvis, Software Engineer: his résumé cut for platform, DevOps and SRE roles. Two years as sole technical owner of a municipal system of record, unattended integrations and a self-hosted CI/CD pipeline.',
+  },
+  resumeBe: {
+    path: '/resume/for/be/',
+    title: 'David Purvis — Software Engineer — Résumé (Backend and Distributed Systems)',
+    description:
+      'David Purvis, Software Engineer: his résumé cut for backend roles. REST API extraction, scheduled batch loading into a financial system of record, and parsing across 100+ schema variants.',
+  },
   personnel: {
     path: '/personnel-file/',
     title: 'Personnel File · David Purvis',
@@ -162,6 +180,13 @@ export const ROUTES = {
     description:
       'David Purvis’s real résumé, re-staged as a 1998 slide deck with WordArt, star wipes and cartoon ad-libs. The facts are unchanged; the packaging is loud.',
     formId: 'DRV-25',
+  },
+  tailor: {
+    path: '/tailor/',
+    title: 'Résumé For You™ · David Purvis',
+    description:
+      'A short quiz that picks the cut of David Purvis’s résumé that fits your role. If you press the link, it hands your answers to Claude in your own account to tailor further.',
+    formId: 'DRV-26',
   },
   notFound: {
     path: '/404.html',

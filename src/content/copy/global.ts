@@ -52,6 +52,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { path: '/sell-your-data/', label: 'Sell Your Data (Free)' },
       { path: '/confess/', label: 'Insider Self-Assessment' },
+      { path: '/tailor/', label: 'Résumé For You™' },
       { path: '/contact/', label: 'Contact' },
     ],
   },

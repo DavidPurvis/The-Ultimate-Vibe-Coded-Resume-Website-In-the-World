@@ -29,6 +29,7 @@ import * as tribute from '../../src/content/copy/tribute';
 import * as forms from '../../src/content/copy/forms';
 import * as presentation from '../../src/content/copy/presentation';
 import * as blogCopy from '../../src/content/copy/blog';
+import * as tailor from '../../src/content/copy/tailor';
 
 const modules = {
   meta,
@@ -59,6 +60,7 @@ const modules = {
   forms,
   presentation,
   blogCopy,
+  tailor,
 };
 
 /** Every string reachable from the copy modules (functions are called with sample args). */

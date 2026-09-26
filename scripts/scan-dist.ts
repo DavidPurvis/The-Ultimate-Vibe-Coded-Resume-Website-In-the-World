@@ -30,6 +30,9 @@ const JS_BUDGET_KB: Record<string, number> = {
   'casino/': 20,
   'contact/': 16,
   'resume/': 3,
+  'resume/for/emb/': 3,
+  'resume/for/plt/': 3,
+  'resume/for/be/': 3,
   'og-card/': 0,
 };
 const DEFAULT_JS_BUDGET_KB = 14;

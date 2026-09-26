@@ -1,0 +1,64 @@
+---
+/**
+ * /resume/for/{emb,plt,be}/ — the pack's lane compositions. Same Resume layout, print CSS and
+ * integrity rules as /resume/; each prints to its own one-page PDF (scripts/postbuild.ts).
+ */
+import Resume from '../../../layouts/Resume.astro';
+import ResumeDocument from '../../../components/ResumeDocument.astro';
+import LaneSwitcher from '../../../components/LaneSwitcher.astro';
+import Icon from '../../../components/Icon.astro';
+import '../../../styles/resume.css';
+import { ROUTES, type RouteMeta } from '../../../content/copy/meta';
+import { LANES, TAILORED_LANES, type LaneId } from '../../../content/lanes';
+import { laneCopy, resumeTools } from '../../../content/copy/resumeExtras';
+import { recruiterBar } from '../../../content/copy/global';
+import { url } from '../../../lib/paths';
+
+export function getStaticPaths() {
+  return TAILORED_LANES.map((lane) => ({ params: { lane } }));
+}
+
+const laneId = Astro.params.lane as Exclude<LaneId, 'gen'>;
+const lane = LANES[laneId];
+const routes: Record<Exclude<LaneId, 'gen'>, RouteMeta> = {
+  emb: ROUTES.resumeEmb,
+  plt: ROUTES.resumePlt,
+  be: ROUTES.resumeBe,
+};
+---
+
+<Resume route={routes[laneId]}>
+  <div class="recruiter-bar recruiter-only screen-only" slot="top">
+    <div class="container">
+      <span>{recruiterBar.text}</span>
+      <button type="button" class="btn btn--small" data-reenable-chaos>
+        {recruiterBar.button}
+      </button>
+    </div>
+  </div>
+
+  <div class="resume-page">
+    <div class="lane-bar screen-only">
+      <p class="lane-bar__kicker">{laneCopy.kicker(lane.label)}</p>
+      <p class="fine">{laneCopy.note}</p>
+    </div>
+    <div class="resume-sheet">
+      <ResumeDocument lane={laneId} />
+    </div>
+    <div class="resume-tools screen-only" role="group" aria-label={resumeTools.sectionLabel}>
+      <a class="btn btn--primary" href={url(`/${lane.pdf}`)} download={lane.pdfName}>
+        <Icon name="download" />
+        {resumeTools.download}
+      </a>
+      <button type="button" class="btn" data-print>
+        <Icon name="printer" />
+        {resumeTools.print}
+      </button>
+    </div>
+    <LaneSwitcher current={laneId} />
+  </div>
+</Resume>
+
+<script>
+  import '../../../scripts/resume-page';
+</script>

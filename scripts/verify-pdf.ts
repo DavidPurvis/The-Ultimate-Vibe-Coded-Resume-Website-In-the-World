@@ -1,7 +1,7 @@
 /**
- * Verifies dist/resume.pdf against the pack's hard requirements: exactly one US Letter page,
+ * Verifies a résumé PDF against the pack's hard requirements: exactly one US Letter page,
  * a selectable text layer, the integrity rules, and the joke confined to metadata.
- * Writes reports/resume-report.json for the PR body.
+ * Writes reports/resume-report.json (GEN) or reports/resume-{lane}-report.json for the PR body.
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { PDFDocument } from 'pdf-lib';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { checkResumeText, formatViolations } from '../src/lib/integrity';
+import { LANE_IDS, LANES, type LaneId } from '../src/content/lanes';
 import { selection } from '../src/content/resume';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -63,7 +64,12 @@ export async function extractPdf(path: string): Promise<{
   };
 }
 
-export async function verifyPdf(path = resolve(ROOT, 'dist', 'resume.pdf')): Promise<boolean> {
+export async function verifyPdf(
+  path = resolve(ROOT, 'dist', 'resume.pdf'),
+  laneId: LaneId = 'gen',
+): Promise<boolean> {
+  const lane = LANES[laneId];
+  const name = lane.pdf;
   const { pages, lines, width, height, subject } = await extractPdf(path);
   const text = lines.join('\n');
   const problems: string[] = [];
@@ -90,20 +96,24 @@ export async function verifyPdf(path = resolve(ROOT, 'dist', 'resume.pdf')): Pro
     pages,
     renderedLines,
     lineBudget: '45–52 (pack §0; counts text lines only, not whitespace)',
-    lane: selection.lane,
-    selected: selection.selected,
-    cut: selection.cut,
+    lane: lane.code,
+    selected: lane.selection.selected,
+    cut: lane.selection.cut,
     placeholders: selection.placeholders,
     ok: problems.length === 0,
   };
   await mkdir(resolve(ROOT, 'reports'), { recursive: true });
   await writeFile(
-    resolve(ROOT, 'reports', 'resume-report.json'),
+    resolve(
+      ROOT,
+      'reports',
+      laneId === 'gen' ? 'resume-report.json' : `resume-${laneId}-report.json`,
+    ),
     `${JSON.stringify(report, null, 2)}\n`,
   );
 
   if (problems.length) {
-    console.error(`✗ resume.pdf failed verification:\n- ${problems.join('\n- ')}`);
+    console.error(`✗ ${name} failed verification:\n- ${problems.join('\n- ')}`);
     return false;
   }
   const note =
@@ -111,7 +121,7 @@ export async function verifyPdf(path = resolve(ROOT, 'dist', 'resume.pdf')): Pro
       ? ' (outside the ~45–52 guidance — review spacing)'
       : '';
   console.log(
-    `✓ resume.pdf: 1 Letter page, ${renderedLines} rendered text lines${note}, 0 integrity violations.`,
+    `✓ ${name}: 1 Letter page, ${renderedLines} rendered text lines${note}, 0 integrity violations.`,
   );
   return true;
 }
@@ -119,5 +129,7 @@ export async function verifyPdf(path = resolve(ROOT, 'dist', 'resume.pdf')): Pro
 const invokedDirectly =
   process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (invokedDirectly) {
-  verifyPdf().then((ok) => process.exit(ok ? 0 : 1));
+  Promise.all(LANE_IDS.map((id) => verifyPdf(resolve(ROOT, 'dist', LANES[id].pdf), id))).then(
+    (oks) => process.exit(oks.every(Boolean) ? 0 : 1),
+  );
 }

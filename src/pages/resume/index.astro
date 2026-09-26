@@ -4,6 +4,7 @@ import ResumeDocument from '../../components/ResumeDocument.astro';
 import SceneDialog from '../../components/SceneDialog.astro';
 import Icon from '../../components/Icon.astro';
 import Memo from '../../components/Memo.astro';
+import LaneSwitcher from '../../components/LaneSwitcher.astro';
 import '../../styles/resume.css';
 import { ROUTES } from '../../content/copy/meta';
 import { hireChain, resumeTools } from '../../content/copy/resumeExtras';
@@ -63,6 +64,7 @@ const jsonLd = {
       </button>
     </div>
     <p class="fine resume-fine screen-only">{resumeTools.fine}</p>
+    <LaneSwitcher current="gen" />
   </div>
 
   <SceneDialog id="hire" title={hireChain.steps[0]?.title ?? ''} closeLabel={hireChain.closeLabel}>
