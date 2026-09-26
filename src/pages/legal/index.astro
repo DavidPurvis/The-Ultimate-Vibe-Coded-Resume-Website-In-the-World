@@ -27,23 +27,25 @@ import { url } from '../../lib/paths';
         <li>{l}</li>
       ))}
     </ul>
-    <table class="storage">
-      <caption>{facts.tableCaption}</caption>
-      <thead>
-        <tr>
-          {facts.tableCols.map((c) => (
-            <th scope="col">{c}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody data-storage-rows>
-        <tr>
-          <td colspan="4" class="fine">
-            {facts.empty}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-scroll" role="region" tabindex="0" aria-labelledby="storage-cap">
+      <table class="storage">
+        <caption id="storage-cap">{facts.tableCaption}</caption>
+        <thead>
+          <tr>
+            {facts.tableCols.map((c) => (
+              <th scope="col">{c}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody data-storage-rows>
+          <tr>
+            <td colspan="4" class="fine">
+              {facts.empty}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <p>
       <button type="button" class="btn" data-storage-reset>
         <Icon set="fluent" name="wastebasket" />
@@ -172,8 +174,12 @@ import { url } from '../../lib/paths';
     display: grid;
     gap: var(--s-2);
   }
-  .storage {
+  .table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
     margin: var(--s-4) 0;
+  }
+  .storage {
     font-size: 0.95rem;
   }
   .storage :global(code) {
@@ -225,7 +231,9 @@ import { url } from '../../lib/paths';
   }
   .detected :global(summary) {
     cursor: pointer;
-    min-height: 32px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
   .stickers__header {
     font: 700 1.2rem var(--font-display);

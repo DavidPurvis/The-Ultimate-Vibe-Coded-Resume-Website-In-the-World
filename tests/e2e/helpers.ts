@@ -65,3 +65,24 @@ export async function watchErrors(page: Page): Promise<() => Promise<void>> {
     expect(errors, errors.join('\n')).toEqual([]);
   };
 }
+
+/** Every prerendered HTML route, relative to the base (no leading slash). */
+export const HTML_ROUTES = [
+  '',
+  'verify/',
+  'about/',
+  'skills/',
+  'beliefs/',
+  'support/',
+  'legal/',
+  'casino/',
+  'contact/',
+  'projects/',
+  'how-it-was-built/',
+  'credits/',
+  'rick/',
+  'r/oracle-integration/',
+  'r/xml-parser/',
+  'r/car-thing/',
+  'resume/',
+] as const;
