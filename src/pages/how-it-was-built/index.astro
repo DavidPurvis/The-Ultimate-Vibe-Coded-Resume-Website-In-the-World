@@ -7,6 +7,7 @@ import Icon from '../../components/Icon.astro';
 import { ROUTES } from '../../content/copy/meta';
 import { howBuiltCopy as H, howBuiltSections } from '../../content/copy/howBuilt';
 import { memos } from '../../content/copy/memos';
+import { url } from '../../lib/paths';
 ---
 
 <Base route={ROUTES.howBuilt}>
@@ -65,6 +66,9 @@ import { memos } from '../../content/copy/memos';
 
     <p class="section">
       <DestLink dest="repo">{H.repoLink}</DestLink>
+    </p>
+    <p>
+      {H.tribute} <a href={url('/tribute/')}>{H.tributeLink}</a>.
     </p>
   </div>
 </Base>

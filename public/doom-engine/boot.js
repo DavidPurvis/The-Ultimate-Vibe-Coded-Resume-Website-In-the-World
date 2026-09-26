@@ -61,7 +61,7 @@
       status.textContent = '';
       tell('ready');
       window.callMain(args);
-      canvas.focus();
+      // No focus grab here: the page decides whether the visitor is still waiting on the game.
     },
     print: function () {},
     printErr: function () {},

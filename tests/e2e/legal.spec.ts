@@ -32,6 +32,20 @@ test.describe('legally binding vibes', () => {
     await done();
   });
 
+  test('part 1 says what can load from elsewhere, and exactly when @smoke', async ({ page }) => {
+    await page.goto('legal/');
+    const part1 = page.locator('section[aria-labelledby="part1"]');
+    // Everything the site can fetch or hand off beyond itself, each gated on a click.
+    for (const fact of [
+      /YouTube’s privacy-enhanced player loads/,
+      /summon gameplay in Attention-Span Mode/,
+      /link to claude\.ai .* Nothing goes to Claude unless you press that link/,
+      /DOOM, on \/doom\/ and in the docked player, comes from this site too/,
+      /downloaded only when you press Play/,
+    ])
+      await expect(part1).toContainText(fact);
+  });
+
   test('the Terms of Reading grow until §4.2, then unlock', async ({ page }) => {
     await page.goto('legal/');
     const accept = page.getByRole('button', { name: 'I have read this sentence' });

@@ -70,7 +70,9 @@ export function wirePlayer(root: HTMLElement, id: string): Player | null {
         } else if (m.type === 'doom:ready') {
           if (bar) bar.hidden = true;
           say(copy.ready);
-          frame.focus();
+          // Only if they're still waiting on it: never pull focus from wherever they went next.
+          const at = document.activeElement;
+          if (at === playBtn || at === document.body || at === null) frame.focus();
         } else if (m.type === 'doom:escape') {
           stopBtn.focus();
           say(copy.escaped);

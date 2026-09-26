@@ -101,6 +101,20 @@ test.describe('DOOM', () => {
     await expect(page.locator('[data-dept-menu] > summary')).toBeFocused();
   });
 
+  test('loading never pulls focus from wherever the visitor went next', async ({ page }) => {
+    test.setTimeout(90_000);
+    await page.goto('doom/');
+    await page.getByRole('button', { name: '▶ Play DOOM' }).click();
+    const elsewhere = page.getByRole('switch', { name: 'Sound effects' });
+    await elsewhere.focus();
+    await expect(page.locator('[data-doom-page] [data-doom-status]')).toContainText(
+      'Knee-Deep in the Dead',
+      { timeout: 60_000 },
+    );
+    await page.waitForTimeout(500);
+    await expect(elsewhere).toBeFocused();
+  });
+
   test('Recruiter Mode stops the game', async ({ page }) => {
     test.setTimeout(90_000);
     await page.goto('doom/');
