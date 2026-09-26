@@ -1,0 +1,54 @@
+{
+  "name": "ultimate-vibe-coded-resume",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A professionally excellent résumé behind a deliberately hostile Department of Recruiter Verification.",
+  "license": "Unlicense",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "typecheck": "astro check",
+    "build:site": "astro build",
+    "build": "npm run typecheck && npm run build:site && tsx scripts/postbuild.ts",
+    "postbuild:only": "tsx scripts/postbuild.ts",
+    "verify:pdf": "tsx scripts/verify-pdf.ts",
+    "scan": "tsx scripts/scan-dist.ts",
+    "rasterize": "tsx scripts/rasterize.ts",
+    "serve:dist": "tsx scripts/serve-dist.ts",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:all": "npm run test && npm run build && npm run scan && npm run test:e2e",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "5.3.0",
+    "@fontsource/comic-neue": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "astro": "7.3.5",
+    "matter-js": "0.20.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@axe-core/playwright": "4.13.0",
+    "@iconify-json/fluent-emoji-flat": "1.2.6",
+    "@iconify-json/game-icons": "1.2.4",
+    "@iconify/utils": "3.1.7",
+    "@playwright/test": "1.56.1",
+    "@types/matter-js": "0.20.2",
+    "@types/node": "22.20.4",
+    "@vitest/coverage-v8": "5.0.2",
+    "lucide-static": "1.48.0",
+    "pdf-lib": "1.17.1",
+    "pdfjs-dist": "6.3.289",
+    "prettier": "3.9.9",
+    "prettier-plugin-astro": "1.1.0",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "vitest": "5.0.2"
+  }
+}
