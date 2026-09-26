@@ -1,0 +1,145 @@
+---
+/**
+ * Résumé.ppt (Deluxe Edition): the real résumé data, re-staged as a 1998 slide deck. Slides fly in
+ * as you scroll and cartoon ad-libs pop from the edges. Reduced motion or no JS: a still deck.
+ */
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import { ROUTES } from '../../content/copy/meta';
+import { presentationCopy as P } from '../../content/copy/presentation';
+import { education, experience, identity, projects, skills, summary } from '../../content/resume';
+import { burstsFor, slideNumbers, transitionsFor } from '../../scenes/presentation/logic';
+import { url } from '../../lib/paths';
+import '../../styles/presentation.css';
+
+type Slide =
+  | { kind: 'title'; title: string; art: string }
+  | { kind: 'summary'; title: string; art: string }
+  | { kind: 'role'; title: string; art: string; role: (typeof experience)[number] }
+  | { kind: 'projects'; title: string; art: string }
+  | { kind: 'skills'; title: string; art: string }
+  | { kind: 'education'; title: string; art: string }
+  | { kind: 'closing'; title: string; art: string };
+
+const arts = ['globe', 'lightbulb', 'rocket', 'trophy', 'fireworks'];
+const slides: Slide[] = [
+  { kind: 'title', title: identity.name, art: 'globe' },
+  { kind: 'summary', title: P.sections.summary, art: 'lightbulb' },
+  ...experience.map((role, i) => ({
+    kind: 'role' as const,
+    title: P.sections.experience,
+    art: arts[(i + 2) % arts.length] ?? 'rocket',
+    role,
+  })),
+  { kind: 'projects', title: P.sections.projects, art: 'rocket' },
+  { kind: 'skills', title: P.sections.skills, art: 'trophy' },
+  { kind: 'education', title: P.sections.education, art: 'lightbulb' },
+  { kind: 'closing', title: P.closing.title, art: 'fireworks' },
+];
+const transitions = transitionsFor(slides.length);
+const numbers = slideNumbers(slides.length);
+---
+
+<Base route={ROUTES.presentation}>
+  <PageHero kicker={P.kicker} title={P.h1} sub={P.sub} />
+  <p class="deck-tools js-only">
+    <button type="button" class="btn btn--small" data-ppt-sound aria-pressed="false">
+      {P.sound.off}
+    </button>
+  </p>
+
+  <div class="deck" data-deck>
+    {slides.map((s, i) => (
+      <section
+        class={`slide wordart-${i % 4}`}
+        data-slide
+        data-transition={transitions[i]}
+        aria-labelledby={`slide-${i}-h`}
+        data-bursts={JSON.stringify(burstsFor(i, P.adlibs))}
+      >
+        <div class="slide__frame">
+          {s.kind === 'title' && <p class="slide__eyebrow">{P.titleSlide.eyebrow}</p>}
+          <h2 id={`slide-${i}-h`} class="wordart">
+            {s.title}
+          </h2>
+          <div class="slide__content" data-slide-content>
+            {s.kind === 'title' && <p class="slide__subtitle">{P.titleSlide.subtitle}</p>}
+            {s.kind === 'summary' && <p class="slide__lead">{summary.text}</p>}
+            {s.kind === 'role' && (
+              <>
+                <h3 class="slide__role">
+                  {s.role.title} — {s.role.org}
+                </h3>
+                <p class="slide__meta">
+                  {s.role.location} · {s.role.dates}
+                </p>
+                <ul>
+                  {s.role.bullets.map((b) => (
+                    <li>{b.text}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {s.kind === 'projects' &&
+              projects.map((p) => (
+                <div class="slide__project">
+                  <h3 class="slide__role">{p.name}</h3>
+                  <p class="slide__meta">{p.stack}</p>
+                  <ul>
+                    {p.bullets.map((b) => (
+                      <li>{b.text}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            {s.kind === 'skills' && (
+              <ul class="slide__skills">
+                {skills.map((k) => (
+                  <li>
+                    <strong>{k.label}:</strong> {k.items}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {s.kind === 'education' && (
+              <ul class="slide__edu">
+                {education.map((e) => (
+                  <li>
+                    <strong>{e.school}</strong> — {e.line}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          {s.kind === 'closing' && (
+            <div class="slide__closing">
+              <p class="slide__lead">{P.closing.body}</p>
+              <p>
+                {P.closing.plain} <a href={url('/resume/')}>{P.closing.plainLink}</a>
+              </p>
+            </div>
+          )}
+          <img
+            class="slide__clipart"
+            src={url(`/illustrations/clipart/${s.art}.svg`)}
+            alt=""
+            width="120"
+            height="120"
+            loading="lazy"
+            decoding="async"
+          />
+          <p class="slide__num mono">{P.slideLabel(numbers[i] ?? i + 1)}</p>
+          <details class="slide__notes">
+            <summary>{P.notesLabel}</summary>
+            <p>{P.notes[i % P.notes.length]}</p>
+          </details>
+        </div>
+      </section>
+    ))}
+  </div>
+  <span hidden data-ppt-copy={JSON.stringify({ sound: P.sound })}></span>
+</Base>
+
+<script>
+  import '../../scenes/presentation';
+</script>

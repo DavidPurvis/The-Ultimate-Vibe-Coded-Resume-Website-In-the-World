@@ -81,9 +81,12 @@ test.describe('CAPTCHAN’T', () => {
     // Navigating within the site after arming never shows the leave-site prompt. The Continue
     // link is "playful", so a consensual rickroll may intercept it (p = 0.25) — handle both.
     await next.click();
+    // The rickroll player loads on demand, so the dialog can appear a beat after the click.
     const rick = page.getByRole('link', { name: 'Continue to where you were going →' });
-    if (await rick.isVisible().catch(() => false)) await rick.click();
-    await expect(page).toHaveURL(/\/about\/$/);
+    await expect(async () => {
+      if (await rick.isVisible()) await rick.click();
+      await expect(page).toHaveURL(/\/about\/$/, { timeout: 500 });
+    }).toPass({ timeout: 10_000 });
     expect(dialogs).toBe(0);
   });
 

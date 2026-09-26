@@ -86,6 +86,7 @@ export const HTML_ROUTES = [
   'tribute/',
   'sell-your-data/',
   'confess/',
+  'presentation/',
   'blog/',
   'blog/zipper-merge/',
   'blog/national-security/',

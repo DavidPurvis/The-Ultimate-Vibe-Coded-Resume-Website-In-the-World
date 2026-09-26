@@ -249,6 +249,21 @@ export const LEDGER: LedgerEntry[] = [
     ],
   },
   {
+    id: 'art-clipart',
+    name: 'Résumé.ppt clip art (lightbulb, trophy, globe, rocket, fireworks)',
+    kind: 'original-art',
+    license: 'Public domain (Unlicense), like the code',
+    author: 'Made for this site',
+    files: [
+      'illustrations/clipart/lightbulb.svg',
+      'illustrations/clipart/trophy.svg',
+      'illustrations/clipart/globe.svg',
+      'illustrations/clipart/rocket.svg',
+      'illustrations/clipart/fireworks.svg',
+    ],
+    note: 'Drawn in the spirit of 1990s office clip art. No clip-art collections were harmed.',
+  },
+  {
     id: 'art-favicon',
     name: 'DRV rubber-stamp favicon (and its crying variant)',
     kind: 'original-art',

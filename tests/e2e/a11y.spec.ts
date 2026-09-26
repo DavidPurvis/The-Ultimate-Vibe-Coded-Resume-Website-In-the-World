@@ -79,6 +79,8 @@ test.describe('accessibility', () => {
   });
 
   test('interactive controls in main are at least 44×44 CSS px', async ({ page }) => {
+    // Measure layout, not a control caught mid-transition (Résumé.ppt spins its slides in).
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     const small: string[] = [];
     for (const r of HTML_ROUTES) {
       await page.goto(r);

@@ -27,6 +27,8 @@ import * as wishlist from '../../src/content/copy/wishlist';
 import * as nintendo from '../../src/content/copy/nintendo';
 import * as tribute from '../../src/content/copy/tribute';
 import * as forms from '../../src/content/copy/forms';
+import * as presentation from '../../src/content/copy/presentation';
+import * as blogCopy from '../../src/content/copy/blog';
 
 const modules = {
   meta,
@@ -55,6 +57,8 @@ const modules = {
   nintendo,
   tribute,
   forms,
+  presentation,
+  blogCopy,
 };
 
 /** Every string reachable from the copy modules (functions are called with sample args). */

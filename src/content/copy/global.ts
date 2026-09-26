@@ -56,6 +56,11 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
+    id: 'recreation',
+    label: 'Recreation',
+    items: [{ path: '/presentation/', label: 'Résumé.ppt' }],
+  },
+  {
     id: 'legal',
     label: 'Legal',
     items: [

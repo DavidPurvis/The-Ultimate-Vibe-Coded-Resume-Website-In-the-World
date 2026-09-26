@@ -156,6 +156,13 @@ export const ROUTES = {
       'Blog posts by David Purvis: a manifesto against the zipper merge, the goldfish incident, national security through job applications, and Rainbow Six as a teamwork philosophy.',
     formId: 'DRV-28',
   },
+  presentation: {
+    path: '/presentation/',
+    title: 'Résumé.ppt (Deluxe Edition) · David Purvis',
+    description:
+      'David Purvis’s real résumé, re-staged as a 1998 slide deck with WordArt, star wipes and cartoon ad-libs. The facts are unchanged; the packaging is loud.',
+    formId: 'DRV-25',
+  },
   notFound: {
     path: '/404.html',
     title: '404: Failed the CAPTCHA · David Purvis',
