@@ -3,7 +3,8 @@ import { seedPrefs, watchErrors } from './helpers';
 
 test.describe('global chaos layer', () => {
   test.beforeEach(async ({ page }) => {
-    await seedPrefs(page);
+    // The identity checkpoint is covered in landing.spec; keep it from interrupting these.
+    await seedPrefs(page, {}, { identityPrompted: true });
   });
 
   test('skip link is the first Tab stop and reaches the résumé in Recruiter Mode @smoke', async ({

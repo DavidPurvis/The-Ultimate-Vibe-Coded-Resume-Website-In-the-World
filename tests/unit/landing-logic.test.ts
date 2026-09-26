@@ -99,8 +99,21 @@ describe('identity state machine', () => {
     });
   });
   it('events in the wrong phase are no-ops', () => {
-    expect(identityReducer(initialIdentity, { t: 'SUBMIT' })).toBe(initialIdentity);
-    expect(identityReducer(initialIdentity, { t: 'KEEP' })).toBe(initialIdentity);
+    const idleNoops: IdentityEvent[] = [
+      { t: 'SELECT', id: 'claude' },
+      { t: 'SUBMIT' },
+      { t: 'REFUSE' },
+      { t: 'KEEP' },
+      { t: 'CHANGE' },
+      { t: 'VERIFY_TEXT', text: 'casserole' },
+      { t: 'SKIP_FINAL' },
+      { t: 'CONTINUE' },
+      { t: 'CLOSE' },
+    ];
+    for (const e of idleNoops) expect(identityReducer(initialIdentity, e)).toBe(initialIdentity);
+    const choosing = run([{ t: 'OPEN' }]);
+    expect(identityReducer(choosing, { t: 'OPEN' })).toBe(choosing);
+    expect(identityReducer(choosing, { t: 'REPLAY' })).toBe(choosing);
   });
 });
 
