@@ -178,6 +178,87 @@ html[data-case] .case,
   margin: 0 var(--s-3) var(--s-3) 0;
 }
 
+/* ---------- release: the only moving control on the site ---------- */
+.release-arena {
+  display: grid;
+  grid-template-rows: repeat(3, minmax(var(--target), auto));
+  gap: var(--s-2);
+  min-block-size: 11rem;
+  margin: 0 0 var(--s-3);
+  padding: var(--s-3);
+  border: 1px dashed var(--rule);
+  border-radius: var(--r-2);
+  overflow: hidden;
+}
+.release-btn {
+  grid-row: 1;
+  justify-self: start;
+  /* One width for every label, so a reassignment never moves or resizes the control. */
+  inline-size: min(100%, 19rem);
+  transition: transform 180ms ease-out;
+}
+.release-arena[data-slot='1'] .release-btn {
+  grid-row: 2;
+  justify-self: center;
+}
+.release-arena[data-slot='2'] .release-btn {
+  grid-row: 3;
+  justify-self: end;
+}
+.release-status:empty {
+  display: none;
+}
+.release-status {
+  color: var(--ink-2);
+}
+
+/* ---------- ceremony: the service table (mono only here and in the case number) ---------- */
+.service-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 var(--s-4);
+  font-size: 0.875rem;
+}
+.service-table th,
+.service-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: var(--s-1) var(--s-2);
+  border-bottom: 1px solid var(--rule);
+}
+.service-table thead th {
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+}
+.service-table tbody th {
+  font-weight: 500;
+  white-space: nowrap;
+}
+.service-table__ms {
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  text-align: right;
+}
+@media (max-width: 30rem) {
+  .case {
+    padding: var(--s-4) var(--s-3);
+  }
+  .service-table {
+    font-size: 0.8125rem;
+  }
+  .service-table th,
+  .service-table td {
+    padding-inline: var(--s-1);
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+  .service-table tbody th {
+    white-space: normal;
+  }
+}
+
 /* ---------- stamp (one per surface) ---------- */
 .stamp {
   --stamp-color: var(--stamp);

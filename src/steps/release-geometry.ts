@@ -1,4 +1,4 @@
-/** Pure geometry for evasive controls (tested without a DOM). */
+/** Pure geometry for the release control's dodge (mouse performance). Tested without a DOM. */
 export interface Pt {
   x: number;
   y: number;

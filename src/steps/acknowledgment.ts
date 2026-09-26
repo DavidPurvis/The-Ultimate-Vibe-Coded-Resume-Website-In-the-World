@@ -1,5 +1,5 @@
 /** Conditional approval: acknowledge, confirm, or appeal. Three screens at most. */
-import { acknowledgment as C } from '../content/institution/case';
+import { acknowledgment as C } from '../content/institution/acknowledgment';
 import { button, h } from './dom';
 import type { StepContext } from './types';
 

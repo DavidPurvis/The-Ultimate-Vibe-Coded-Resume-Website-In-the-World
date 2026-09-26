@@ -83,3 +83,12 @@ These specs are still deleted with the legacy layer (P4A/P4B).
 | `tests/e2e/narrative.spec.ts` | Journeys J1–J3, J5–J8, J10, J11 (slice form until P3) |
 | `tests/e2e/boundary.spec.ts` | `/resume/` stays clean while a case is open in the same tab |
 | `tests/e2e/access.spec.ts` | Skip link, direct link and expedite at every step, modified clicks, 44 px, J9 |
+
+## Changes made in P3
+
+- The runaway geometry tests moved from `small-libs.test.ts` to `tests/unit/steps/release-geometry.test.ts`, with the module (`src/steps/release-geometry.ts`).
+- `tests/unit/voice.test.ts` (new) checks every institutional string: no `!`, no banned words, notice ≤25 words, step bodies ≤45, and a finding never reads the same on two surfaces.
+- `tests/unit/source-policy.test.ts` now also covers steps and runtime: no raw timers or listeners in steps, no HTML strings, no `Math.random`, no `localStorage`, and only the kernel reduces, saves or loads steps.
+- `tests/dom/steps.test.ts` covers the release step in each performance (keyboard, touch, mouse, reduced motion, a mid-review preference change, restore) and the ceremony (budget, skip, reduced motion, a mid-run preference change, focus).
+- `narrative.spec.ts` runs the full pipeline: J1 (mouse), J2 (keyboard), J3 (reduced motion) end on identical disposition lines; J4 (touch, mobile project); J8 reloads mid-release; J10 aborts the ceremony chunk.
+- `access.spec.ts`, `layout.spec.ts` and `a11y.spec.ts` now check every case step: escapes present, 44 px targets, no sideways scrolling at 320/390 px, axe clean in light and dark.

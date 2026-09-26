@@ -7,7 +7,7 @@ import { Disposer } from './scene';
 import { finePointer, reducedMotion } from './motion';
 import { isChaos } from './mode';
 import { readSession, writeSession } from './storage';
-import { center, dist, nextPosition, shouldDodge, type Rect } from '../scenes/runaway/logic';
+import { center, dist, nextPosition, shouldDodge, type Rect } from '../steps/release-geometry';
 
 export interface RunawayOpts {
   id: string;

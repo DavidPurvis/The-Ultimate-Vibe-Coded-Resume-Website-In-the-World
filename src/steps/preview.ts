@@ -1,5 +1,5 @@
 /** Approved in principle: relief, with real résumé content (the chosen cut's summary and highlights). */
-import { preview as C } from '../content/institution/case';
+import { preview as C } from '../content/institution/preview';
 import { LANES } from '../content/lanes';
 import { button, h } from './dom';
 import type { StepContext } from './types';

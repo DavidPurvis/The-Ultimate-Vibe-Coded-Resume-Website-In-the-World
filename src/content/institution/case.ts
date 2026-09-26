@@ -22,72 +22,13 @@ export const panel = {
   received: (caseNo: string) => `Request received. ${caseNo}.`,
 };
 
+/** One line in the browser console on `/`, once per page load. */
+export const consoleLine = (resumeUrl: string) =>
+  `${DEPARTMENT}. This session is subject to routine review. The résumé is at ${resumeUrl}`;
+
 export const notice = {
   text: 'A routine review of this session has been scheduled. No action is required.',
   dismiss: 'Dismiss',
-};
-
-export const scope = {
-  heading: 'Scope clarification',
-  processing: 'Classifying request…',
-  body: 'Your request to view publicly available information has been received. Please specify the scope of the request.',
-  legend: 'Scope of request',
-  options: [
-    { value: 'emb', label: 'Embedded software' },
-    { value: 'plt', label: 'Platform / SRE' },
-    { value: 'be', label: 'Backend' },
-    { value: 'gen', label: 'General software engineering' },
-    { value: 'unspecified', label: 'I was told there would be a PDF' },
-  ] as const satisfies readonly { value: LaneChoice; label: string }[],
-  submit: 'Submit scope',
-  empty: 'Scope cannot be empty. "None" is not a scope.',
-  accepted: 'Scope accepted. Approved in principle.',
-};
-
-export const preview = {
-  heading: 'Approved in principle',
-  body: 'Your request has been approved in principle. The following extract is released for review. Full document release is pending behavioral review.',
-  extract: 'Released extract',
-  request: 'Request full document',
-};
-
-export const findingsCopy = {
-  heading: 'Preliminary determination',
-  processing: 'Compiling findings…',
-  body: 'Review is complete. The Department has reached a preliminary determination.',
-  risk: (value: string) => `Risk score: ${value}.`,
-  primary: 'Primary contributor',
-  none: 'No contributing behavior was recorded.',
-  evidence: 'Evidence on file',
-  telemetryHeading: 'Telemetry',
-  telemetry: (processed: number) => [
-    `Events processed: ${processed}`,
-    'Events transmitted: 0',
-    'Analytics providers: 0',
-    'Retention: until tab close',
-  ],
-  gpc: 'Global Privacy Control honored. Behavioral observation was suspended for this session.',
-  proceed: 'Proceed to adjudication',
-};
-
-export const acknowledgment = {
-  pending: {
-    heading: 'Conditional approval',
-    body: 'Access is approved on one condition: acknowledge that the requested document is publicly available.',
-    yes: 'Acknowledge',
-    appeal: 'Appeal',
-  },
-  acknowledged: {
-    heading: 'Confirm acknowledgment',
-    body: 'Please confirm that you acknowledged. The confirmation will be filed with the acknowledgment.',
-    yes: 'Confirm',
-    appeal: 'Appeal',
-  },
-  appealed: {
-    heading: 'Appeal decided',
-    body: 'Appeal granted. Original decision was also granted. Records have been reconciled.',
-    yes: 'Continue',
-  },
 };
 
 export const dispositionCopy = {
@@ -155,17 +96,6 @@ export const findingLines: Record<
     findings: () => 'Ceremonial review: declined by visitor.',
     disposition: () => 'The ceremony was skipped. Its conclusions were unchanged.',
   },
-};
-
-/** Primary-contributor phrasing for the risk line. */
-export const primaryLabel: Record<FindingId, string> = {
-  REPEATED_REQUEST: 'repeated selection of "View résumé."',
-  PERSISTENCE: 'persistence after reassignment.',
-  EXTERNAL_CONSULTATION: 'external consultation.',
-  EXTRACTION: 'clipboard activity.',
-  CASE_CONTINUITY: 'refresh behavior.',
-  ACKNOWLEDGMENT_DECLINED: 'a declined acknowledgment.',
-  CEREMONY_DECLINED: 'a declined ceremony.',
 };
 
 export const laneLabels: Record<LaneChoice, string> = {

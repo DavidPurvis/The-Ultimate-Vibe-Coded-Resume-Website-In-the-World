@@ -110,3 +110,21 @@ export function processingMs(seed: number, step: string): number {
   const { min, max } = BUDGET.processingMs;
   return min + Math.floor(derive(seed, `latency:${step}`)() * (max - min + 1));
 }
+
+export type Slot = 0 | 1 | 2;
+
+/**
+ * The order in which a tapped release control visits its three fixed slots (touch performance).
+ * The first slot is where it starts. Cosmetic only: the number of taps never depends on it.
+ */
+export function releaseSlots(seed: number): readonly [Slot, Slot, Slot] {
+  const orders: readonly (readonly [Slot, Slot, Slot])[] = [
+    [0, 2, 1],
+    [1, 0, 2],
+    [1, 2, 0],
+    [2, 0, 1],
+    [0, 1, 2],
+    [2, 1, 0],
+  ];
+  return orders[Math.floor(derive(seed, 'release-slot')() * orders.length)] ?? [0, 2, 1];
+}

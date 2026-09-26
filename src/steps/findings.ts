@@ -1,5 +1,7 @@
 /** Preliminary determination: the risk score, the evidence on file, and what was never sent. */
-import { findingLines, findingsCopy as C, primaryLabel } from '../content/institution/case';
+import { findingLines } from '../content/institution/case';
+import { findingsCopy as C, primaryLabel } from '../content/institution/findings';
+import { credentials } from '../content/institution/credentials';
 import { riskScore } from '../domain/assessment';
 import { selectCallbacks } from '../domain/findings';
 import { privacySignal } from '../runtime/signals';
@@ -40,6 +42,7 @@ export async function mount(ctx: StepContext): Promise<void> {
     ...nodes(
       h('p', {}, C.body),
       list,
+      h('p', {}, C.credential(credentials.goldfish.title)),
       privacySignal() ? h('p', { class: 'fine' }, C.gpc) : null,
       telemetry,
       h('div', { class: 'btn-row' }, proceed),

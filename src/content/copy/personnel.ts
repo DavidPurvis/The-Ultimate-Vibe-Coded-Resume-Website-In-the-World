@@ -81,23 +81,8 @@ export const aliases: Alias[] = [
   },
 ];
 
-export const credentials = {
-  minister: {
-    title: 'Ordained Minister',
-    tenure: 'In good standing for 8 years',
-    story:
-      'Ordained during a 10th-grade math class. The math has since left me. The ministry remains.',
-    services:
-      'Services offered: weddings, funerals, vow renewals, and blessings of production deploys (Fridays extra).',
-    status: 'verified' as const,
-  },
-  goldfish: {
-    title: 'High School Goldfish Honoree',
-    story:
-      'A goldfish was named in my honor after I signed the wrong sign-up sheet. I meant to sign up for the swim meet. In a way, I still made the team.',
-    status: 'verified' as const,
-  },
-};
+/** Moved to the institution's copy (status inversion); re-exported until this page goes (P4A). */
+export { credentials } from '../institution/credentials';
 
 /** The fish's actual name. Hidden until David supplies it. */
 export const goldfishName: PersonalFact = {

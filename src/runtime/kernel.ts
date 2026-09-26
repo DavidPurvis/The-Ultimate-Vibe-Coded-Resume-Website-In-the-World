@@ -12,8 +12,9 @@ import type { CaseEvent } from '../domain/events';
 import { BUDGET, type StepId } from '../domain/steps';
 import { caseNumber, processingMs } from '../domain/assessment';
 import { newFindings, type FindingId } from '../domain/findings';
-import { findingLines } from '../content/institution/case';
+import { consoleLine, findingLines } from '../content/institution/case';
 import { isPlainActivation } from '../lib/links';
+import { url } from '../lib/paths';
 import { isAbort, Scope } from './lifecycle';
 import { load, save } from './persistence';
 import { modality } from './modality';
@@ -24,15 +25,14 @@ import * as disposition from '../steps/disposition';
 import * as notice from '../steps/notice';
 import type { StepContext, StepModule } from '../steps/types';
 
-const LOADERS: Partial<Record<StepId, () => Promise<StepModule>>> = {
+const LOADERS: Record<StepId, () => Promise<StepModule>> = {
   scope: () => import('../steps/scope'),
   preview: () => import('../steps/preview'),
+  release: () => import('../steps/release'),
+  ceremony: () => import('../steps/ceremony'),
   findings: () => import('../steps/findings'),
   acknowledgment: () => import('../steps/acknowledgment'),
 };
-
-/** P2 vertical slice only: these steps complete themselves until their renderers land (P3). */
-const SLICE_AUTOCOMPLETE: ReadonlySet<StepId> = new Set<StepId>(['release', 'ceremony']);
 
 interface Elements {
   panel: HTMLElement;
@@ -107,7 +107,7 @@ export function boot(doc: Document = document): Scope {
     },
     dispatch,
     processing: () => s.delay(state.step ? processingMs(seed, state.step) : 0),
-    wait: (ms) => s.delay(Math.max(0, Math.min(ms, BUDGET.climaxMaxMs))),
+    wait: (ms, within = s) => within.delay(Math.max(0, Math.min(ms, BUDGET.climaxMaxMs))),
     announce,
     setHeading(text) {
       els.heading.textContent = text;
@@ -116,12 +116,6 @@ export function boot(doc: Document = document): Scope {
       els.heading.focus();
     },
   });
-
-  const autocomplete = (id: StepId): void => {
-    if (id === 'release')
-      for (let i = 0; i <= BUDGET.maxResisted; i++) dispatch({ t: 'RELEASE_ATTEMPTED' });
-    else if (id === 'ceremony') dispatch({ t: 'STEP_COMPLETED', step: 'ceremony' });
-  };
 
   const mountStep = (id: StepId | 'disposition', userInitiated: boolean): void => {
     stepScope?.dispose();
@@ -135,13 +129,7 @@ export function boot(doc: Document = document): Scope {
         disposition.mount(ctx);
         return;
       }
-      if (SLICE_AUTOCOMPLETE.has(id)) {
-        queueMicrotask(() => autocomplete(id));
-        return;
-      }
-      const loader = LOADERS[id];
-      if (!loader) throw new Error(`no renderer for ${id}`);
-      const m = await loader();
+      const m = await LOADERS[id]();
       if (s.disposed) return;
       const pending = m.mount(ctx);
       if (userInitiated) {
@@ -225,6 +213,7 @@ export function boot(doc: Document = document): Scope {
   });
 
   render(null, state, false);
+  console.info(consoleLine(new URL(url('/resume/'), location.href).href));
 
   if (new URLSearchParams(location.search).get('mode') === 'recruiter')
     dispatch({ t: 'BYPASS_REQUESTED' });

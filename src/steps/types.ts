@@ -1,7 +1,7 @@
 /** The contract every step renderer implements: mount(ctx), with everything owned by ctx.scope. */
 import type { CaseEvent } from '../domain/events';
 import type { CaseState } from '../domain/case';
-import type { MountContext } from '../runtime/lifecycle';
+import type { MountContext, Scope } from '../runtime/lifecycle';
 import type { ModalityProfile } from '../runtime/modality';
 
 export interface StepContext extends MountContext {
@@ -15,8 +15,11 @@ export interface StepContext extends MountContext {
   dispatch(e: CaseEvent): void;
   /** The step's processing delay (seeded, inside BUDGET). Rejects if the step is disposed. */
   processing(): Promise<void>;
-  /** A bounded wait (clamped to the climax budget). Rejects if the step is disposed. */
-  wait(ms: number): Promise<void>;
+  /**
+   * A bounded wait (clamped to the climax budget). Rejects when `within` (default: the step's
+   * scope) is disposed, so a step can cut its own pacing short.
+   */
+  wait(ms: number, within?: Scope): Promise<void>;
   announce(text: string): void;
   setHeading(text: string): void;
   focusHeading(): void;

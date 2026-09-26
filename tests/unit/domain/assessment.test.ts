@@ -5,6 +5,7 @@ import {
   caseNumber,
   ceremonyIndex,
   processingMs,
+  releaseSlots,
   riskScore,
   serviceRows,
 } from '../../../src/domain/assessment';
@@ -76,5 +77,19 @@ describe('assessment', () => {
       }),
     );
     expect(ceremonyIndex(1, 0)).toBe(0);
+  });
+});
+
+describe('releaseSlots', () => {
+  it('visits all three slots, deterministically per seed', () => {
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 0xffffffff }), (seed) => {
+        const order = releaseSlots(seed);
+        expect([...order].sort()).toEqual([0, 1, 2]);
+        expect(releaseSlots(seed)).toEqual(order);
+      }),
+    );
+    const seen = new Set(Array.from({ length: 200 }, (_, i) => releaseSlots(i).join('')));
+    expect(seen.size).toBe(6);
   });
 });

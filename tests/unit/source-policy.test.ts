@@ -37,3 +37,38 @@ describe('domain purity', () => {
       expect(importsOf(read(f)), f).not.toContain('./random');
   });
 });
+
+describe('steps and runtime', () => {
+  const code = (f: string) => read(f).replace(/\/\*[^]*?\*\/|\/\/.*$/gm, '');
+
+  it('steps own nothing directly: timers, listeners and frames go through their Scope (§L)', () => {
+    for (const f of files('src/steps'))
+      expect(code(f), f).not.toMatch(
+        /\b(?:setTimeout|setInterval|requestAnimationFrame|addEventListener)\s*\(/,
+      );
+  });
+
+  it('only the lifecycle and the announcer touch raw timers or listeners', () => {
+    const allowed = new Set(['src/runtime/lifecycle.ts', 'src/runtime/announce.ts']);
+    for (const f of files('src/runtime').filter((f) => !allowed.has(f)))
+      expect(code(f), f).not.toMatch(/\b(?:setTimeout|setInterval|addEventListener)\s*\(/);
+  });
+
+  it('builds DOM from text only, reads no randomness and stores nothing outside the case', () => {
+    for (const f of [...files('src/steps'), ...files('src/runtime')]) {
+      const src = code(f);
+      expect(src, f).not.toMatch(/innerHTML|outerHTML|insertAdjacentHTML|document\.write/);
+      expect(src, f).not.toMatch(/Math\.random/);
+      expect(src, f).not.toMatch(/\blocalStorage\b/);
+    }
+  });
+
+  it('only the kernel reduces, persists, or loads steps', () => {
+    const owners = new Set(['src/runtime/kernel.ts', 'src/runtime/persistence.ts']);
+    for (const f of [...files('src/steps'), ...files('src/runtime')]) {
+      if (owners.has(f)) continue;
+      const src = code(f);
+      expect(src, f).not.toMatch(/\breduce\(|\bsave\(|import\(['"]\.\.\/steps/);
+    }
+  });
+});

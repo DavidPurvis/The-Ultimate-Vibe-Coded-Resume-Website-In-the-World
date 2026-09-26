@@ -4,11 +4,19 @@
  * (which are also ordinary résumé words) are excluded.
  */
 import * as institution from './case';
+import * as scope from './scope';
+import * as preview from './preview';
+import * as release from './release';
+import * as ceremony from './ceremony';
+import * as findings from './findings';
+import * as acknowledgment from './acknowledgment';
+
+const MODULES = [institution, scope, preview, release, ceremony, findings, acknowledgment];
 
 const MIN_LENGTH = 20;
 const EXCLUDED = new Set<string>([
   ...Object.values(institution.laneLabels),
-  ...institution.scope.options.map((o) => o.label),
+  ...scope.scope.options.map((o) => o.label),
 ]);
 
 function collect(value: unknown, out: Set<string>): void {
@@ -23,6 +31,6 @@ function collect(value: unknown, out: Set<string>): void {
 
 export function institutionStrings(): string[] {
   const out = new Set<string>();
-  collect(institution, out);
+  for (const m of MODULES) collect(m, out);
   return [...out];
 }

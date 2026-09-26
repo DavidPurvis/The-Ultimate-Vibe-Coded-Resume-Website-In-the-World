@@ -1,5 +1,6 @@
 /** Scope clarification: the request for the request. Any answer is accepted; none is not. */
-import { scope as C, panel } from '../content/institution/case';
+import { panel } from '../content/institution/case';
+import { scope as C } from '../content/institution/scope';
 import type { LaneChoice } from '../domain/events';
 import { button, h } from './dom';
 import type { StepContext } from './types';
