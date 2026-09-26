@@ -1,9 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { LANE_IDS, LANES, TAILORED_LANES, type LaneResume } from '../../src/content/lanes';
-import * as gen from '../../src/content/resume';
-import { FACTS } from '../../src/content/facts';
-import { checkResumeText } from '../../src/lib/integrity';
-import { renderResumeText } from '../../src/lib/resumeText';
+import {
+  LANE_IDS,
+  LANES,
+  TAILORED_LANES,
+  type LaneResume,
+} from '../../../src/content/resume/resolve';
+import { FACTS } from '../../../src/content/resume/facts';
+import { ROLES } from '../../../src/content/resume/roles';
+import { experienceLines, summaryLine } from '../../../src/content/resume/lines';
+import { checkResumeText } from '../../../src/lib/integrity';
+import { renderResumeText } from '../../../src/lib/resumeText';
 
 const VERBS = [
   'Served',
@@ -46,10 +52,8 @@ describe.each(LANE_IDS)('lane %s', (id) => {
   });
 
   it('keeps role headers exactly as on record, reverse-chronological', () => {
-    for (const r of lane.experience) {
-      const g = gen.experience.find((x) => x.id === r.id);
-      expect({ ...r, bullets: [] }).toEqual({ ...g, bullets: [] });
-    }
+    for (const r of lane.experience)
+      expect({ ...r, bullets: [] }).toEqual({ ...ROLES[r.id], bullets: [] });
     const starts = lane.experience.map((r) => r.start);
     expect([...starts].sort().reverse()).toEqual(starts);
     // R9: both Aspen titles of record always appear, even when a role keeps only its header.
@@ -91,10 +95,13 @@ describe.each(LANE_IDS)('lane %s', (id) => {
 
 describe('lane compositions (pack §9)', () => {
   it('GEN is the résumé itself, so /resume/ cannot drift', () => {
-    expect(LANES.gen.experience).toBe(gen.experience);
-    expect(LANES.gen.projects).toBe(gen.projects);
-    expect(LANES.gen.education).toBe(gen.education);
     expect(renderResumeText()).toBe(renderResumeText(LANES.gen));
+  });
+
+  it('the no-GPA degree line is still the BS (E2), not the MS', () => {
+    const bs = LANES.plt.education.find((e) => e.school === 'Mississippi State University');
+    expect(bs?.block).toBe('E2');
+    expect(bs?.line).not.toContain('GPA');
   });
 
   it('orders sections the way the pack recommends', () => {
@@ -166,5 +173,16 @@ describe('lane compositions (pack §9)', () => {
     }
     expect(LANES.gen.path).toBe('/resume/');
     expect(LANES.gen.pdf).toBe('resume.pdf');
+  });
+});
+
+describe('the lines the case shows', () => {
+  it('are exactly the render model’s summary and experience bullets', () => {
+    for (const id of LANE_IDS) {
+      expect(summaryLine(id)).toBe(LANES[id].summary?.text ?? null);
+      expect(experienceLines(id)).toEqual(
+        LANES[id].experience.flatMap((r) => r.bullets.map((b) => b.text)),
+      );
+    }
   });
 });

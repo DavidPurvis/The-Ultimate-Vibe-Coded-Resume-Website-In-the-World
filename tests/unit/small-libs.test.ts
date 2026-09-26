@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { isPlainActivation } from '../../src/runtime/activation';
 import { entityEncode, url } from '../../src/lib/paths';
-import { identity } from '../../src/content/identity';
+import { identity } from '../../src/content/resume/identity';
 
 describe('plain activation (A8)', () => {
   it('truth table', () => {

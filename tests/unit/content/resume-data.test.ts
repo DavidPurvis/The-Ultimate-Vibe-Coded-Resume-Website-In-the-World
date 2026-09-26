@@ -1,14 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import {
-  education,
-  experience,
-  projects,
-  selection,
-  skills,
-  summary,
-} from '../../src/content/resume';
-import { FACTS } from '../../src/content/facts';
-import { renderResumeText } from '../../src/lib/resumeText';
+import { LANES } from '../../../src/content/resume/resolve';
+import { PLACEHOLDERS } from '../../../src/content/resume/selections';
+import { FACTS } from '../../../src/content/resume/facts';
+import { renderResumeText } from '../../../src/lib/resumeText';
+
+const { experience, projects, skills, education } = LANES.gen;
+const summary = LANES.gen.summary ?? { block: 'SUM-GEN', text: '' };
 
 const bullets = [...experience.flatMap((r) => r.bullets), ...projects.flatMap((p) => p.bullets)];
 const VERBS = [
@@ -88,8 +85,6 @@ describe('résumé data (GEN composition)', () => {
   });
 
   it('selection report has no unfilled placeholders', () => {
-    expect(Object.values(selection.placeholders).join(' ')).not.toMatch(
-      /\[(EMAIL|PHONE|USERNAME)\]/,
-    );
+    expect(Object.values(PLACEHOLDERS).join(' ')).not.toMatch(/\[(EMAIL|PHONE|USERNAME)\]/);
   });
 });

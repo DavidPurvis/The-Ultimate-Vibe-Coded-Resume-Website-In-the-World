@@ -1,21 +1,22 @@
 /** Approved in principle: relief, with real résumé content (the chosen cut's summary and highlights). */
 import { preview as C } from '../content/institution/preview';
-import { LANES } from '../content/lanes';
+import { experienceLines, summaryLine } from '../content/resume/lines';
 import { button, h } from './dom';
 import type { StepContext } from './types';
 
 export function mount(ctx: StepContext): void {
   const { root, scope } = ctx;
   const s = ctx.state();
-  const lane = LANES[s.lane && s.lane !== 'unspecified' ? s.lane : 'gen'];
+  const lane = s.lane && s.lane !== 'unspecified' ? s.lane : 'gen';
+  const summary = summaryLine(lane);
   ctx.setHeading(C.heading);
-  const highlights = lane.experience.flatMap((r) => r.bullets).slice(0, 3);
+  const highlights = experienceLines(lane).slice(0, 3);
   const extract = h(
     'div',
     { class: 'case-extract', 'data-evidence': 'resume' },
     h('p', { class: 'case__label' }, C.extract),
-    lane.summary ? h('p', {}, lane.summary.text) : null,
-    h('ul', {}, ...highlights.map((b) => h('li', {}, b.text))),
+    summary ? h('p', {}, summary) : null,
+    h('ul', {}, ...highlights.map((b) => h('li', {}, b))),
   );
   const more = button(scope, C.request, () =>
     ctx.dispatch({ t: 'RESUME_REQUESTED', via: 'full-document' }),

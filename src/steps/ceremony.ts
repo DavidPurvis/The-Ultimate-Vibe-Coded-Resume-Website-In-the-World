@@ -5,7 +5,7 @@
  * not eleven rows.
  */
 import { ceremony as C, jurisdiction, services } from '../content/institution/ceremony';
-import { LANES } from '../content/lanes';
+import { experienceLines } from '../content/resume/lines';
 import { ceremonyIndex, serviceRows, type ServiceRow } from '../domain/assessment';
 import { isAbort } from '../runtime/lifecycle';
 import { button, h } from './dom';
@@ -16,8 +16,7 @@ export async function mount(ctx: StepContext): Promise<void> {
   const s = ctx.state();
   ctx.setHeading(C.heading);
 
-  const lane = LANES[s.lane && s.lane !== 'unspecified' ? s.lane : 'gen'];
-  const bullets = lane.experience.flatMap((r) => r.bullets);
+  const bullets = experienceLines(s.lane && s.lane !== 'unspecified' ? s.lane : 'gen');
   const bullet = bullets[ceremonyIndex(s.seed, bullets.length)];
   const rows = serviceRows(s);
   const today = new Date().getDay();
@@ -74,7 +73,7 @@ export async function mount(ctx: StepContext): Promise<void> {
       'div',
       { class: 'case-extract', 'data-evidence': 'resume' },
       h('p', { class: 'case__label' }, C.subject),
-      bullet ? h('p', {}, bullet.text) : null,
+      bullet ? h('p', {}, bullet) : null,
     ),
     table,
     motionNote,

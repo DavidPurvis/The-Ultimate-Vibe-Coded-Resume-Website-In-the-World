@@ -1,5 +1,5 @@
 /** Projects — P1–P4 from their FACT lines. Integrity rules run on this page's rendered text. */
-import type { BlockId } from '../types';
+import type { BlockId } from '../resume/types';
 
 export const projectsCopy = {
   kicker: 'Projects',

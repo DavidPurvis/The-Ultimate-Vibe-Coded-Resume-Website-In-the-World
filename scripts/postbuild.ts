@@ -1,16 +1,18 @@
 /**
- * Postbuild: print /resume/ to dist/resume.pdf (and each lane cut to dist/resume-{lane}.pdf) with
- * headless Chromium, stamp plain PDF metadata, then verify every file. Fails the build if any
- * résumé isn't exactly 1 page. PDFs get forwarded to people outside the joke: no fiction inside.
+ * Postbuild: validate the content model (every line traces to a fact and adds nothing), print
+ * /resume/ to dist/resume.pdf (and each lane cut to dist/resume-{lane}.pdf) with headless Chromium,
+ * stamp plain PDF metadata, then verify every file. Fails the build on a content violation or if
+ * any résumé isn't exactly 1 page. PDFs get forwarded to people outside the joke: no fiction inside.
  */
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
 import { PDFDocument } from 'pdf-lib';
 import { startServer } from './serve-dist';
 import { verifyPdf } from './verify-pdf';
-import { LANE_IDS, LANES } from '../src/content/lanes';
+import { LANE_IDS, LANES } from '../src/content/resume/resolve';
+import { CONTENT, validateContent } from '../src/content/resume/validate';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const BASE = (
@@ -19,7 +21,25 @@ const BASE = (
 const PORT = Number(process.env.POSTBUILD_PORT ?? 4399);
 export const PDF_SUBJECT = 'Résumé — Software Engineer';
 
+/** Fail on any structural violation; list grandfathered wording for David to confirm. */
+async function checkContent(): Promise<void> {
+  const violations = validateContent();
+  await mkdir(resolve(ROOT, 'reports'), { recursive: true });
+  await writeFile(
+    resolve(ROOT, 'reports', 'content-report.json'),
+    `${JSON.stringify({ violations, grandfathered: CONTENT.grandfathered }, null, 2)}\n`,
+  );
+  if (violations.length) {
+    for (const v of violations) console.error(`✗ content ${v.rule} @ ${v.where}: ${v.detail}`);
+    throw new Error(`${violations.length} content violation(s)`);
+  }
+  console.log(
+    `✓ content model: every line traces to a fact (${CONTENT.grandfathered.length} grandfathered items to confirm, see reports/content-report.json)`,
+  );
+}
+
 async function main(): Promise<void> {
+  await checkContent();
   const server = await startServer(PORT);
   const executablePath = process.env.PW_CHROMIUM_PATH;
   const browser = await chromium.launch(executablePath ? { executablePath } : {});

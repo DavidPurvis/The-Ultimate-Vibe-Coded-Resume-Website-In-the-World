@@ -5,14 +5,17 @@
  * panel (the default slot) takes the CTA's place.
  */
 import { home } from '../content/site/home';
-import { identity, summary } from '../content/resume';
+import { identity } from '../content/resume/identity';
+import { LANES } from '../content/resume/resolve';
+
+const summary = LANES.gen.summary;
 import { url } from '../lib/paths';
 ---
 
 <section class="arrival" aria-labelledby="arrival-name">
   <p class="kicker">{home.kicker}</p>
   <h1 id="arrival-name">{identity.name}</h1>
-  <p class="lede arrival__lede">{summary.text}</p>
+  <p class="lede arrival__lede">{summary?.text}</p>
   <div class="btn-row arrival__cta">
     <a class="btn btn--primary" href={url('/resume/')} data-case-cta>
       {home.cta}

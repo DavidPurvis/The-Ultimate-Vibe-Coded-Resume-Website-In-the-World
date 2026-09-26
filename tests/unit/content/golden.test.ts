@@ -3,7 +3,7 @@
  * change unless a commit changes them on purpose (and regenerates these files with -u).
  */
 import { describe, expect, it } from 'vitest';
-import { LANES, LANE_IDS } from '../../../src/content/lanes';
+import { LANES, LANE_IDS } from '../../../src/content/resume/resolve';
 import { renderResumeMarkdown, renderResumeText } from '../../../src/lib/resumeText';
 
 describe('golden résumé outputs', () => {

@@ -3,7 +3,7 @@
  * and the institution's fiction never borrows a real employer or a technology David doesn't use.
  */
 import { describe, expect, it } from 'vitest';
-import { ABSENT_TECH, GO_LANG, REAL_EMPLOYERS } from '../../src/content/facts';
+import { ABSENT_TECH, GO_LANG, REAL_EMPLOYERS } from '../../src/content/resume/lexicon';
 import * as meta from '../../src/content/site/meta';
 import * as projects from '../../src/content/site/projects';
 import * as resumeExtras from '../../src/content/site/resumeExtras';

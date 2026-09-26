@@ -9,8 +9,8 @@ import { fileURLToPath } from 'node:url';
 import { PDFDocument } from 'pdf-lib';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { checkResumeText, formatViolations } from '../src/lib/integrity';
-import { LANE_IDS, LANES, type LaneId } from '../src/content/lanes';
-import { selection } from '../src/content/resume';
+import { LANE_IDS, LANES, type LaneId } from '../src/content/resume/resolve';
+import { PLACEHOLDERS } from '../src/content/resume/selections';
 import { institutionStrings } from '../src/content/institution/strings';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -105,7 +105,7 @@ export async function verifyPdf(
     lane: lane.code,
     selected: lane.selection.selected,
     cut: lane.selection.cut,
-    placeholders: selection.placeholders,
+    placeholders: PLACEHOLDERS,
     ok: problems.length === 0,
   };
   await mkdir(resolve(ROOT, 'reports'), { recursive: true });

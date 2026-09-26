@@ -10,6 +10,7 @@ export default defineConfig({
         'src/lib/**/*.ts',
         'src/domain/**/*.ts',
         'src/doom/logic.ts',
+        'src/content/resume/**/*.ts',
         'src/runtime/persistence.ts',
         'src/runtime/activation.ts',
       ],

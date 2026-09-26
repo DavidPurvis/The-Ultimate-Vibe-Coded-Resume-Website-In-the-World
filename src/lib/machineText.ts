@@ -1,12 +1,12 @@
 /** llms.txt and robots.txt: plain indexes for machines. No requests, no jokes, no hidden text. */
-import { summary } from '../content/resume';
+import { LANES } from '../content/resume/resolve';
 import { absoluteUrl, BASE } from './paths';
 
 export function renderLlmsTxt(site: URL | string | undefined): string {
   const abs = (p: string) => absoluteUrl(p, site);
   return `# David Purvis — Software Engineer
 
-> ${summary.text}
+> ${LANES.gen.summary?.text ?? ''}
 
 ## Résumé
 

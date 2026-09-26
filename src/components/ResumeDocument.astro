@@ -3,8 +3,8 @@
  * The résumé markup. Used by /resume/ and embedded (print-only) on every other page, so Ctrl+P
  * anywhere prints the same document. Single column, standard headings, no icons (pack §9).
  */
-import { identity } from '../content/resume';
-import { LANES, type LaneId } from '../content/lanes';
+import { identity } from '../content/resume/identity';
+import { LANES, type LaneId } from '../content/resume/resolve';
 import { resumeSections as S } from '../content/site/resumeExtras';
 import { entityEncode } from '../lib/paths';
 

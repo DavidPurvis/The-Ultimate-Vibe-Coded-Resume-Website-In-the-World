@@ -118,3 +118,10 @@ The anthology and the whole legacy gag layer are gone, and their tests with them
 **New:** `privacy-page.spec.ts` (the storage table, Reset, legacy-key cleanup, no JS).
 
 E2E now runs on the production build: the test-hook build is gone from CI.
+
+## Changes made in P5
+
+- `resume-data.test.ts` and `lanes.test.ts` moved to `tests/unit/content/` and assert against `resolve()`. Role headers are checked against `ROLES`. The PLT no-GPA degree line is checked to be labelled E2.
+- `content/validate.test.ts` (new): the published content validates cleanly. Six kinds of mutation must each be caught: unknown fact, adapted wording without a reason, an extra number, foreign or absent technology, a bullet under the wrong role, a bad reference or order. The grandfathered list is pinned.
+- `content/lanes.test.ts` also checks that the case's lightweight lines match the render model.
+- `tests/golden/resume-plt.model.json` changed on one line: the no-GPA BS entry's block went from E1 to E2 (the planned label fix). Every text golden, `resume.md` and the other models are byte-identical.
