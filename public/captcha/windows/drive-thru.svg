@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <title>A drive-thru window handing out a paper bag</title>
+  <rect width="240" height="240" fill="#F4C542"/>
+  <path d="M0 200h240" stroke="#D9A92B" stroke-width="4"/>
+  <rect x="44" y="14" width="152" height="40" rx="6" fill="#D93B3B" stroke="#1A1A2E" stroke-width="5"/>
+  <text x="120" y="42" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="22" fill="#FFFFFF" letter-spacing="2">PAY HERE</text>
+  <rect x="40" y="70" width="160" height="120" rx="6" fill="#FFFFFF" stroke="#1A1A2E" stroke-width="6"/>
+  <rect x="52" y="82" width="136" height="96" fill="#2F4858"/>
+  <rect x="52" y="82" width="70" height="96" fill="#BFE3F2" stroke="#1A1A2E" stroke-width="4"/>
+  <path d="M60 170 L110 90" stroke="#FFFFFF" stroke-width="5" opacity=".7"/>
+  <path d="M150 132 H222 V152 H150 Z" fill="#E0A77B" stroke="#1A1A2E" stroke-width="4"/>
+  <path d="M188 96 H232 L228 160 H192 Z" fill="#C9A36B" stroke="#1A1A2E" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M188 96 L196 86 H224 L232 96" fill="#B08A55" stroke="#1A1A2E" stroke-width="4" stroke-linejoin="round"/>
+  <rect x="30" y="190" width="180" height="14" fill="#8A8378" stroke="#1A1A2E" stroke-width="4"/>
+</svg>

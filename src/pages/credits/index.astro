@@ -1,0 +1,128 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import { ROUTES } from '../../content/copy/meta';
+import {
+  creditsCopy as C,
+  ICON_MANIFEST,
+  INSPIRATION,
+  LEDGER,
+  type LedgerEntry,
+} from '../../content/credits';
+import { url } from '../../lib/paths';
+
+const byKind = (k: LedgerEntry['kind']) => LEDGER.filter((e) => e.kind === k);
+const iconSetFor: Record<string, keyof typeof ICON_MANIFEST> = {
+  'icons-lucide': 'lucide',
+  'icons-fluent': 'fluent',
+  'icons-game': 'game',
+};
+const groups: { heading: string; kind: LedgerEntry['kind'] }[] = [
+  { heading: C.sections.fonts, kind: 'font' },
+  { heading: C.sections.icons, kind: 'icons' },
+  { heading: C.sections.art, kind: 'original-art' },
+  { heading: C.sections.libraries, kind: 'library' },
+  { heading: C.sections.media, kind: 'media' },
+];
+---
+
+<Base route={ROUTES.credits}>
+  <PageHero kicker={C.kicker} title={C.h1} sub={C.sub} />
+
+  {groups.map((g) => (
+    <section class="section credits-group" aria-labelledby={`c-${g.kind}`}>
+      <h2 id={`c-${g.kind}`}>{g.heading}</h2>
+      <ul class="ledger" role="list">
+        {byKind(g.kind).map((e) => (
+          <li class="card ledger__item" data-ledger={e.id}>
+            <h3>
+              {e.url ? (
+                <a href={e.url} rel="noopener noreferrer">
+                  {e.name}
+                </a>
+              ) : (
+                e.name
+              )}
+            </h3>
+            <p class="ledger__meta">
+              <span>{e.author}</span> · <span>{e.license}</span>
+            </p>
+            {e.note && <p class="ledger__note">{e.note}</p>}
+            {e.files && (
+              <details>
+                <summary>Files ({e.files.length})</summary>
+                <ul class="ledger__files">
+                  {e.files.map((f) => (
+                    <li>
+                      <a href={url(`/${f}`)}>{f}</a>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            )}
+            {iconSetFor[e.id] && (
+              <details>
+                <summary>
+                  {C.iconsUsed} ({ICON_MANIFEST[iconSetFor[e.id]!].length})
+                </summary>
+                <p class="ledger__icons mono">{ICON_MANIFEST[iconSetFor[e.id]!].join(', ')}</p>
+              </details>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <section class="section" aria-labelledby="c-inspiration">
+    <h2 id="c-inspiration">{C.sections.inspiration}</h2>
+    <ul>
+      {INSPIRATION.map((i) => (
+        <li>{i}</li>
+      ))}
+    </ul>
+  </section>
+
+  <p class="section fine">{C.footer}</p>
+</Base>
+
+<style>
+  .ledger {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--s-4);
+  }
+  @media (min-width: 48rem) {
+    .ledger {
+      grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    }
+  }
+  .ledger__item {
+    padding: var(--s-4) var(--s-5);
+  }
+  .ledger__item h3 {
+    font-size: 1.1rem;
+    margin-bottom: var(--s-2);
+  }
+  .ledger__meta {
+    font-size: 0.9rem;
+    color: var(--ink-2);
+    margin-bottom: var(--s-2);
+  }
+  .ledger__note {
+    font-size: 0.9rem;
+  }
+  .ledger__files,
+  .ledger__icons {
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+  }
+  details summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+</style>

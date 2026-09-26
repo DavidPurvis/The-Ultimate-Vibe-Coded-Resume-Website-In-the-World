@@ -1,0 +1,323 @@
+/* Résumé.ppt: a 1998 slide deck, lovingly. Motion only when the visitor allows it. */
+.deck {
+  display: grid;
+  gap: var(--s-8);
+  padding-block: var(--s-5);
+  /* Bursts poke out of the slides; never out of the page. */
+  overflow-x: clip;
+  overflow-clip-margin: 12px;
+}
+.deck-tools {
+  margin: 0 0 var(--s-4);
+}
+.slide {
+  position: relative;
+  max-width: 60rem;
+  margin-inline: auto;
+  width: 100%;
+}
+.slide__frame {
+  position: relative;
+  min-height: 26rem;
+  padding: clamp(var(--s-5), 4vw, var(--s-8)) clamp(var(--s-4), 5vw, var(--s-8));
+  padding-right: clamp(var(--s-4), 18vw, 11rem);
+  border: 6px solid #1a1a2e;
+  border-radius: 6px;
+  background:
+    radial-gradient(circle at 90% 10%, rgb(255 255 255 / 0.7), transparent 40%),
+    linear-gradient(160deg, #fdfbe7 0%, #e0f2fe 55%, #c7d2fe 100%);
+  color: #14213d;
+  box-shadow: 10px 10px 0 #1a1a2e;
+}
+.slide__eyebrow {
+  font: 700 0.9rem/1 var(--font-mono);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #3730a3;
+}
+.slide__frame :is(ul) {
+  padding-left: 1.4rem;
+}
+.slide__frame li {
+  margin-bottom: var(--s-2);
+  font-size: 1.05rem;
+}
+.slide__frame li::marker {
+  content: '➤  ';
+  color: #b3261e;
+}
+.slide__role {
+  font: 700 1.3rem/1.3 var(--font-body);
+  margin: 0 0 var(--s-1);
+}
+.slide__meta {
+  font: 600 0.9rem var(--font-mono);
+  color: #3730a3;
+}
+.slide__lead {
+  font: 600 clamp(1.1rem, 2.5vw, 1.5rem) / 1.45 var(--font-body);
+}
+.slide__subtitle {
+  font: 700 clamp(1.2rem, 3vw, 1.8rem) / 1.3 var(--font-display);
+}
+.slide__project + .slide__project {
+  margin-top: var(--s-4);
+}
+.slide__clipart {
+  position: absolute;
+  right: clamp(var(--s-3), 3vw, var(--s-6));
+  top: clamp(var(--s-4), 4vw, var(--s-7));
+  width: clamp(64px, 12vw, 120px);
+  height: auto;
+}
+.slide__num {
+  position: absolute;
+  right: var(--s-4);
+  bottom: var(--s-3);
+  margin: 0;
+  font-size: 0.8rem;
+  color: #3730a3;
+}
+.slide__notes {
+  margin-top: var(--s-5);
+  font-size: 0.9rem;
+  max-width: 34rem;
+}
+.slide__notes summary {
+  cursor: pointer;
+  min-height: var(--target);
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+.slide__frame a {
+  color: #0b4f6c;
+}
+
+/* ---- WordArt, four classic styles ---- */
+.wordart {
+  font: 900 clamp(2rem, 6vw, 3.6rem) / 1.05 var(--font-display);
+  letter-spacing: 0.01em;
+  margin: 0 0 var(--s-5);
+  color: #14213d; /* fallback when background-clip text is unsupported */
+  -webkit-text-stroke: 1.5px #1a1a2e;
+  paint-order: stroke fill;
+}
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .wordart {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(3px 3px 0 #1a1a2e);
+  }
+  .wordart-0 .wordart {
+    background-image: linear-gradient(90deg, #b3261e, #c2410c, #a16207, #15803d, #1d4ed8, #6d28d9);
+  }
+  .wordart-1 .wordart {
+    background-image: linear-gradient(180deg, #52525b 0%, #e4e4e7 45%, #3f3f46 55%, #a1a1aa 100%);
+  }
+  .wordart-2 .wordart {
+    background-image: linear-gradient(0deg, #9a3412 0%, #ea580c 40%, #ca8a04 100%);
+  }
+  .wordart-3 .wordart {
+    background-image: linear-gradient(135deg, #1e3a8a, #0e7490 50%, #1e3a8a);
+  }
+}
+.wordart-1 .wordart {
+  font-style: italic;
+}
+.wordart-3 .wordart {
+  transform: skewX(-8deg);
+}
+
+/* ---- Cartoon ad-lib bursts (decorative, aria-hidden) ---- */
+.burst {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: clamp(7.5rem, 16vw, 11rem);
+  aspect-ratio: 1;
+  padding: 1.6rem;
+  text-align: center;
+  font:
+    900 clamp(0.8rem, 1.6vw, 1.05rem) / 1.05 'Comic Sans MS',
+    'Comic Neue',
+    cursive;
+  color: #1a0033;
+  background: #ffe600;
+  clip-path: polygon(
+    50% 0%,
+    61% 18%,
+    82% 7%,
+    80% 30%,
+    100% 34%,
+    86% 50%,
+    100% 66%,
+    80% 70%,
+    82% 93%,
+    61% 82%,
+    50% 100%,
+    39% 82%,
+    18% 93%,
+    20% 70%,
+    0% 66%,
+    14% 50%,
+    0% 34%,
+    20% 30%,
+    18% 7%,
+    39% 18%
+  );
+  cursor: pointer;
+  user-select: none;
+  animation: burst-pop 420ms cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+.burst--left {
+  left: -2.5rem;
+}
+.burst--right {
+  right: -2.5rem;
+}
+.burst.is-leaving {
+  animation: burst-leave 300ms ease-in forwards;
+}
+@keyframes burst-pop {
+  from {
+    transform: scale(0) rotate(var(--burst-rot, 0deg));
+  }
+  to {
+    transform: scale(1) rotate(var(--burst-rot, 0deg));
+  }
+}
+@keyframes burst-leave {
+  to {
+    transform: scale(0) rotate(var(--burst-rot, 0deg));
+    opacity: 0;
+  }
+}
+
+/* ---- Transitions: hidden until scrolled in (only with JS and motion allowed) ---- */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-js] .slide:not(.is-in) .slide__frame {
+    opacity: 0;
+  }
+  .slide.is-in[data-transition='fly-left'] .slide__frame {
+    animation: ppt-fly-left 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .slide.is-in[data-transition='spiral'] .slide__frame {
+    animation: ppt-spiral 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .slide.is-in[data-transition='star-wipe'] .slide__frame {
+    animation: ppt-star 900ms ease-out both;
+  }
+  .slide.is-in[data-transition='blinds'] .slide__frame {
+    animation: ppt-blinds 800ms ease-out both;
+  }
+  .slide.is-in[data-transition='boomerang'] .slide__frame {
+    animation: ppt-boomerang 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .slide.is-in[data-transition='dissolve'] .slide__frame {
+    animation: ppt-dissolve 900ms ease-out both;
+  }
+}
+@keyframes ppt-fly-left {
+  from {
+    transform: translateX(-70vw) rotate(-6deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes ppt-spiral {
+  from {
+    transform: scale(0.05) rotate(-720deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes ppt-star {
+  from {
+    clip-path: polygon(
+      50% 47%,
+      51% 49%,
+      53% 49%,
+      51.5% 50.5%,
+      52% 52.5%,
+      50% 51.3%,
+      48% 52.5%,
+      48.5% 50.5%,
+      47% 49%,
+      49% 49%
+    );
+  }
+  to {
+    clip-path: polygon(
+      50% -250%,
+      100% -50%,
+      200% -50%,
+      125% 25%,
+      150% 175%,
+      50% 115%,
+      -50% 175%,
+      -25% 25%,
+      -100% -50%,
+      0% -50%
+    );
+  }
+}
+@keyframes ppt-blinds {
+  from {
+    mask-image: linear-gradient(#000, #000);
+    mask-size: 0% 100%;
+    mask-repeat: repeat-x;
+  }
+  to {
+    mask-image: linear-gradient(#000, #000);
+    mask-size: 10% 100%;
+    mask-repeat: repeat-x;
+  }
+}
+@keyframes ppt-boomerang {
+  0% {
+    transform: translateX(80vw) rotate(25deg);
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(-4vw) rotate(-4deg);
+    opacity: 1;
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes ppt-dissolve {
+  from {
+    opacity: 0;
+    filter: blur(14px) saturate(3);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .burst {
+    display: none;
+  }
+}
+@media (max-width: 40rem) {
+  .burst--left {
+    left: -1rem;
+  }
+  .burst--right {
+    right: -1rem;
+  }
+  .slide__frame {
+    box-shadow: 6px 6px 0 #1a1a2e;
+  }
+}

@@ -1,0 +1,88 @@
+---
+/**
+ * Layout G — every gag page. Chaos layer, skip link, escape hatch, print-only résumé copy.
+ */
+import '../styles/fonts';
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/print.css';
+import '../styles/ads.css';
+import Head from '../components/Head.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import ResumeDocument from '../components/ResumeDocument.astro';
+import RickrollDialog from '../components/RickrollDialog.astro';
+import CookieBanner from '../components/CookieBanner.astro';
+import VendorsDialog from '../components/VendorsDialog.astro';
+import ParodyAd from '../components/ParodyAd.astro';
+import DoomPlayer from '../components/DoomPlayer.astro';
+import { doomCopy } from '../content/copy/doom';
+import { PARODY_ADS } from '../content/copy/ads';
+import { exits } from '../content/copy/global';
+import type { RouteMeta } from '../content/copy/meta';
+import { url } from '../lib/paths';
+
+interface Props {
+  route: RouteMeta;
+  ogTitle?: string;
+  bodyClass?: string;
+  noindex?: boolean;
+  /** Sincere pages (the tribute): no parody ads, and global gags (HUD, Subway) stand down. */
+  sincere?: boolean;
+}
+const { route, ogTitle, bodyClass, noindex = false, sincere = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-mode="chaos" data-layout="gag">
+  <head>
+    <Head
+      title={route.title}
+      description={route.description}
+      path={route.path}
+      {...(ogTitle ? { ogTitle } : {})}
+      noindex={noindex}
+    />
+    <slot name="head" />
+  </head>
+  <body
+    class:list={['layout-g', bodyClass]}
+    data-cursor={route.cursor}
+    data-sincere={sincere ? '' : undefined}
+  >
+    <a class="skip-link" href={`${url('/resume/')}?mode=recruiter`} data-escape>
+      {exits.skipLink}
+    </a>
+    <SiteHeader currentPath={route.path} {...(route.formId ? { formId: route.formId } : {})} />
+    {!sincere && <ParodyAd placement="leaderboard" seed={route.path} />}
+    <main id="main" tabindex="-1">
+      <div class="container">
+        <slot />
+      </div>
+    </main>
+    {!sincere && <ParodyAd placement="banner" seed={route.path} />}
+    <SiteFooter />
+    <span hidden data-parody-ads={JSON.stringify(PARODY_ADS)}></span>
+    <div class="print-only" aria-hidden="true">
+      <ResumeDocument idPrefix="print" embedded />
+    </div>
+    <CookieBanner />
+    <VendorsDialog />
+    <RickrollDialog />
+    <slot name="after" />
+    {!sincere && (
+      <>
+        <template data-doom-template>
+          <DoomPlayer compact />
+        </template>
+        <span hidden data-doom-dock-copy={JSON.stringify(doomCopy.dock)} />
+      </>
+    )}
+    <div class="toast-stack" data-toasts role="region" aria-label="Notifications"></div>
+    <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  </body>
+</html>
+
+<script>
+  import '../scripts/chaos';
+</script>

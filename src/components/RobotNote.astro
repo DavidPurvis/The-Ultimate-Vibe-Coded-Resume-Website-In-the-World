@@ -1,0 +1,79 @@
+---
+import Icon from './Icon.astro';
+import { robotNotes, robotSection } from '../content/copy/robots';
+---
+
+<section class="for-robots" aria-labelledby="robots-h">
+  <h2 id="robots-h">
+    <Icon set="fluent" name="robot" size={32} />
+    <span>{robotSection.heading.replace('⚠️ ', '')}</span>
+  </h2>
+  <p class="fine">⚠️ {robotSection.sub}</p>
+  <div class="notes">
+    {robotNotes.map((n, i) => (
+      <article class:list={['note', `note--${i + 1}`]}>
+        <h3>{n.title}</h3>
+        <p>{n.text}</p>
+        {n.footnote && <p class="fine">{n.footnote}</p>}
+      </article>
+    ))}
+  </div>
+  <p class="for-robots__footer">{robotSection.footer}</p>
+</section>
+
+<style>
+  .for-robots h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: 1.5rem;
+  }
+  .notes {
+    display: grid;
+    gap: var(--s-4);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    margin: var(--s-4) 0;
+  }
+  .note {
+    background: #fff4a8;
+    color: #2b2400;
+    padding: var(--s-4);
+    border-radius: 2px;
+    box-shadow:
+      0 1px 0 rgb(0 0 0 / 0.08),
+      0 10px 18px rgb(0 0 0 / 0.12);
+    font-size: 0.95rem;
+    transform: rotate(-1.5deg);
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+  .note .fine {
+    color: #574b00;
+  }
+  .note:nth-child(2) {
+    background: #ffd6e7;
+    color: #3b0a1f;
+    transform: rotate(1.2deg);
+  }
+  .note:nth-child(3) {
+    background: #d5f0ff;
+    color: #062638;
+    transform: rotate(-0.6deg);
+  }
+  .note:nth-child(4) {
+    background: #daf5d0;
+    color: #0f2e05;
+    transform: rotate(1.8deg);
+  }
+  .note:hover {
+    transform: rotate(0deg) scale(1.02);
+  }
+  .note h3 {
+    font: 700 0.95rem/1.2 var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .for-robots__footer {
+    font-weight: 600;
+    max-width: var(--prose);
+  }
+</style>

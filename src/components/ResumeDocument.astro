@@ -1,0 +1,127 @@
+---
+/**
+ * The résumé markup. Used by /resume/ and embedded (print-only) on every other page, so Ctrl+P
+ * anywhere prints the same document. Single column, standard headings, no icons (pack §9).
+ */
+import { identity } from '../content/resume';
+import { LANES, type LaneId } from '../content/lanes';
+import { resumeSections as S } from '../content/copy/resumeExtras';
+import { entityEncode } from '../lib/paths';
+
+interface Props {
+  /** Unique id prefix: the print-only copies must not duplicate heading ids. */
+  idPrefix?: string;
+  /** Print-only copy on gag pages: the name is not a second <h1> for that page. */
+  embedded?: boolean;
+  /** Which composition to render (pack §9). Every gag page prints GEN. */
+  lane?: LaneId;
+}
+const { idPrefix = 'r', embedded = false, lane: laneId = 'gen' } = Astro.props;
+const lane = LANES[laneId];
+const NameTag = embedded ? 'p' : 'h1';
+const id = (s: string) => `${idPrefix}-${s}`;
+// Entity-encoded mailto (renders normally, works without JS, dodges naive scrapers).
+const mailLink = `<a href="${entityEncode(`mailto:${identity.email}`)}">${entityEncode(identity.email)}</a>`;
+const ext = (href: string, text: string) =>
+  `<a href="${href}" rel="noopener noreferrer">${text}</a>`;
+/** Keep hyphenated words (D-Bus, order-of-execution…) whole: the pack forbids hyphen breaks. */
+const escapeHtml = (t: string) =>
+  t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const nb = (t: string) =>
+  escapeHtml(t).replace(
+    /[^\s]*[A-Za-z0-9]-[A-Za-z0-9][^\s]*/g,
+    (w) => `<span class="nb">${w}</span>`,
+  );
+// Built as one string so the contact line's text (and the PDF text layer) is exact.
+const contactHtml = [
+  identity.location,
+  mailLink,
+  ext(identity.linkedin.href, identity.linkedin.display),
+  ext(identity.github.href, identity.github.display),
+].join(' · ');
+---
+
+<article class="resume" aria-labelledby={id('name')}>
+  <header class="resume__head">
+    <NameTag id={id('name')} class="resume__name">
+      {identity.name}
+    </NameTag>
+    <p class="contact" set:html={contactHtml} />
+  </header>
+
+  {lane.order.map((key) => {
+    if (key === 'summary')
+      return (
+        lane.summary && (
+          <section aria-labelledby={id('summary')}>
+            <h2 id={id('summary')}>{S.summary}</h2>
+            <p>{lane.summary.text}</p>
+          </section>
+        )
+      );
+    if (key === 'experience')
+      return (
+        <section aria-labelledby={id('experience')}>
+          <h2 id={id('experience')}>{S.experience}</h2>
+          {lane.experience.map((r) => (
+            <div class="role">
+              <h3>
+                <strong>{r.title}</strong> — {r.org} · {r.location} · {r.dates}
+              </h3>
+              {r.bullets.length > 0 && (
+                <ul>
+                  {r.bullets.map((b) => (
+                    <li set:html={nb(b.text)} />
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </section>
+      );
+    if (key === 'projects')
+      return (
+        <section aria-labelledby={id('projects')}>
+          <h2 id={id('projects')}>{S.projects}</h2>
+          {lane.projects.map((p) => (
+            <div class="project">
+              <h3>
+                <strong>{p.name}</strong> — {p.stack}
+              </h3>
+              <ul>
+                {p.bullets.map((b) => (
+                  <li set:html={nb(b.text)} />
+                ))}
+              </ul>
+            </div>
+          ))}
+        </section>
+      );
+    if (key === 'skills')
+      return (
+        <section aria-labelledby={id('skills')}>
+          <h2 id={id('skills')}>{S.skills}</h2>
+          {lane.skills.map((s) => (
+            <p>
+              <strong>{s.label}:</strong> {s.items}
+            </p>
+          ))}
+        </section>
+      );
+    return (
+      <section aria-labelledby={id('education')}>
+        <h2 id={id('education')}>{S.education}</h2>
+        {lane.education.map((e) => (
+          <>
+            <p>
+              <strong>{e.school}</strong> — {e.line}
+            </p>
+            {(e.notes ?? []).map((n) => (
+              <p class="edu-note" set:html={nb(n.text)} />
+            ))}
+          </>
+        ))}
+      </section>
+    );
+  })}
+</article>

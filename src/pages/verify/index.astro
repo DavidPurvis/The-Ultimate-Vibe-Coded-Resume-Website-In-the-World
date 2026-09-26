@@ -1,0 +1,166 @@
+---
+import Base from '../../layouts/Base.astro';
+import Memo from '../../components/Memo.astro';
+import Icon from '../../components/Icon.astro';
+import { ROUTES } from '../../content/copy/meta';
+import {
+  audio,
+  captchaCopy as C,
+  completion,
+  progress,
+  rounds,
+  windowTiles,
+} from '../../content/copy/captcha';
+import { memos } from '../../content/copy/memos';
+import { url } from '../../lib/paths';
+import { cagePhotoTiles } from '../../content/cagePhotos';
+
+const cagePhotos = cagePhotoTiles();
+import '../../styles/captcha.css';
+---
+
+<Base route={ROUTES.verify} bodyClass="cn-page">
+  <Memo text={memos.verify} />
+  <p class="kicker">{C.kicker}</p>
+  <div class="cn" data-captcha>
+    <header class="cn__brand">
+      <p class="cn__logo" aria-hidden="true">
+        {C.logo}
+      </p>
+      <h1 class="cn__h1">
+        <span class="sr-only">{C.logo}: </span>
+        {C.tagline}
+      </h1>
+    </header>
+    <p class="cn__disclaimer">{C.disclaimer}</p>
+
+    <section class="cn__challenge" data-cn-challenge aria-labelledby="cn-prompt">
+      <div class="cn__prompt">
+        <Icon set="fluent" name="window" size={40} />
+        <div>
+          <h2 id="cn-prompt" data-cn-prompt>
+            {rounds.windows.prompt[0]}
+            <strong>{rounds.windows.prompt[1]}</strong>
+            {rounds.windows.prompt[2]}
+          </h2>
+          <p data-cn-sub>{rounds.windows.sub}</p>
+        </div>
+      </div>
+
+      <div class="cn__grid" role="group" aria-labelledby="cn-prompt" data-cn-grid>
+        {windowTiles.map((t) => (
+          <button type="button" class="cn__tile" aria-pressed="false" data-tile={t.id}>
+            <img src={url(`/${t.src}`)} alt={t.alt} width="240" height="240" decoding="async" />
+            <span class="cn__check" aria-hidden="true">
+              ✓
+            </span>
+          </button>
+        ))}
+      </div>
+      {cagePhotos && (
+        <p class="fine cn__caption" data-cn-photo-caption hidden>
+          {rounds.cage.photo.caption}
+        </p>
+      )}
+      {cagePhotos && <span hidden data-cage-photos={JSON.stringify(cagePhotos)} />}
+      <div class="cn__empty" data-cn-empty hidden>
+        <img src={url('/illustrations/empty-grid.svg')} alt="" width="240" height="240" />
+        <p>{rounds.linux.empty}</p>
+      </div>
+
+      <div class="cn__feedback" role="status" data-cn-feedback>
+        <p class="cn__headline" data-cn-headline></p>
+        <p class="cn__subline" data-cn-subline></p>
+      </div>
+
+      <div class="cn__controls">
+        <button type="button" class="btn cn__verify" data-cn-verify>
+          {C.verify}
+        </button>
+        <button type="button" class="btn btn--small" data-cn-new>
+          {C.newChallenge}
+        </button>
+        <span class="mono cn__counter" data-cn-counter>
+          {C.counter(0)}
+        </span>
+      </div>
+
+      <details class="cn__audio" data-cn-audio>
+        <summary>{audio.summary}</summary>
+        <div class="cn__audio-body">
+          <button type="button" class="btn btn--small" data-cn-audio-play>
+            {audio.start}
+          </button>
+          <p class="cn__countdown" data-cn-countdown aria-live="polite"></p>
+          <div data-cn-audio-form hidden>
+            <label class="cn__audio-label">
+              <span>{audio.label}</span>
+              <input type="text" autocomplete="off" data-cn-audio-input />
+            </label>
+            <button type="button" class="btn btn--small" data-cn-audio-submit>
+              {audio.submit}
+            </button>
+          </div>
+        </div>
+      </details>
+
+      <p class="cn__skip">
+        <a href={`${url('/about/')}?skipped=1`} data-cn-skip>
+          {C.skip}
+        </a>
+      </p>
+      <noscript>
+        <p class="real-error">
+          The ceremonial CAPTCHA needs JavaScript to reject you properly. You may simply
+          <a href={url('/about/')}>continue to Character Review</a>.
+        </p>
+      </noscript>
+    </section>
+
+    <section class="cn__done" data-cn-done hidden aria-labelledby="cn-done-title">
+      <h2 id="cn-done-title" tabindex="-1" data-cn-done-headline></h2>
+      <div class="receipt">
+        <p class="receipt__title">{completion.title}</p>
+        <ul>
+          <li data-cn-method></li>
+          {completion.lines.map((l) => (
+            <li>{l}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="cn__progress" data-progress>
+        <p class="cn__progress-status" data-progress-status>
+          {progress.label}
+        </p>
+        <progress max="100" value="0" data-progress-bar aria-label={progress.label}></progress>
+        <p class="mono" data-progress-pct>
+          0.0%
+        </p>
+        <div class="btn-row">
+          <button type="button" class="btn btn--small" data-progress-skip>
+            {progress.skip}
+          </button>
+          <div class="cn__skipfast-arena" data-skipfast-arena>
+            <button type="button" class="btn btn--small btn--ghost" data-progress-skipfast>
+              <span data-label>{progress.skipFastLabels[0]}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <p class="cn__unload chaos-only" data-unload-line hidden>
+        {completion.unloadLine}
+      </p>
+      <p>
+        <a class="btn btn--primary" href={url('/about/')} data-playful data-cn-next hidden>
+          {completion.next}
+        </a>
+      </p>
+    </section>
+  </div>
+</Base>
+
+<script>
+  import '../../scenes/captcha';
+</script>

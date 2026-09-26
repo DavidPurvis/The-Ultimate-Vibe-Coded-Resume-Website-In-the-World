@@ -1,0 +1,77 @@
+---
+/**
+ * The DOOM player shell: a 16:10 screen, controls, status and legend. The engine frame is created
+ * in the screen only when Play is pressed (src/scenes/doom/player.ts). Used on /doom/ and, compact,
+ * as the docked player's template on every gag page.
+ */
+import { doomCopy as C } from '../content/copy/doom';
+
+interface Props {
+  compact?: boolean;
+}
+const { compact = false } = Astro.props;
+const copy = {
+  loading: C.loading,
+  progress: C.progress,
+  ready: C.ready,
+  stopped: C.stopped,
+  escaped: C.escaped,
+  error: C.error,
+  soundNext: C.soundNext,
+  frameTitle: C.frameTitle,
+};
+---
+
+<div class:list={['doom-player', { 'doom-player--compact': compact }]} data-doom-player>
+  <div class="doom-screen" data-doom-screen>
+    <div class="doom-poster" data-doom-poster>
+      <p class="doom-poster__title">DOOM</p>
+      <p class="doom-poster__sub">{C.poster}</p>
+    </div>
+  </div>
+  <div class="doom-controls js-only" role="group" aria-label={`${C.h1} controls`}>
+    <button type="button" class="btn btn--primary" data-doom-play>
+      {C.play}
+    </button>
+    <button type="button" class="btn" data-doom-stop disabled>
+      {C.stop}
+    </button>
+    <button type="button" class="btn" data-doom-full disabled>
+      {C.fullscreen}
+    </button>
+    <button type="button" class="switch" role="switch" aria-checked="false" data-doom-sound>
+      <span class="switch__track" aria-hidden="true"></span>
+      <span>{C.sound}</span>
+    </button>
+  </div>
+  <progress
+    class="doom-progress"
+    max="100"
+    value="0"
+    aria-label={C.loading}
+    hidden
+    data-doom-progress
+  ></progress>
+  <p class="fine doom-status" role="status" data-doom-status></p>
+  <p class="fine doom-touch">{C.touch}</p>
+  {compact ? (
+    <p class="fine doom-escape">
+      <kbd>Shift</kbd> + <kbd>Esc</kbd>: {C.legend.at(-1)?.[1]}
+    </p>
+  ) : (
+    <div class="doom-legend">
+      <h2>{C.legendTitle}</h2>
+      <dl>
+        {C.legend.map(([k, v]) => (
+          <div>
+            <dt>
+              <kbd>{k}</kbd>
+            </dt>
+            <dd>{v}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  )}
+  <span hidden data-doom-copy={JSON.stringify(copy)}></span>
+</div>

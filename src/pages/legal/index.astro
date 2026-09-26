@@ -1,0 +1,308 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import { ROUTES } from '../../content/copy/meta';
+import {
+  detected,
+  facts,
+  fictionalTerms,
+  legalCopy as L,
+  realWorld,
+  stickers,
+  tos,
+  metaSnippets,
+} from '../../content/copy/legal';
+import { url } from '../../lib/paths';
+// Real platforms' terms, quoted only after David checks each against the live page.
+const verifiedSnippets = metaSnippets.filter((q) => q.status === 'verified');
+---
+
+<Base route={ROUTES.legal}>
+  <PageHero kicker={L.kicker} title={L.h1} sub={L.sub} />
+
+  <section class="zone zone--true" aria-labelledby="part1">
+    <h2 id="part1">
+      <Icon set="fluent" name="balance-scale" size={32} /> {L.part1Heading}
+    </h2>
+    <ul class="facts">
+      {facts.lines.map((l) => (
+        <li>{l}</li>
+      ))}
+    </ul>
+    <div class="table-scroll" role="region" tabindex="0" aria-labelledby="storage-cap">
+      <table class="storage">
+        <caption id="storage-cap">{facts.tableCaption}</caption>
+        <thead>
+          <tr>
+            {facts.tableCols.map((c) => (
+              <th scope="col">{c}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody data-storage-rows>
+          <tr>
+            <td colspan="4" class="fine">
+              {facts.empty}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <button type="button" class="btn" data-storage-reset>
+        <Icon set="fluent" name="wastebasket" />
+        {facts.reset}
+      </button>
+    </p>
+    <ul class="facts">
+      <li>{facts.host}</li>
+      <li>{facts.games}</li>
+    </ul>
+    <span hidden data-storage-copy={JSON.stringify(facts)}></span>
+  </section>
+
+  <section class="zone zone--fiction section" aria-labelledby="part2">
+    <h2 id="part2">
+      <Icon set="fluent" name="scroll" size={32} /> {L.part2Heading}
+    </h2>
+    <div class="terms">
+      {fictionalTerms.map((t) => (
+        <article class="term">
+          <h3 class="mono">{t.heading}</h3>
+          <p>{t.body}</p>
+        </article>
+      ))}
+    </div>
+
+    <h3>{tos.label}</h3>
+    <div class="tos" tabindex="0" role="region" aria-label={tos.label} data-tos>
+      {tos.initial.map((p) => (
+        <p>{p}</p>
+      ))}
+      <div data-tos-more></div>
+      <div class="tos__sentinel" data-tos-sentinel aria-hidden="true"></div>
+    </div>
+    <p>
+      <button type="button" class="btn" data-tos-accept aria-disabled="true">
+        {tos.button}
+      </button>
+    </p>
+    <p class="fine" data-tos-receipt aria-live="polite"></p>
+    <span hidden data-tos-copy={JSON.stringify(tos)}></span>
+  </section>
+
+  <section class="zone section" aria-labelledby="part3">
+    <h2 id="part3">
+      <Icon set="fluent" name="magnifying-glass-tilted-left" size={32} /> {L.part3Heading}
+    </h2>
+    <ul class="detected" data-detected>
+      <li>{detected.screen}</li>
+      <li>{detected.notHired}</li>
+      <li>{detected.timeline}</li>
+    </ul>
+    <p class="fine">{detected.footer}</p>
+  </section>
+
+  <section class="zone section chaos-only" aria-labelledby="part4">
+    <h2 id="part4">
+      <Icon set="game" name="cctv-camera" size={32} /> {L.part4Heading}
+    </h2>
+    <p class="stickers__header">{stickers.header}</p>
+    <div class="stickers">
+      {(['camera', 'location'] as const).map((k) => (
+        <div class="sticker" data-sticker={k}>
+          <p class="sticker__title">{stickers[k].title}</p>
+          <div class="btn-row">
+            {stickers.buttons.map((b) => (
+              <button type="button" class="btn btn--small" data-sticker-btn>
+                {b}
+              </button>
+            ))}
+          </div>
+          <p class="sticker__result" aria-live="polite" data-sticker-result />
+        </div>
+      ))}
+    </div>
+    <p>
+      <button type="button" class="btn" data-notify>
+        {stickers.notify.button}
+      </button>
+    </p>
+    <p class="fine" data-notify-result aria-live="polite"></p>
+    <span hidden data-sticker-copy={JSON.stringify(stickers)}></span>
+  </section>
+
+  <section class="zone section" aria-labelledby="part5">
+    <h2 id="part5">{L.part5Heading}</h2>
+    <p>
+      {realWorld.text}{' '}
+      <a href={realWorld.link.href} rel="noopener noreferrer">
+        {realWorld.link.label}
+      </a>
+      .
+    </p>
+    {verifiedSnippets.length > 0 && (
+      <div class="snippets" data-meta-snippets>
+        {verifiedSnippets.map((q) => (
+          <figure class="snippet card">
+            <blockquote cite={q.url}>
+              <p>“{q.text}”</p>
+            </blockquote>
+            <figcaption>
+              <a href={q.url} rel="noopener noreferrer">
+                {q.source}
+              </a>
+              . <em>{q.commentary}</em>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    )}
+  </section>
+
+  <p class="section">
+    <a class="btn btn--primary" href={url('/casino/')} data-playful>
+      Continue to Link Roulette →
+    </a>
+  </p>
+</Base>
+
+<script>
+  import '../../scenes/legal';
+</script>
+
+<style>
+  .zone h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+  }
+  .zone--true {
+    background: var(--card);
+    border: 2px solid var(--ok);
+    border-radius: var(--r-3);
+    padding: var(--s-5);
+  }
+  .zone--fiction {
+    border: 2px dashed var(--stamp);
+    border-radius: var(--r-3);
+    padding: var(--s-5);
+  }
+  .facts {
+    max-width: var(--prose);
+    display: grid;
+    gap: var(--s-2);
+  }
+  .table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    margin: var(--s-4) 0;
+  }
+  .storage {
+    font-size: 0.95rem;
+  }
+  .storage :global(code) {
+    overflow-wrap: anywhere;
+  }
+  .terms {
+    display: grid;
+    gap: var(--s-4);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+    margin-bottom: var(--s-5);
+  }
+  .term h3 {
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
+  }
+  .tos {
+    height: 280px;
+    overflow: auto;
+    border: 1.5px solid var(--ink-2);
+    border-radius: var(--r-1);
+    padding: var(--s-4);
+    background: var(--card);
+    max-width: 40rem;
+    font-size: 0.95rem;
+  }
+  .tos :global(p) {
+    margin-bottom: var(--s-6);
+  }
+  .tos__sentinel {
+    height: 1px;
+  }
+  .detected {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--s-3);
+    max-width: 46rem;
+  }
+  .detected :global(li) {
+    padding: var(--s-3) var(--s-4);
+    background: var(--card);
+    border-left: 4px solid var(--action);
+    border-radius: 0 var(--r-1) var(--r-1) 0;
+  }
+  .detected :global(details) {
+    margin-top: var(--s-1);
+    font-size: 0.875rem;
+    color: var(--ink-2);
+  }
+  .detected :global(summary) {
+    cursor: pointer;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .snippets {
+    display: grid;
+    gap: var(--s-4);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  }
+  .snippet {
+    margin: 0;
+    padding: var(--s-4);
+  }
+  .snippet blockquote {
+    margin: 0 0 var(--s-2);
+    font: italic 400 1.05rem/1.4 var(--font-display);
+  }
+  .stickers__header {
+    font: 700 1.2rem var(--font-display);
+  }
+  .stickers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-5);
+    margin-bottom: var(--s-4);
+  }
+  .sticker {
+    background: #ffe24d;
+    color: #1a1400;
+    border: 4px solid #1a1400;
+    border-radius: 22px;
+    padding: var(--s-4) var(--s-5);
+    box-shadow: 6px 6px 0 #ff3ea5;
+    background-image: radial-gradient(rgb(0 0 0 / 0.12) 1.2px, transparent 1.4px);
+    background-size: 10px 10px;
+    transform: rotate(-2deg);
+    max-width: 22rem;
+  }
+  .sticker:nth-child(2) {
+    transform: rotate(2deg);
+    background-color: #9ee7ff;
+  }
+  .sticker__title {
+    font: 700 1.1rem/1.3 var(--font-comic);
+  }
+  .sticker :global(.btn) {
+    --btn-bg: #fff;
+    --btn-ink: #1a1400;
+    --btn-border: #1a1400;
+  }
+  .sticker__result {
+    font-weight: 700;
+    margin: var(--s-2) 0 0;
+  }
+</style>

@@ -1,0 +1,242 @@
+/** Per-route metadata. Descriptions lead with who David is; the joke comes second. */
+export interface RouteMeta {
+  path: string;
+  title: string;
+  description: string;
+  formId?: string;
+  ogTitle?: string;
+  cursor?: 'cabbage' | 'paddle' | 'crosshair';
+}
+
+export const ROUTES = {
+  home: {
+    path: '/',
+    title: 'Identity Checkpoint · David Purvis',
+    description:
+      'Résumé of David Purvis, software engineer in Broomfield, CO. Before you proceed: the Department of Recruiter Verification would like to know which model you are.',
+    formId: 'DRV-1',
+  },
+  verify: {
+    path: '/verify/',
+    title: 'CAPTCHAN’T™ · David Purvis',
+    description:
+      'David Purvis’s résumé site. Please prove you are human by selecting all images of windows. All of them are windows.',
+    formId: 'DRV-2',
+    cursor: 'cabbage',
+  },
+  about: {
+    path: '/about/',
+    title: 'Independent Character Review · David Purvis',
+    description:
+      'David Purvis, software engineer. Green flags, independently unverified and aggressively self-reported.',
+    formId: 'DRV-3',
+    cursor: 'paddle',
+  },
+  skills: {
+    path: '/skills/',
+    title: 'Loadout · David Purvis',
+    description:
+      'David Purvis’s technical skills rendered as a weapon loadout. Float values are fictional; the skills are not.',
+    formId: 'DRV-4',
+    cursor: 'crosshair',
+  },
+  beliefs: {
+    path: '/beliefs/',
+    title: 'Peer-Reviewed Research · David Purvis',
+    description:
+      'Peer-reviewed by two guys from David’s CS2 team. Obvious satire; no advice of any kind.',
+    formId: 'DRV-5',
+  },
+  support: {
+    path: '/support/',
+    title: 'Causes. Endorsed. Unfunded. · David Purvis',
+    description: 'Causes David Purvis endorses. None are funded. One is a planet named Kevin.',
+    formId: 'DRV-6',
+  },
+  legal: {
+    path: '/legal/',
+    title: 'Legally Binding Vibes · David Purvis',
+    description:
+      'What this résumé site actually does with your data (nothing), followed by several legally meaningless agreements.',
+    formId: 'DRV-8',
+  },
+  casino: {
+    path: '/casino/',
+    title: 'Link Roulette · David Purvis',
+    description:
+      'Every link on David Purvis’s résumé site is decided by a rigged roulette wheel. The house guarantees your link by the third spin.',
+    formId: 'DRV-9',
+    cursor: 'crosshair',
+  },
+  contact: {
+    path: '/contact/',
+    title: 'Contact (Theoretically) · David Purvis',
+    description: 'Contact David Purvis, theoretically. The phone field is a slider.',
+    formId: 'DRV-10',
+  },
+  projects: {
+    path: '/projects/',
+    title: 'Case Files · David Purvis',
+    description:
+      'Case files: projects by David Purvis, including a repurposed Spotify Car Thing and a Stream Deck brought up on Linux without vendor software.',
+    formId: 'DRV-11',
+  },
+  howBuilt: {
+    path: '/how-it-was-built/',
+    title: 'How This Was Built · David Purvis',
+    description:
+      'How a deliberately hostile résumé site was engineered to be accessible, private, testable and honest.',
+    formId: 'DRV-12',
+  },
+  credits: {
+    path: '/credits/',
+    title: 'Credits · David Purvis',
+    description: 'Fonts, icons, libraries and original art used on David Purvis’s résumé site.',
+    formId: 'DRV-13',
+  },
+  rick: {
+    path: '/rick/',
+    title: 'Mandatory Musical Due Diligence · David Purvis',
+    description:
+      'Every candidate file is subject to musical due diligence. Nothing plays until you press the button.',
+    formId: 'DRV-14',
+  },
+  resume: {
+    path: '/resume/',
+    title: 'David Purvis — Software Engineer — Résumé',
+    description:
+      'David Purvis, Software Engineer. Two years owning a municipal system of record; BS Computer Science (Magna Cum Laude); MS Computer Science in progress at CU Boulder.',
+  },
+  resumeEmb: {
+    path: '/resume/for/emb/',
+    title: 'David Purvis — Software Engineer — Résumé (Embedded Software)',
+    description:
+      'David Purvis, Software Engineer: his résumé cut for embedded software roles. Embedded Linux projects, a completed digital logic and microprocessors sequence, and two years of production automation.',
+  },
+  resumePlt: {
+    path: '/resume/for/plt/',
+    title: 'David Purvis — Software Engineer — Résumé (Platform, DevOps and SRE)',
+    description:
+      'David Purvis, Software Engineer: his résumé cut for platform, DevOps and SRE roles. Two years as sole technical owner of a municipal system of record, unattended integrations and a self-hosted CI/CD pipeline.',
+  },
+  resumeBe: {
+    path: '/resume/for/be/',
+    title: 'David Purvis — Software Engineer — Résumé (Backend and Distributed Systems)',
+    description:
+      'David Purvis, Software Engineer: his résumé cut for backend roles. REST API extraction, scheduled batch loading into a financial system of record, and parsing across 100+ schema variants.',
+  },
+  personnel: {
+    path: '/personnel-file/',
+    title: 'Personnel File · David Purvis',
+    description:
+      'David Purvis’s unauthorized personnel file: known aliases (Big Purv among them), an ordination obtained during math class, and instructions in case he is kidnapped.',
+    formId: 'DRV-16',
+  },
+  wishlist: {
+    path: '/wishlist/',
+    title: 'Wishlist · David Purvis',
+    description:
+      'David Purvis’s wishlist: a tungsten cube, a second tungsten cube for symmetry, and quantities of everyday essentials that concern procurement.',
+    formId: 'DRV-18',
+  },
+  cube: {
+    path: '/cube/',
+    title: 'The Tungsten Cube Experience · David Purvis',
+    description:
+      'A four-inch tungsten cube from David Purvis’s wishlist, rendered in physically based WebGL. Drag to orbit, heft it, and summon ten thousand more.',
+    formId: 'DRV-19',
+  },
+  sellData: {
+    path: '/sell-your-data/',
+    title: 'Sell Your Data (For Free) · David Purvis',
+    description:
+      'A form on David Purvis’s site that asks whether you would like to sell your data for free. Nothing you type is stored or sent anywhere.',
+    formId: 'DRV-20',
+  },
+  confess: {
+    path: '/confess/',
+    title: 'Insider Trading Self-Assessment · David Purvis',
+    description:
+      'A satirical self-assessment on David Purvis’s site: are you anxious about any upcoming insider trades you might make? Answers go nowhere.',
+    formId: 'DRV-21',
+  },
+  nintendo: {
+    path: '/nintendo/',
+    title: 'Dear Nintendo · David Purvis',
+    description:
+      'An affectionate, preemptive open letter from David Purvis to Nintendo’s legal department. This website contains no plumbers.',
+    formId: 'DRV-22',
+  },
+  tribute: {
+    path: '/tribute/',
+    title: 'In Memoriam: Terry A. Davis · David Purvis',
+    description:
+      'A tribute from David Purvis to Terry A. Davis, who built TempleOS, its compiler and its programming language, alone. Anything is possible.',
+    formId: 'DRV-23',
+  },
+  blog: {
+    path: '/blog/',
+    title: 'The Department Newsletter · David Purvis',
+    description:
+      'Blog posts by David Purvis: a manifesto against the zipper merge, the goldfish incident, national security through job applications, and Rainbow Six as a teamwork philosophy.',
+    formId: 'DRV-28',
+  },
+  doom: {
+    path: '/doom/',
+    title: 'DOOM · David Purvis',
+    description:
+      'DOOM shareware episode 1, running inside David Purvis’s résumé website. Chocolate Doom compiled to WebAssembly, loaded only when you press Play.',
+    formId: 'DRV-24',
+  },
+  presentation: {
+    path: '/presentation/',
+    title: 'Résumé.ppt (Deluxe Edition) · David Purvis',
+    description:
+      'David Purvis’s real résumé, re-staged as a 1998 slide deck with WordArt, star wipes and cartoon ad-libs. The facts are unchanged; the packaging is loud.',
+    formId: 'DRV-25',
+  },
+  tailor: {
+    path: '/tailor/',
+    title: 'Résumé For You™ · David Purvis',
+    description:
+      'A short quiz that picks the cut of David Purvis’s résumé that fits your role. If you press the link, it hands your answers to Claude in your own account to tailor further.',
+    formId: 'DRV-26',
+  },
+  notFound: {
+    path: '/404.html',
+    title: '404: Failed the CAPTCHA · David Purvis',
+    description: 'This page failed the CAPTCHA. The résumé did not.',
+    formId: 'DRV-404',
+  },
+} satisfies Record<string, RouteMeta>;
+
+/** Share decoys under /r/ — sincere Open Graph copy built only from verified facts. */
+export const DECOYS = [
+  {
+    slug: 'oracle-integration',
+    n: 1,
+    block: 'A2',
+    title: 'A Salesforce-to-Oracle Integration',
+    description: 'A scheduled Python integration that removed ~125 hours of annual manual entry.',
+    target: '/resume/',
+  },
+  {
+    slug: 'xml-parser',
+    n: 2,
+    block: 'C1',
+    title: 'An Adaptive XML Parser',
+    description: '100+ schema variants at 1,000 files per minute.',
+    target: '/resume/',
+  },
+  {
+    slug: 'car-thing',
+    n: 3,
+    block: 'P1',
+    title: 'The Car Thing Media Controller',
+    description:
+      'A discontinued embedded Linux touch device, repurposed as a desk media controller.',
+    target: '/projects/#car-thing',
+  },
+] as const;
+
+export const OG_IMAGE_ALT = 'A rubber stamp reading UNDER REVIEW over David Purvis’s name';

@@ -1,0 +1,9 @@
+---
+/** Emits a fictional source-code memo as an HTML comment (deep lore for DevTools visitors). */
+interface Props {
+  text: string;
+}
+const safe = Astro.props.text.replace(/--/g, '—');
+---
+
+<Fragment set:html={`<!--${safe}-->`} />

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <!-- WebAssembly compiles here, in DOOM's own frame, and nowhere else on the site. -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; media-src 'self' blob:; base-uri 'none'; form-action 'none'"
+    />
+    <title>DOOM (shareware episode 1)</title>
+    <link rel="stylesheet" href="play.css" />
+  </head>
+  <body>
+    <canvas id="canvas" tabindex="-1" aria-label="DOOM"></canvas>
+    <p id="status" class="status" aria-live="polite">Loading DOOM…</p>
+    <script src="boot.js"></script>
+  </body>
+</html>

@@ -1,0 +1,113 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Memo from '../../components/Memo.astro';
+import DestLink from '../../components/DestLink.astro';
+import Icon from '../../components/Icon.astro';
+import { ROUTES } from '../../content/copy/meta';
+import { howBuiltCopy as H, howBuiltSections } from '../../content/copy/howBuilt';
+import { memos } from '../../content/copy/memos';
+import { url } from '../../lib/paths';
+---
+
+<Base route={ROUTES.howBuilt}>
+  <Memo text={memos.howBuilt} />
+  <PageHero kicker={H.kicker} title={H.h1} lede={H.lede} />
+
+  <nav class="toc card" aria-label="Sections">
+    <ol>
+      {howBuiltSections.map((s) => (
+        <li>
+          <a href={`#${s.id}`}>{s.title}</a>
+        </li>
+      ))}
+      <li>
+        <a href="#limitations">Honest list of limitations</a>
+      </li>
+    </ol>
+  </nav>
+
+  <div class="prose">
+    {howBuiltSections.map((s, i) => (
+      <section id={s.id} aria-labelledby={`${s.id}-h`} class="disclosure">
+        <h2 id={`${s.id}-h`}>
+          <span class="disclosure__n mono">{String(i + 1).padStart(2, '0')}</span> {s.title}
+        </h2>
+        {s.body.map((p) => (
+          <p>{p}</p>
+        ))}
+        {s.id === 'devtools' && (
+          <p>
+            <button type="button" class="btn" data-inspect-me aria-pressed="false">
+              <Icon name="bug" />
+              {H.inspect}
+            </button>
+          </p>
+        )}
+        <aside class="limitation" aria-label={`${H.limitationLabel}: ${s.title}`}>
+          <strong>{H.limitationLabel}:</strong> {s.limitation}
+        </aside>
+      </section>
+    ))}
+
+    <section id="limitations" aria-labelledby="limitations-h" class="disclosure">
+      <h2 id="limitations-h">
+        <span class="disclosure__n mono">
+          {String(howBuiltSections.length + 1).padStart(2, '0')}
+        </span>
+        Honest list of limitations
+      </h2>
+      <ul>
+        {howBuiltSections.map((s) => (
+          <li>{s.limitation}</li>
+        ))}
+      </ul>
+    </section>
+
+    <p class="section">
+      <DestLink dest="repo">{H.repoLink}</DestLink>
+    </p>
+    <p>
+      {H.tribute} <a href={url('/tribute/')}>{H.tributeLink}</a>.
+    </p>
+  </div>
+</Base>
+
+<script>
+  import '../../scenes/inspect';
+</script>
+
+<style>
+  .toc {
+    padding: var(--s-4) var(--s-5);
+    margin-bottom: var(--s-6);
+    max-width: 42rem;
+  }
+  .toc ol {
+    margin: 0;
+    padding-left: 1.4rem;
+    columns: 2 16rem;
+  }
+  .toc li {
+    break-inside: avoid;
+    padding: var(--s-1) 0;
+  }
+  .prose {
+    max-width: 42rem;
+  }
+  .disclosure {
+    margin-bottom: var(--s-7);
+    scroll-margin-top: 6rem;
+  }
+  .disclosure__n {
+    color: var(--stamp);
+    font-size: 0.9rem;
+    vertical-align: middle;
+  }
+  .limitation {
+    border-left: 4px solid var(--stamp);
+    background: var(--card);
+    padding: var(--s-3) var(--s-4);
+    border-radius: 0 var(--r-1) var(--r-1) 0;
+  }
+</style>

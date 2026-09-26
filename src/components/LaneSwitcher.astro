@@ -1,0 +1,24 @@
+---
+/** Links between the cuts of the résumé (/resume/ and /resume/for/…/). Screen-only, never printed. */
+import { LANE_IDS, LANES, type LaneId } from '../content/lanes';
+import { laneCopy } from '../content/copy/resumeExtras';
+import { url } from '../lib/paths';
+
+interface Props {
+  current: LaneId;
+}
+const { current } = Astro.props;
+---
+
+<nav class="lane-switcher screen-only" aria-label={laneCopy.switcherLabel}>
+  <span>{laneCopy.switcherIntro}</span>
+  <ul>
+    {LANE_IDS.map((id) => (
+      <li>
+        <a href={url(LANES[id].path)} aria-current={id === current ? 'page' : undefined}>
+          {laneCopy.names[id]}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>

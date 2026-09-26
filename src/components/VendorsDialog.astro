@@ -1,0 +1,136 @@
+---
+import SceneDialog from './SceneDialog.astro';
+import Icon from './Icon.astro';
+import { categories, vendorsDialog } from '../content/copy/cookies';
+---
+
+<SceneDialog id="vendors" title={vendorsDialog.title} closeLabel={vendorsDialog.closeLabel} wide>
+  <h3>{vendorsDialog.categoriesHeading}</h3>
+  <ul class="vd-cats" role="list">
+    {categories.map((c) => (
+      <li class="vd-cat">
+        <Icon set="fluent" name={c.icon} size={32} />
+        <div class="vd-cat__text">
+          <strong id={`cat-${c.id}`}>{c.name}</strong>
+          <span class="fine">{c.description}</span>
+          <span class="vd-cat__result" data-cat-result={c.id} aria-live="polite" />
+        </div>
+        <button
+          type="button"
+          class="switch"
+          role="switch"
+          aria-checked="true"
+          aria-labelledby={`cat-${c.id}`}
+          aria-disabled={c.locked ? 'true' : undefined}
+          data-cat={c.id}
+        >
+          <span class="switch__track" aria-hidden="true" />
+        </button>
+      </li>
+    ))}
+  </ul>
+  <div class="btn-row vd-biscotti">
+    <button type="button" class="btn" data-biscotti-accept>
+      <Icon set="fluent" name="cookie" />
+      <span>{vendorsDialog.biscottiButton}</span>
+    </button>
+    <div data-biscotti-receipt></div>
+  </div>
+
+  <h3>{vendorsDialog.partnersHeading}</h3>
+  <div class="vd-pager" data-vd-pager>
+    <button type="button" class="btn btn--small" data-vd-prev>
+      {vendorsDialog.prev}
+    </button>
+    <span class="mono" data-vd-page aria-live="polite"></span>
+    <button type="button" class="btn btn--small" data-vd-next>
+      {vendorsDialog.next}
+    </button>
+    <label class="vd-jump">
+      <span>{vendorsDialog.jump}</span>
+      <input type="number" min="1" max="60" inputmode="numeric" data-vd-jump />
+    </label>
+    <button type="button" class="btn btn--small btn--ghost" data-vd-reset>
+      <Icon name="rotate-ccw" />
+      {vendorsDialog.reset}
+    </button>
+  </div>
+  <ol class="vd-list" data-vd-list></ol>
+  <p class="fine">{vendorsDialog.footer}</p>
+  <div class="btn-row">
+    <button type="button" class="btn btn--primary" data-vd-save>
+      {vendorsDialog.save}
+    </button>
+    <button type="button" class="btn" data-close>
+      {vendorsDialog.close}
+    </button>
+  </div>
+</SceneDialog>
+
+<style>
+  .vd-cats,
+  .vd-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--s-4);
+  }
+  .vd-cat,
+  .vd-list :global(li) {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: var(--s-2) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .vd-cat__text,
+  .vd-list :global(.vd-row__text) {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+  .vd-cat__result {
+    font-size: 0.875rem;
+    color: var(--action);
+  }
+  .vd-cat__result:empty {
+    display: none;
+  }
+  .vd-pager {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2) var(--s-3);
+    margin-bottom: var(--s-3);
+  }
+  .vd-jump {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: 0.875rem;
+  }
+  .vd-jump input {
+    width: 5rem;
+    min-height: var(--target);
+    border: 1.5px solid var(--ink-2);
+    border-radius: var(--r-1);
+    background: var(--card);
+    color: var(--ink);
+    padding: 0 var(--s-2);
+    font: inherit;
+  }
+  .vd-list {
+    max-height: 22rem;
+    overflow: auto;
+    border-top: 1px solid var(--rule);
+  }
+  .vd-list :global(.vd-row__n) {
+    font: 400 0.75rem var(--font-mono);
+    color: var(--ink-2);
+    width: 3.5rem;
+    flex: none;
+  }
+  .vd-biscotti {
+    margin-bottom: var(--s-5);
+  }
+</style>

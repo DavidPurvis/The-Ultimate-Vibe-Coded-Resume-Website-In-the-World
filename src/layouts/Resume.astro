@@ -1,0 +1,34 @@
+---
+/** Layout R — the résumé. No chaos layer. Calm, fast, print-perfect. */
+import '../styles/fonts';
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/print.css';
+import Head from '../components/Head.astro';
+import type { RouteMeta } from '../content/copy/meta';
+
+interface Props {
+  route: RouteMeta;
+}
+const { route } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-mode="chaos" data-layout="resume">
+  <head>
+    <Head
+      title={route.title}
+      description={route.description}
+      path={route.path}
+      preloadDisplay={false}
+    />
+    <slot name="head" />
+  </head>
+  <body class="layout-r">
+    <slot name="top" />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  </body>
+</html>

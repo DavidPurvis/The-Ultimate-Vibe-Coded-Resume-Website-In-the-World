@@ -1,0 +1,18 @@
+---
+interface Props {
+  title: string;
+  lines: readonly string[];
+  id?: string;
+  live?: boolean;
+}
+const { title, lines, id, live = false } = Astro.props;
+---
+
+<div class="receipt" id={id} role={live ? 'status' : undefined}>
+  <p class="receipt__title">{title}</p>
+  <ul>
+    {lines.map((l) => (
+      <li>{l}</li>
+    ))}
+  </ul>
+</div>

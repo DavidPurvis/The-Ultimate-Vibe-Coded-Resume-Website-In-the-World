@@ -1,0 +1,149 @@
+/* DOOM player (the /doom/ page and the docked player). */
+.doom-player {
+  display: grid;
+  gap: var(--s-3);
+}
+.doom-screen {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: #000;
+  border: 10px solid #1d1a17;
+  border-radius: 18px;
+  box-shadow:
+    inset 0 0 40px rgb(0 0 0 / 0.9),
+    0 12px 30px rgb(0 0 0 / 0.35);
+  overflow: hidden;
+}
+.doom-screen:fullscreen {
+  aspect-ratio: auto;
+  border: 0;
+  border-radius: 0;
+}
+.doom-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.doom-poster {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: var(--s-2);
+  text-align: center;
+  color: #f5e6c8;
+  background: radial-gradient(ellipse at 50% 120%, #b3261e 0%, #4a0d0a 45%, #120505 80%);
+}
+.doom-poster[hidden] {
+  display: none;
+}
+.doom-poster__title {
+  margin: 0;
+  font: 900 clamp(2.5rem, 9vw, 5.5rem) / 1 var(--font-display);
+  letter-spacing: 0.08em;
+  color: #fbd38d;
+  text-shadow:
+    0 3px 0 #7c2d12,
+    0 6px 18px rgb(0 0 0 / 0.8);
+}
+.doom-poster__sub {
+  margin: 0;
+  font: 600 0.9rem/1.4 var(--font-mono);
+}
+.doom-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+.doom-progress {
+  width: 100%;
+  height: 0.6rem;
+  accent-color: var(--stamp);
+}
+.doom-status {
+  min-height: 1.4em;
+  margin: 0;
+}
+.doom-status:empty {
+  display: none;
+}
+.doom-touch {
+  display: none;
+  margin: 0;
+}
+@media (pointer: coarse) {
+  .doom-touch {
+    display: block;
+  }
+}
+.doom-legend h2 {
+  font-size: 1.1rem;
+  margin: 0 0 var(--s-2);
+}
+.doom-legend dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--s-1) var(--s-4);
+  margin: 0;
+}
+.doom-legend dl > div {
+  display: flex;
+  gap: var(--s-2);
+  align-items: baseline;
+}
+.doom-legend dd {
+  margin: 0;
+}
+.doom-player kbd {
+  font: 600 0.8rem/1 var(--font-mono);
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--ink-2);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--card);
+  white-space: nowrap;
+}
+.doom-escape {
+  margin: 0;
+}
+
+/* Docked player (any gag page). */
+.doom-dock {
+  position: fixed;
+  left: var(--s-4);
+  bottom: var(--s-4);
+  z-index: var(--z-doom);
+  width: min(var(--doom-dock-w, 22rem), calc(100vw - 2 * var(--s-4)));
+  max-height: calc(100dvh - 7rem);
+  overflow: auto;
+  padding: var(--s-2) var(--s-3) var(--s-3);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  box-shadow: var(--sh-2);
+}
+html.hud-on .doom-dock {
+  bottom: calc(3.75rem + var(--s-3));
+}
+.doom-dock__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-bottom: var(--s-2);
+}
+.doom-dock__bar strong {
+  margin-right: auto;
+  font: 800 1rem/1 var(--font-display);
+  letter-spacing: 0.08em;
+}
+.doom-dock .doom-screen {
+  border-width: 6px;
+  border-radius: 12px;
+}
+@media print {
+  .doom-dock {
+    display: none !important;
+  }
+}

@@ -1,0 +1,126 @@
+/*
+ * Print: every page on this site prints the résumé, and only the résumé.
+ * US Letter, 0.5in margins, 10pt single column, black text, one dark rule accent (pack §0, §9).
+ */
+@page {
+  size: Letter;
+  margin: 0.5in;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  html {
+    filter: none !important;
+  }
+  body {
+    display: block;
+    min-height: 0;
+    background-image: none !important;
+  }
+  /* Gag pages print their hidden résumé copy; the résumé page prints its <main>. Nothing else. */
+  body.layout-g > :not(.print-only) {
+    display: none !important;
+  }
+  body.layout-r > :not(main) {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .screen-only,
+  dialog {
+    display: none !important;
+  }
+  main,
+  .resume-page,
+  .resume-sheet,
+  .print-only {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+  }
+  .resume .nb {
+    white-space: nowrap;
+  }
+  .resume {
+    width: 100%;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: #fff !important;
+    color: #000 !important;
+    font:
+      400 10pt/1.22 'IBM Plex Sans',
+      Arial,
+      Helvetica,
+      sans-serif !important;
+    text-align: left;
+    hyphens: manual;
+  }
+  .resume .resume__name {
+    font:
+      700 18pt/1.1 'IBM Plex Sans',
+      Arial,
+      sans-serif !important;
+    margin: 0 0 2pt !important;
+    letter-spacing: 0 !important;
+  }
+  .resume .contact {
+    font-size: 9.5pt !important;
+    margin: 0 0 7pt !important;
+  }
+  .resume h2 {
+    font:
+      700 10.5pt/1.2 'IBM Plex Sans',
+      Arial,
+      sans-serif !important;
+    margin: 9pt 0 4pt !important;
+    padding: 0 0 1.5pt !important;
+    border-bottom: 0.75pt solid #1b1b1b !important;
+    break-after: avoid;
+    color: #000 !important;
+  }
+  .resume h3 {
+    font:
+      400 10pt/1.22 'IBM Plex Sans',
+      Arial,
+      sans-serif !important;
+    margin: 3.5pt 0 1pt !important;
+    color: #000 !important;
+    break-after: avoid;
+  }
+  .resume h3 strong {
+    font-weight: 600 !important;
+  }
+  .resume p {
+    margin: 0 0 1pt !important;
+  }
+  .resume ul {
+    margin: 0 !important;
+    padding-left: 12pt !important;
+  }
+  .resume .edu-note {
+    padding-left: 12pt !important;
+  }
+  .resume li {
+    margin: 0 0 1.5pt !important;
+  }
+  .resume a {
+    color: #000 !important;
+    text-decoration: none !important;
+  }
+  .resume .role,
+  .resume .project {
+    break-inside: avoid;
+  }
+}

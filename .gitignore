@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.astro/
+test-results/
+playwright-report/
+.lighthouseci/
+coverage/
+reports/
+*.log
+.DS_Store
+# Vendored at build time by scripts/vendor-doom.ts (hash-pinned).
+public/doom-engine/websockets-doom.js
+public/doom-engine/websockets-doom.wasm
+public/doom-engine/doom1.wad

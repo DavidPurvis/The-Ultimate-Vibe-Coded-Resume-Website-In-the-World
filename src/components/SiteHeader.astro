@@ -1,0 +1,106 @@
+---
+import Icon from './Icon.astro';
+import ThreatMeter from './ThreatMeter.astro';
+import ThemeCycle from './ThemeCycle.astro';
+import { header, navGroups, callbacks, modes } from '../content/copy/global';
+import { doomCopy } from '../content/copy/doom';
+import { ROUTES } from '../content/copy/meta';
+import { url } from '../lib/paths';
+
+interface Props {
+  formId?: string;
+  currentPath: string;
+}
+const { formId, currentPath } = Astro.props;
+const formFor = (path: string) =>
+  Object.values(ROUTES).find((r) => r.path === path && 'formId' in r) as
+    { formId?: string } | undefined;
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <div class="brand">
+      <span class="brand__name">{header.name}</span>
+      <span class="brand__role">
+        {header.role} · {header.location}
+      </span>
+      {formId && <span class="brand__dept">{header.deptLine(formId)}</span>}
+      <p class="callback chaos-only" data-identity-callback>
+        {callbacks.unknown}
+      </p>
+    </div>
+    <div class="header-tools">
+      <ThreatMeter />
+      <ThemeCycle />
+      <details class="dept-menu" data-menu data-dept-menu>
+        <summary class="btn btn--small">
+          <Icon name="menu" />
+          <span>{header.navLabel}</span>
+        </summary>
+        <div class="dept-menu__panel">
+          <nav class="dept-menu__nav" aria-label={header.navLabel}>
+            {navGroups.map((g) => (
+              <div class="dept-menu__group">
+                <p class="dept-menu__heading" id={`nav-${g.id}`}>
+                  {g.label}
+                </p>
+                <ul aria-labelledby={`nav-${g.id}`}>
+                  {g.items.map((item) => (
+                    <li>
+                      <a
+                        href={url(item.path)}
+                        aria-current={item.path === currentPath ? 'page' : undefined}
+                        data-playful
+                      >
+                        <span>{item.label}</span>
+                        <span class="form-id">{formFor(item.path)?.formId}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                {g.id === 'recreation' && (
+                  <button type="button" class="dept-menu__action chaos-only" data-doom-dock>
+                    {doomCopy.dock.open}
+                  </button>
+                )}
+              </div>
+            ))}
+          </nav>
+          <div class="dept-menu__modes chaos-only" role="group" aria-labelledby="nav-modes">
+            <p class="dept-menu__heading" id="nav-modes">
+              {modes.label}
+            </p>
+            <button
+              type="button"
+              class="switch"
+              role="switch"
+              aria-checked="false"
+              aria-describedby="modes-hud-hint"
+              data-hud-toggle
+            >
+              <span class="switch__track" aria-hidden="true"></span>
+              <span>{modes.hud}</span>
+            </button>
+            <p class="fine" id="modes-hud-hint">
+              {modes.hudHint}
+            </p>
+            <button
+              type="button"
+              class="switch"
+              role="switch"
+              aria-checked="false"
+              aria-describedby="modes-subway-hint"
+              data-subway-toggle
+            >
+              <span class="switch__track" aria-hidden="true"></span>
+              <span>{modes.subway}</span>
+            </button>
+            <p class="fine" id="modes-subway-hint">
+              {modes.subwayHint}
+            </p>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>
