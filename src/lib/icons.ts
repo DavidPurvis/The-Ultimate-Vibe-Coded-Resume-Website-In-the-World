@@ -25,8 +25,6 @@ const PKG: Record<Exclude<IconSet, 'lucide'>, string> = {
   game: '@iconify-json/game-icons',
 };
 
-let idCounter = 0;
-
 /** Returns inline <svg> markup. `label` → role="img" + aria-label; otherwise aria-hidden. */
 export function getSvg(
   set: IconSet,
@@ -70,6 +68,7 @@ export function getSvg(
   const data = getIconData(iconSet(PKG[set]), name);
   if (!data) throw new Error(`Icon ${set}:${name} missing from ${PKG[set]}`);
   const svg = iconToSVG(data, { height: size });
-  const body = replaceIDs(svg.body, () => `uvcr-ic-${idCounter++}`);
+  // replaceIDs generates unique ids so repeated icons never collide on one page.
+  const body = replaceIDs(svg.body);
   return iconToHTML(body, { ...svg.attributes, class: cls, ...a11y });
 }
