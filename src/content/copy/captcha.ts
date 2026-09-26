@@ -207,5 +207,6 @@ export const progress = {
   final: '99.4%: the last 0.6% is character development.',
   skip: 'Skip',
   skipFastLabels: ['Skip (fast)', 'Skip (faster)'],
+  skipFastFinal: 'Skip (it gave up)',
   continueAnyway: 'Continue anyway →',
 };

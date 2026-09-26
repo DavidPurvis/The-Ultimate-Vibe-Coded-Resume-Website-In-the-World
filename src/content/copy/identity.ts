@@ -72,7 +72,7 @@ export const callbackLabels: Record<IdentityId, string> = {
 
 export const identityDialog = {
   closeLabel: 'Close identity checkpoint',
-  stepOf: (n: number, total: number) => `Step ${n} of ${total}`,
+  bonusRound: 'Checkpoint 3 of 2 (unannounced bonus round)',
   choose: {
     title: 'IDENTITY CHECKPOINT 1 of 2',
     lede: 'Before we proceed, please state your model.',

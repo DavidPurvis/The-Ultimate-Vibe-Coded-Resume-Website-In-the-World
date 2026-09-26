@@ -1,0 +1,154 @@
+---
+import Icon from './Icon.astro';
+import Memo from './Memo.astro';
+import { banner, loadBearing } from '../content/copy/cookies';
+import { memos } from '../content/copy/memos';
+import { url } from '../lib/paths';
+---
+
+<Memo text={memos.banner} />
+<section
+  id="cookie-consent-overlay"
+  class="cookie-banner chaos-only"
+  aria-labelledby="cb-title"
+  hidden
+  data-cookie-banner
+>
+  <div class="cookie-banner__inner container">
+    <p class="kicker">{banner.kicker}</p>
+    <h2 id="cb-title" tabindex="-1">
+      <Icon set="fluent" name="cookie" size={36} />
+      <span>{banner.title.replace('🍪 ', '')}</span>
+    </h2>
+    {banner.body.map((p) => (
+      <p class="cookie-banner__body">{p}</p>
+    ))}
+    <p class="fine">
+      {banner.footnote.split('Legally Binding Vibes')[0]}
+      <a href={url('/legal/')}>Legally Binding Vibes</a>
+      {banner.footnote.split('Legally Binding Vibes')[1]}
+    </p>
+    <div class="cookie-banner__actions" data-cb-actions>
+      <button type="button" class="btn btn--primary cookie-banner__primary" data-cb="accept">
+        {banner.acceptAll}
+      </button>
+      <button type="button" class="btn" data-cb="accept-cookies">
+        {banner.acceptCookiesAll}
+      </button>
+      <button type="button" class="btn" data-cb="manage">
+        {banner.manage}
+      </button>
+      <div class="cookie-banner__reject-arena" data-cb-reject-arena>
+        <button type="button" class="btn btn--ghost" data-cb="reject">
+          <span data-label>{banner.reject}</span>
+        </button>
+      </div>
+    </div>
+    <div data-cb-receipt></div>
+  </div>
+</section>
+
+<div
+  class="load-bearing chaos-only"
+  role="alertdialog"
+  aria-labelledby="lb-title"
+  aria-describedby="lb-body"
+  hidden
+  data-load-bearing
+>
+  <Icon set="fluent" name="warning" size={40} />
+  <h2 id="lb-title" tabindex="-1">
+    {loadBearing.title}
+  </h2>
+  <p id="lb-body">{loadBearing.body}</p>
+  <div class="btn-row">
+    <button type="button" class="btn btn--primary" data-lb="restore">
+      {loadBearing.restore}
+    </button>
+    <button type="button" class="btn" data-lb="dismiss">
+      {loadBearing.dismiss}
+    </button>
+  </div>
+  <p class="fine">{loadBearing.fine}</p>
+</div>
+
+<style>
+  .cookie-banner {
+    position: fixed;
+    inset: auto 0 0 0;
+    height: 92vh;
+    z-index: var(--z-banner);
+    overflow: auto;
+    background: var(--card);
+    border-top: 4px solid var(--stamp);
+    box-shadow: 0 -20px 60px rgb(var(--shadow-color) / 0.35);
+    padding-block: var(--s-6) var(--s-7);
+    animation: cb-up var(--dur-3) var(--ease-out);
+  }
+  @media (max-width: 48rem) {
+    .cookie-banner {
+      height: calc(100dvh - 4.5rem);
+    }
+  }
+  .cookie-banner h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+  }
+  .cookie-banner__body {
+    font-size: 1.15rem;
+    max-width: var(--prose);
+  }
+  .cookie-banner__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    align-items: center;
+    margin-top: var(--s-5);
+  }
+  .cookie-banner__primary {
+    font-size: 1.1rem;
+    padding: var(--s-3) var(--s-5);
+    animation: cb-pulse 2.4s ease-in-out infinite;
+  }
+  .cookie-banner__reject-arena {
+    position: relative;
+    min-width: 18rem;
+    min-height: 3.5rem;
+    flex: 1 1 18rem;
+  }
+  @keyframes cb-up {
+    from {
+      transform: translateY(24px);
+      opacity: 0;
+    }
+  }
+  @keyframes cb-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--action) 45%, transparent);
+    }
+    50% {
+      box-shadow: 0 0 0 10px color-mix(in srgb, var(--action) 0%, transparent);
+    }
+  }
+  .load-bearing {
+    position: fixed;
+    z-index: var(--z-error);
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(100% - 2rem, 34rem);
+    background: var(--card);
+    color: var(--ink);
+    border: 4px solid var(--stamp);
+    border-radius: var(--r-3);
+    padding: var(--s-5);
+    box-shadow: var(--sh-2);
+  }
+  .load-bearing h2 {
+    font-size: 1.4rem;
+    color: var(--stamp);
+  }
+</style>

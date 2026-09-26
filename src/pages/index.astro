@@ -1,12 +1,112 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
-import Stamp from '../components/Stamp.astro';
+import RobotNote from '../components/RobotNote.astro';
+import IdentityDialog from '../components/IdentityDialog.astro';
+import Memo from '../components/Memo.astro';
+import Icon from '../components/Icon.astro';
 import { ROUTES } from '../content/copy/meta';
 import { landing } from '../content/copy/identity';
+import { noscript } from '../content/copy/robots';
+import { memos } from '../content/copy/memos';
+import { url } from '../lib/paths';
 ---
 
 <Base route={ROUTES.home}>
-  <PageHero kicker={landing.kicker} title={landing.h1} lede={landing.lede} />
-  <Stamp text="Under review" />
+  <Memo text={memos.ceo} />
+  <div class="landing">
+    <div class="landing__main">
+      <PageHero kicker={landing.kicker} title={landing.h1} lede={landing.lede}>
+        <ul class="status-strip">
+          {landing.status.map((s) => (
+            <li>{s}</li>
+          ))}
+        </ul>
+      </PageHero>
+
+      <noscript>
+        <p class="real-error">
+          {noscript.text} <a href={url('/resume/')}>{noscript.link}</a>
+          {noscript.close}
+        </p>
+      </noscript>
+
+      <div class="card checkpoint">
+        <p class="card__form-id">FORM DRV-1 · SECTION A</p>
+        <div class="btn-row">
+          <button type="button" class="btn" data-open-identity>
+            <Icon set="fluent" name="detective" />
+            {landing.beginButton}
+          </button>
+        </div>
+        <div class="robot-arena" data-robot-arena>
+          <a class="btn btn--primary robot-btn" href={url('/verify/')} data-robot data-playful>
+            <Icon name="check" />
+            <span data-label>{landing.robotButton}</span>
+          </a>
+        </div>
+        <p class="fine">{landing.finePrint}</p>
+      </div>
+    </div>
+
+    <figure class="landing__figure">
+      <img
+        src={url('/illustrations/human-silhouette.svg')}
+        alt={landing.figureAlt}
+        width="320"
+        height="400"
+      />
+      <figcaption class="fine">{landing.figureCaption}</figcaption>
+    </figure>
+  </div>
+
+  <div class="section">
+    <RobotNote />
+  </div>
+
+  <IdentityDialog slot="after" />
 </Base>
+
+<script>
+  import '../scenes/identity';
+</script>
+
+<style>
+  .landing {
+    display: grid;
+    gap: var(--s-6);
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+  @media (min-width: 64rem) {
+    .landing {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+    }
+  }
+  .landing__figure {
+    margin: 0;
+    max-width: 18rem;
+  }
+  .landing__figure img {
+    border-radius: var(--r-2);
+    box-shadow: var(--sh-1);
+  }
+  .checkpoint {
+    display: grid;
+    gap: var(--s-4);
+    max-width: 40rem;
+  }
+  .robot-arena {
+    position: relative;
+    min-height: 200px;
+    border: 2px dashed var(--rule);
+    border-radius: var(--r-2);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .robot-btn {
+    font-size: 1.15rem;
+    padding: var(--s-3) var(--s-5);
+  }
+</style>

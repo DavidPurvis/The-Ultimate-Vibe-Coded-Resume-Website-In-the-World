@@ -55,6 +55,8 @@ export interface SessionState {
   guiltIndex: number;
   dodges: Record<string, number>;
   appendixOpened: boolean;
+  identityPrompted: boolean;
+  loadBearingShown: boolean;
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -77,6 +79,8 @@ export const DEFAULT_SESSION: SessionState = {
   guiltIndex: 0,
   dodges: {},
   appendixOpened: false,
+  identityPrompted: false,
+  loadBearingShown: false,
 };
 
 type Area = 'local' | 'session';
@@ -265,6 +269,8 @@ export function validateSession(o: Record<string, unknown> | null): SessionState
     guiltIndex: Math.max(0, Math.floor(num(o.guiltIndex, 0))),
     dodges,
     appendixOpened: bool(o.appendixOpened, false),
+    identityPrompted: bool(o.identityPrompted, false),
+    loadBearingShown: bool(o.loadBearingShown, false),
   };
 }
 

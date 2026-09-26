@@ -11,6 +11,8 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import ResumeDocument from '../components/ResumeDocument.astro';
 import RickrollDialog from '../components/RickrollDialog.astro';
+import CookieBanner from '../components/CookieBanner.astro';
+import VendorsDialog from '../components/VendorsDialog.astro';
 import { exits } from '../content/copy/global';
 import type { RouteMeta } from '../content/copy/meta';
 import { url } from '../lib/paths';
@@ -50,6 +52,8 @@ const { route, ogTitle, bodyClass, noindex = false } = Astro.props;
     <div class="print-only" aria-hidden="true">
       <ResumeDocument idPrefix="print" />
     </div>
+    <CookieBanner />
+    <VendorsDialog />
     <RickrollDialog />
     <slot name="after" />
     <div class="toast-stack" data-toasts role="region" aria-label="Notifications"></div>

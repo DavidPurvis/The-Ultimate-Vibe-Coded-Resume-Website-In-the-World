@@ -66,6 +66,9 @@ a:hover {
   color: var(--action-hover);
   text-decoration-thickness: 2px;
 }
+[tabindex='-1']:focus {
+  outline: none;
+}
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 3px;
@@ -487,7 +490,10 @@ dialog.scene-dialog::backdrop {
 .scene-dialog__head h2:focus {
   outline: none;
 }
-.scene-dialog__head h2:focus-visible {
+.scene-dialog__head h2[tabindex='-1']:focus {
+  outline: none;
+}
+:focus-visible {
   outline: 3px solid var(--focus);
 }
 .scene-dialog__body {
