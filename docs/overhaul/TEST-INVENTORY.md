@@ -153,3 +153,19 @@ The post-build scanner was rewritten as `scripts/scan-dist/` (`load`, `policies`
 | `content.integrity` | R2 on a résumé page; R1 in `llms.txt` |
 
 Two regressions are also pinned: each block element reads as its own line, so neighbouring blocks never combine into one integrity "line", and a page's static closure never includes its lazy steps.
+
+## Changes made in P7
+
+`ci.yml` and `deploy.yml` are replaced by one workflow, `.github/workflows/pipeline.yml`:
+
+```
+check → build → { e2e (chromium, mobile, firefox, webkit), lighthouse } → deploy (main only)
+```
+
+- **One build.** Only `build` runs `npm run build`. The PDFs are printed and verified and the site is scanned before anything is uploaded. Then it writes `site.sha256` over every file in `dist`.
+- **Verified artifact.** `e2e`, `lighthouse` and `deploy` all start with `.github/actions/verified-site`. It downloads the artifact and fails on any changed, missing or extra file.
+- **Deploy only publishes.** `deploy` has no install and no build step. It runs only for `main`, after every E2E project and Lighthouse pass.
+- **One set of site settings.** `SITE_URL` and `BASE_PATH` come from the repository variables in every job, so the site that was tested is built with the settings that deploy.
+- **Each browser in its own job.** The four Playwright projects run in parallel on the downloaded site.
+
+`tests/unit/pipeline.test.ts` (new) pins these properties against the workflow text: the job graph, `npm run build` only in `build`, the manifest written there after the scan, every consumer through the verified-site action, the E2E matrix equal to the Playwright projects, `deploy` gated to `main` with no install, and the action's changed/missing/extra checks.
