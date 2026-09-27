@@ -125,3 +125,31 @@ E2E now runs on the production build: the test-hook build is gone from CI.
 - `content/validate.test.ts` (new): the published content validates cleanly. Six kinds of mutation must each be caught: unknown fact, adapted wording without a reason, an extra number, foreign or absent technology, a bullet under the wrong role, a bad reference or order. The grandfathered list is pinned.
 - `content/lanes.test.ts` also checks that the case's lightweight lines match the render model.
 - `tests/golden/resume-plt.model.json` changed on one line: the no-GPA BS entry's block went from E1 to E2 (the planned label fix). Every text golden, `resume.md` and the other models are byte-identical.
+
+## Changes made in P6
+
+The post-build scanner was rewritten as `scripts/scan-dist/` (`load`, `policies`, `budgets`, `index`).
+- HTML is parsed with parse5.
+- JS budgets and the résumé boundary come from the build's chunk graph (`scripts/build/chunk-graph.mjs` → `reports/chunk-graph.json`), not from parsing minified imports.
+- `scripts/scan-dist.ts` is deleted. Before it went, it and the new scanner both passed on the same `dist`.
+
+`tests/unit/scan-dist.test.ts` (new) builds a small in-memory site from the real route table, CSP builder, boot scripts and résumé renderers. The clean site passes every policy. Each of these mutations fails the policy that guards it:
+
+| Policy | Mutations |
+| --- | --- |
+| `html.basics` | Missing lang; missing description; two `<h1>` |
+| `html.styleAttr` | Single-quoted and unquoted `style` attributes |
+| `csp` | Second inline script; `unsafe-inline`; a whitespace difference; an unpinned boot script; the engine policy; a missing meta |
+| `text.forbidden` | A DRV number with a 7; real-CAPTCHA phrasing |
+| `html.forms` | A form; a password input; `cc-number` autofill |
+| `js.appApis` | `Math.random`, `sendBeacon`, `__uvcr`, `Notification`, `hardwareConcurrency`, `clipboardData` (the vendored engine is exempt) |
+| `js.externalUrls` | An unknown origin |
+| `css` | An external `url()`; a broken `url()`; over budget |
+| `html.references` | An off-origin img; a broken reference; outside the base; `target=_blank` without noopener |
+| `graph` | Graph missing; a script not in the graph |
+| `budgets` | A route over budget; JS on a 0 KB page; a lazy chunk over 6 KB; a heavy chunk in a static closure |
+| `routes.coverage` | A missing route; a page outside the table |
+| `boundary.resume` | The kernel, a step, the domain or institution copy in a résumé closure; `uvcr:case`; institutional sentences in the résumé or `resume.md` |
+| `content.integrity` | R2 on a résumé page; R1 in `llms.txt` |
+
+Two regressions are also pinned: each block element reads as its own line, so neighbouring blocks never combine into one integrity "line", and a page's static closure never includes its lazy steps.
