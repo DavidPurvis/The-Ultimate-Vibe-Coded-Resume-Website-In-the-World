@@ -256,11 +256,14 @@ html[data-case] .case,
   .service-table th,
   .service-table td {
     padding-inline: var(--s-1);
-    overflow-wrap: anywhere;
-    hyphens: auto;
   }
+  /* Service names wrap between words only; a verdict may break inside one at 320 px. */
   .service-table tbody th {
     white-space: normal;
+  }
+  .service-table td {
+    overflow-wrap: anywhere;
+    hyphens: auto;
   }
 }
 
