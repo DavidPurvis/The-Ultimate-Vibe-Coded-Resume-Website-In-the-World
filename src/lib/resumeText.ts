@@ -1,7 +1,8 @@
 /** Plain-text and Markdown renderings of the résumé (for resume.md, tests and llms.txt). */
-import { education, experience, identity, projects, skills, summary } from '../content/resume';
-import { resumeSections as S } from '../content/copy/resumeExtras';
-import { LANES, type LaneResume } from '../content/lanes';
+import { identity } from '../content/resume/identity';
+import { resumeSections as S } from '../content/site/resumeExtras';
+import { LANES, type LaneResume } from '../content/resume/resolve';
+import type { Role } from '../content/resume/types';
 
 export function contactLine(): string {
   return [
@@ -12,7 +13,7 @@ export function contactLine(): string {
   ].join(' · ');
 }
 
-export function roleHeading(r: (typeof experience)[number]): string {
+export function roleHeading(r: Role): string {
   return `${r.title} — ${r.org} · ${r.location} · ${r.dates}`;
 }
 
@@ -45,6 +46,7 @@ export function renderResumeText(lane: LaneResume = LANES.gen): string {
 
 /** resume.md — clean, joke-free, instruction-free. */
 export function renderResumeMarkdown(pdfUrl: string): string {
+  const { summary, experience, projects, skills, education } = LANES.gen;
   const out: string[] = [
     `# ${identity.name}`,
     '',
@@ -52,7 +54,7 @@ export function renderResumeMarkdown(pdfUrl: string): string {
     '',
     `## ${S.summary}`,
     '',
-    summary.text,
+    summary?.text ?? '',
     '',
     `## ${S.experience}`,
   ];

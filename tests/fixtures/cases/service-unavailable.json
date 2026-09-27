@@ -1,0 +1,71 @@
+{
+  "name": "service-unavailable",
+  "seed": 7,
+  "events": [
+    {
+      "t": "RESUME_REQUESTED",
+      "via": "cta"
+    },
+    {
+      "t": "SCOPE_STATED",
+      "lane": "gen"
+    },
+    {
+      "t": "RESUME_REQUESTED",
+      "via": "full-document"
+    },
+    {
+      "t": "RELEASE_ATTEMPTED"
+    },
+    {
+      "t": "RELEASE_ATTEMPTED"
+    },
+    {
+      "t": "RELEASE_ATTEMPTED"
+    },
+    {
+      "t": "SERVICE_UNAVAILABLE",
+      "step": "ceremony"
+    }
+  ],
+  "expect": {
+    "phase": "authorized",
+    "via": "default-approval",
+    "index": 7,
+    "accepted": 7,
+    "resisted": 2,
+    "ack": "pending",
+    "lane": "gen",
+    "findings": {
+      "REPEATED_REQUEST": 1,
+      "PERSISTENCE": 2
+    },
+    "caseNumber": "DRV-868399",
+    "risk": {
+      "value": "0.7332",
+      "primary": "PERSISTENCE"
+    },
+    "ceremonyIndexOf4": 1,
+    "disposition": {
+      "caseNumber": "DRV-868399",
+      "route": "default-approval",
+      "lane": "gen",
+      "statedScope": "gen",
+      "lines": [
+        {
+          "finding": "REPEATED_REQUEST",
+          "count": 1
+        },
+        {
+          "finding": "PERSISTENCE",
+          "count": 2
+        }
+      ],
+      "resistance": {
+        "used": 2,
+        "permitted": 2
+      },
+      "requests": 2
+    }
+  }
+}

@@ -1,0 +1,30 @@
+name: Verified site
+description: >-
+  Downloads the site the build job produced into dist/ and proves it is byte-for-byte that artifact:
+  every file matches site.sha256, and there is no file the manifest does not list. Every job that
+  tests, measures or deploys the site starts here, so what ships is what passed.
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/download-artifact@v8
+      with:
+        name: site
+        path: dist
+    - uses: actions/download-artifact@v8
+      with:
+        name: site-manifest
+        path: .
+    - name: Verify dist against site.sha256
+      shell: bash
+      run: |
+        set -euo pipefail
+        cd dist
+        sha256sum --check --strict --quiet ../site.sha256
+        files=$(find . -type f | wc -l)
+        listed=$(wc -l < ../site.sha256)
+        if [ "$files" -ne "$listed" ]; then
+          echo "::error::dist has $files files but site.sha256 lists $listed"
+          exit 1
+        fi
+        echo "✓ dist matches site.sha256 ($files files)"

@@ -1,8 +1,33 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { HTML_ROUTES, seedPrefs } from './helpers';
+import { HTML_ROUTES, seedCase } from './helpers';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
+
+const OPEN = { t: 'RESUME_REQUESTED', via: 'cta' };
+const TO_FINDINGS = [
+  OPEN,
+  { t: 'SCOPE_STATED', lane: 'plt' },
+  { t: 'RESUME_REQUESTED', via: 'full-document' },
+  { t: 'RELEASE_ATTEMPTED' },
+  { t: 'RELEASE_ATTEMPTED' },
+  { t: 'RELEASE_ATTEMPTED' },
+  { t: 'STEP_COMPLETED', step: 'ceremony' },
+];
+const TO_ACK = [...TO_FINDINGS, { t: 'STEP_COMPLETED', step: 'findings' }];
+/** Each state of the case on `/`, restored from a stored case, and what shows it is ready. */
+const CASE_STATES: [string, unknown[], string][] = [
+  ['arrival', [], 'View résumé'],
+  ['scope', [OPEN], 'Submit scope'],
+  ['preview', [OPEN, { t: 'SCOPE_STATED', lane: 'plt' }], 'Request full document'],
+  ['release', TO_FINDINGS.slice(0, 3), 'Release document'],
+  ['release, resisted', TO_FINDINGS.slice(0, 5), 'Release document (reassigned)'],
+  ['ceremony', TO_FINDINGS.slice(0, 6), 'Continue'],
+  ['findings', TO_FINDINGS, 'Proceed to adjudication'],
+  ['acknowledgment', TO_ACK, 'Acknowledge'],
+  ['appeal', [...TO_ACK, { t: 'APPEAL_REQUESTED' }], 'Continue'],
+  ['disposition', [...TO_ACK, { t: 'ACKNOWLEDGED' }, { t: 'ACKNOWLEDGED' }], 'Open résumé'],
+];
 
 async function seriousViolations(page: Page, include?: string): Promise<string[]> {
   let b = new AxeBuilder({ page }).withTags(TAGS);
@@ -20,13 +45,6 @@ async function seriousViolations(page: Page, include?: string): Promise<string[]
 }
 
 test.describe('accessibility', () => {
-  test.beforeEach(async ({ page }) => {
-    await seedPrefs(page, {}, { identityPrompted: true });
-    await page.route('https://www.youtube-nocookie.com/**', (r) =>
-      r.fulfill({ contentType: 'text/html', body: '<!doctype html><title>stub</title>' }),
-    );
-  });
-
   // One test per page: each gets its own timeout (axe is slow on WebKit) and names its page.
   for (const r of HTML_ROUTES) {
     test(`${r || '/'}: no serious or critical axe violations @smoke`, async ({ page }) => {
@@ -35,51 +53,38 @@ test.describe('accessibility', () => {
     });
   }
 
-  test('dark theme and reduced motion', async ({ page }) => {
+  test('every page in dark mode with reduced motion', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
     const found: string[] = [];
-    for (const r of ['', 'verify/', 'casino/', 'legal/', 'resume/', 'skills/']) {
+    for (const r of HTML_ROUTES) {
       await page.goto(r);
       for (const v of await seriousViolations(page)) found.push(`${r || '/'} → ${v}`);
     }
     expect(found).toEqual([]);
   });
 
-  test('open dialogs: identity, vendors, rickroll, hire', async ({ page }) => {
-    const found: string[] = [];
-    await page.goto('./');
-    await page.getByRole('button', { name: 'Begin identity verification' }).click();
-    await expect(page.locator('#identity')).toBeVisible();
-    found.push(...(await seriousViolations(page, '#identity')));
-    await page.keyboard.press('Escape');
-
-    await page.goto('rick/');
-    await page.getByRole('button', { name: 'Begin due diligence' }).click();
-    await expect(page.locator('#rickroll')).toBeVisible();
-    found.push(...(await seriousViolations(page, '#rickroll')));
-
-    await page.goto('resume/');
-    await page.getByRole('button', { name: 'Hire David' }).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-    found.push(...(await seriousViolations(page, 'dialog[open]')));
-    expect(found).toEqual([]);
-  });
-
-  test('first visit: cookie banner and the 3,000-partner dialog', async ({ page, context }) => {
-    await context.clearCookies();
-    const fresh = await context.newPage();
-    await fresh.goto('./');
-    await expect(fresh.locator('#cookie-consent-overlay')).toBeVisible();
-    const found = await seriousViolations(fresh, '#cookie-consent-overlay');
-    await fresh.getByRole('button', { name: 'Manage Detailed Settings' }).click();
-    await expect(fresh.locator('#vendors')).toBeVisible();
-    found.push(...(await seriousViolations(fresh, '#vendors')));
-    expect(found).toEqual([]);
-    void page;
-  });
+  for (const scheme of ['light', 'dark'] as const) {
+    test(`case on /, every step (${scheme}): no serious or critical axe violations`, async ({
+      context,
+    }) => {
+      const found: string[] = [];
+      for (const [name, events, ready] of CASE_STATES) {
+        // A new tab per state: sessionStorage (the case) is per tab.
+        const page = await context.newPage();
+        await page.emulateMedia({ colorScheme: scheme });
+        await seedCase(page, { events });
+        await page.goto('./');
+        const role = name === 'arrival' || name === 'disposition' ? 'link' : 'button';
+        await expect(page.getByRole(role, { name: ready }).first()).toBeVisible();
+        for (const v of await seriousViolations(page)) found.push(`${name} → ${v}`);
+        await page.close();
+      }
+      expect(found).toEqual([]);
+    });
+  }
 
   test('interactive controls in main are at least 44×44 CSS px', async ({ page }) => {
-    // Measure layout, not a control caught mid-transition (Résumé.ppt spins its slides in).
+    // Measure layout, not a control caught mid-transition.
     await page.emulateMedia({ reducedMotion: 'reduce' });
     const small: string[] = [];
     for (const r of HTML_ROUTES) {

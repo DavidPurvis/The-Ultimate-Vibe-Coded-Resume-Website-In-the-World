@@ -1,15 +1,10 @@
 ---
 /**
- * The DOOM player shell: a 16:10 screen, controls, status and legend. The engine frame is created
- * in the screen only when Play is pressed (src/scenes/doom/player.ts). Used on /doom/ and, compact,
- * as the docked player's template on every gag page.
+ * The DOOM player shell on /doom/: a 16:10 screen, controls, status and legend. The engine frame is
+ * created in the screen only when Play is pressed (src/doom/player.ts).
  */
-import { doomCopy as C } from '../content/copy/doom';
+import { doomCopy as C } from '../content/site/doom';
 
-interface Props {
-  compact?: boolean;
-}
-const { compact = false } = Astro.props;
 const copy = {
   loading: C.loading,
   progress: C.progress,
@@ -22,7 +17,7 @@ const copy = {
 };
 ---
 
-<div class:list={['doom-player', { 'doom-player--compact': compact }]} data-doom-player>
+<div class="doom-player" data-doom-player>
   <div class="doom-screen" data-doom-screen>
     <div class="doom-poster" data-doom-poster>
       <p class="doom-poster__title">DOOM</p>
@@ -54,24 +49,18 @@ const copy = {
   ></progress>
   <p class="fine doom-status" role="status" data-doom-status></p>
   <p class="fine doom-touch">{C.touch}</p>
-  {compact ? (
-    <p class="fine doom-escape">
-      <kbd>Shift</kbd> + <kbd>Esc</kbd>: {C.legend.at(-1)?.[1]}
-    </p>
-  ) : (
-    <div class="doom-legend">
-      <h2>{C.legendTitle}</h2>
-      <dl>
-        {C.legend.map(([k, v]) => (
-          <div>
-            <dt>
-              <kbd>{k}</kbd>
-            </dt>
-            <dd>{v}</dd>
-          </div>
-        ))}
-      </dl>
-    </div>
-  )}
+  <div class="doom-legend">
+    <h2>{C.legendTitle}</h2>
+    <dl>
+      {C.legend.map(([k, v]) => (
+        <div>
+          <dt>
+            <kbd>{k}</kbd>
+          </dt>
+          <dd>{v}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
   <span hidden data-doom-copy={JSON.stringify(copy)}></span>
 </div>

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { PNG } from './png';
-import { seedPrefs, watchErrors } from './helpers';
+import { watchErrors } from './helpers';
 
 /** Share of pixels in the DOOM screen that aren't (nearly) black. */
 async function litShare(page: Page, sel: string): Promise<number> {
@@ -15,10 +15,6 @@ async function litShare(page: Page, sel: string): Promise<number> {
 }
 
 test.describe('DOOM', () => {
-  test.beforeEach(async ({ page }) => {
-    await seedPrefs(page, {}, { identityPrompted: true });
-  });
-
   test('runs embedded in the page, from this site, only after Play', async ({ page }) => {
     test.setTimeout(90_000);
     const done = await watchErrors(page);
@@ -77,28 +73,25 @@ test.describe('DOOM', () => {
     await expect(status).toHaveText('Stopped. The demons will wait.');
   });
 
-  test('plays docked on any page from the Departments menu, and closes cleanly', async ({
-    page,
-  }) => {
-    test.setTimeout(90_000);
-    await page.goto('about/');
-    await page.locator('[data-dept-menu] > summary').click();
-    await page.getByRole('button', { name: '▶ Play DOOM here (docked)' }).click();
-    const dock = page.getByRole('region', { name: 'DOOM' });
-    await expect(dock).toBeVisible();
-    await expect(dock.getByRole('button', { name: '▶ Play DOOM' })).toBeFocused();
-
-    await dock.getByRole('button', { name: '▶ Play DOOM' }).click();
-    await expect(dock.locator('iframe')).toHaveCount(1);
-    await expect(dock.locator('[data-doom-status]')).toContainText('Knee-Deep in the Dead', {
-      timeout: 60_000,
-    });
-    await dock.getByRole('button', { name: /^Size: S$/ }).click();
-    await expect(dock.getByRole('button', { name: /^Size: M$/ })).toBeVisible();
-
-    await dock.getByRole('button', { name: 'Close DOOM' }).click();
-    await expect(page.locator('.doom-dock, iframe')).toHaveCount(0);
-    await expect(page.locator('[data-dept-menu] > summary')).toBeFocused();
+  test('leaving the page ends the game; the sound switch lives in memory', async ({ page }) => {
+    await page.goto('doom/');
+    const sw = page.getByRole('switch', { name: 'Sound effects' });
+    await expect(sw).toHaveAttribute('aria-checked', 'false');
+    await sw.click();
+    await expect(sw).toHaveAttribute('aria-checked', 'true');
+    await page.getByRole('button', { name: '▶ Play DOOM' }).click();
+    await expect(page.locator('[data-doom-page] iframe')).toHaveAttribute('src', /sound=1$/);
+    // Even a page kept for back/forward must not keep the game running.
+    await page.evaluate(() =>
+      window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })),
+    );
+    await expect(page.locator('iframe')).toHaveCount(0);
+    await expect(page.locator('[data-doom-page] [data-doom-poster]')).toBeVisible();
+    const stored = await page.evaluate(() => [
+      ...Object.keys(localStorage),
+      ...Object.keys(sessionStorage),
+    ]);
+    expect(stored.filter((k) => k.startsWith('uvcr:'))).toEqual([]);
   });
 
   test('loading never pulls focus from wherever the visitor went next', async ({ page }) => {
@@ -115,24 +108,12 @@ test.describe('DOOM', () => {
     await expect(elsewhere).toBeFocused();
   });
 
-  test('Recruiter Mode stops the game', async ({ page }) => {
-    test.setTimeout(90_000);
-    await page.goto('doom/');
-    await page.getByRole('button', { name: '▶ Play DOOM' }).click();
-    await expect(page.locator('[data-doom-page] iframe')).toHaveCount(1);
-    const sw = page.getByRole('switch', { name: 'Recruiter Mode' });
-    await sw.focus();
-    await page.keyboard.press('Enter');
-    await expect(page.locator('iframe')).toHaveCount(0);
-    await expect(page.getByText('DOOM is paused while HR is in the building.')).toBeVisible();
-  });
-
   test('the engine frame is the only document allowed to compile WebAssembly', async ({
     request,
   }) => {
     const engine = await (await request.get('doom-engine/play.html')).text();
     expect(engine).toContain("'wasm-unsafe-eval'");
-    for (const r of ['doom/', 'about/', 'resume/']) {
+    for (const r of ['doom/', '', 'projects/', 'resume/']) {
       const html = await (await request.get(r)).text();
       expect(html, r).not.toContain('wasm-unsafe-eval');
     }

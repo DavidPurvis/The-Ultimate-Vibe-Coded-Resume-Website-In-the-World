@@ -1,0 +1,35 @@
+David Purvis
+Broomfield, CO · davidpurvis647@gmail.com · linkedin.com/in/dgp0 · github.com/DavidPurvis
+
+Summary
+Software engineer with two years of production experience owning a system of record for a 300+ employee organization, plus a BS in Computer Science (Magna Cum Laude) and an MS in progress at CU Boulder.
+
+Experience
+Salesforce Administrator — City of Aspen, Strategy & Innovation Office · Aspen, CO · Apr 2025 – May 2026
+• Served as the sole technical resource for the city’s Salesforce org, the system of record for permitting and financial operations across 22 departments in a 300+ employee municipal government.
+• Designed and shipped a scheduled Python integration between the Salesforce REST API and Oracle Financials, with run-status and error reporting built into the job itself; removed ~125 annual hours of manual entry and the transcription error class that came with it.
+• Migrated the org’s legacy automation inventory to Flow, isolating a runtime order-of-execution defect introduced by the transition.
+• Led the technical side of a three-day vendor architecture assessment and drove the resulting $130K engagement to approval.
+IT Support Specialist — City of Aspen · Aspen, CO · Oct 2024 – Apr 2025
+• Automated workstation imaging and setup with a PowerShell provisioning script, deploying and configuring 150+ machines in six months.
+Whitewater Rafting Guide / Instructor — Whitewater Rafting, LLC · Glenwood Springs, CO · May 2022 – Nov 2024 (seasonal)
+• Led trips of up to 20 rafts and 120 customers; trained new guides on technique and safety protocol.
+Software Developer Intern, Fiber Billing — C Spire · Ridgeland, MS · Jun 2021 – Jul 2021
+• Developed an adaptive XML parser handling 100+ schema variants for the Fiber Billing system, sustaining a throughput of 1,000 files per minute.
+• Automated SFTP transfer and parsing between Linux hosts; integrated the pipeline into the existing continuous integration process.
+
+Projects
+Self-Hosted Service Infrastructure — Proxmox VE, Docker, Python, CI/CD
+• Built a CI/CD pipeline from pull request through build to deployment for containerized services on a Proxmox host, including a self-hosted OpenSpeedTest instance and a Python scraper that monitors rafting availability and posts notifications to Discord.
+Car Thing Media Controller — Python, aiohttp, dbus-next, systemd, MPRIS
+• Repurposed a discontinued embedded Linux touch device into a media controller with a Python D-Bus/MPRIS service, touch frontend, and systemd packaging.
+
+Technical Skills
+Languages: Python, Bash, PowerShell, SQL, JavaScript, Apex/SOQL
+Infrastructure: Linux, Docker, Proxmox VE, Windows Server, Active Directory / Entra ID
+Platforms: Salesforce (REST API, Flow, Apex), Oracle Financials, Elements.cloud, Atera
+Practices: CI/CD, scheduled and unattended job design, dependency and impact analysis, documentation
+
+Education
+University of Colorado Boulder — MS, Computer Science (Professional) · Expected May 2028
+Mississippi State University — BS, Computer Science, AI Concentration · May 2023 · Magna Cum Laude · 3.76 GPA

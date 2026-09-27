@@ -1,100 +1,12 @@
 /**
- * Namespaced, validated, failure-proof browser storage. Every key this site writes starts with
- * "uvcr:" and is disclosed on /legal/. If storage throws (private mode, blocked site data), an
- * in-memory fallback keeps the site working for the current page.
+ * Namespaced, failure-proof browser storage primitives. Every key this site writes starts with
+ * "uvcr:" and is listed on /privacy/. If storage throws (private mode, blocked site data), an
+ * in-memory fallback keeps the site working for the current page. The only schema that uses these
+ * is the case record (runtime/persistence.ts).
  */
-import type { DestId } from '../content/types';
-
 export const NS = 'uvcr:';
-export const PREFS_KEY = `${NS}prefs`;
-export const SESSION_KEY = `${NS}session`;
-export const BISCOTTI_PREFIX = `${NS}biscotti:`;
 
-export type ThemeName = 'system' | 'light' | 'dark' | 'darker' | 'lights-out' | 'comic';
-export const THEMES: readonly ThemeName[] = [
-  'system',
-  'light',
-  'dark',
-  'darker',
-  'lights-out',
-  'comic',
-];
-export type Mode = 'chaos' | 'recruiter';
-export type BannerState = 'pending' | 'accepted' | 'rejected' | 'managed';
-
-export interface Prefs {
-  v: 1;
-  mode: Mode;
-  theme: ThemeName;
-  cookieBanner: BannerState;
-  notified: boolean;
-  sound: boolean;
-  /** Overkill HUD (edge-crowding overlay). */
-  hud: 'off' | 'overkill';
-}
-
-export interface IdentitySnapshot {
-  claimed: string | null;
-  refused: boolean;
-  confirmation: string | null;
-}
-export interface CaptchaSnapshot {
-  round: 'windows' | 'cage' | 'linux';
-  roundRejections: number;
-  totalRejections: number;
-  completed: boolean;
-  method: 'persistence' | 'audio' | 'linux' | 'skipped' | null;
-}
-
-export interface SubwayState {
-  on: boolean;
-  count: number;
-}
-
-export interface SessionState {
-  v: 1;
-  identity: IdentitySnapshot | null;
-  captcha: CaptchaSnapshot | null;
-  casino: Partial<Record<DestId, number>>;
-  lastPlayfulWasRick: boolean;
-  threat: number;
-  unload: 'idle' | 'armed' | 'fired';
-  guiltIndex: number;
-  dodges: Record<string, number>;
-  appendixOpened: boolean;
-  identityPrompted: boolean;
-  loadBearingShown: boolean;
-  /** Attention-Span Mode: switched on, and how many gameplay players are summoned. */
-  subway: SubwayState;
-}
-
-export const DEFAULT_PREFS: Prefs = {
-  v: 1,
-  mode: 'chaos',
-  theme: 'system',
-  cookieBanner: 'pending',
-  notified: false,
-  sound: false,
-  hud: 'off',
-};
-
-export const DEFAULT_SESSION: SessionState = {
-  v: 1,
-  identity: null,
-  captcha: null,
-  casino: {},
-  lastPlayfulWasRick: false,
-  threat: 0,
-  unload: 'idle',
-  guiltIndex: 0,
-  dodges: {},
-  appendixOpened: false,
-  identityPrompted: false,
-  loadBearingShown: false,
-  subway: { on: false, count: 0 },
-};
-
-type Area = 'local' | 'session';
+export type Area = 'local' | 'session';
 
 /** Minimal Storage-like interface so tests can inject fakes. */
 export interface KV {
@@ -195,137 +107,12 @@ function safeRemove(area: Area, key: string): void {
   memory[area].removeItem(key);
 }
 
-function parse(raw: string | null): Record<string, unknown> | null {
-  if (!raw) return null;
-  try {
-    const v: unknown = JSON.parse(raw);
-    return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : null;
-  } catch {
-    return null;
-  }
-}
-
-const oneOf = <T extends string>(v: unknown, allowed: readonly T[], d: T): T =>
-  typeof v === 'string' && (allowed as readonly string[]).includes(v) ? (v as T) : d;
-const bool = (v: unknown, d: boolean) => (typeof v === 'boolean' ? v : d);
-const num = (v: unknown, d: number) => (typeof v === 'number' && Number.isFinite(v) ? v : d);
-
-export function validatePrefs(o: Record<string, unknown> | null): Prefs {
-  if (!o || o.v !== 1) return { ...DEFAULT_PREFS };
-  return {
-    v: 1,
-    mode: oneOf(o.mode, ['chaos', 'recruiter'] as const, DEFAULT_PREFS.mode),
-    theme: oneOf(o.theme, THEMES, DEFAULT_PREFS.theme),
-    cookieBanner: oneOf(
-      o.cookieBanner,
-      ['pending', 'accepted', 'rejected', 'managed'] as const,
-      'pending',
-    ),
-    notified: bool(o.notified, false),
-    sound: bool(o.sound, false),
-    hud: oneOf(o.hud, ['off', 'overkill'] as const, 'off'),
-  };
-}
-
-function validateCasino(v: unknown): Partial<Record<DestId, number>> {
-  const out: Partial<Record<DestId, number>> = {};
-  if (!v || typeof v !== 'object') return out;
-  for (const k of ['github', 'linkedin', 'email', 'pdf', 'repo'] as const) {
-    const n = (v as Record<string, unknown>)[k];
-    if (typeof n === 'number' && Number.isInteger(n) && n >= 0) out[k] = n;
-  }
-  return out;
-}
-
-function validateIdentity(v: unknown): IdentitySnapshot | null {
-  if (!v || typeof v !== 'object') return null;
-  const o = v as Record<string, unknown>;
-  return {
-    claimed: typeof o.claimed === 'string' ? o.claimed : null,
-    refused: bool(o.refused, false),
-    confirmation: typeof o.confirmation === 'string' ? o.confirmation : null,
-  };
-}
-
-function validateCaptcha(v: unknown): CaptchaSnapshot | null {
-  if (!v || typeof v !== 'object') return null;
-  const o = v as Record<string, unknown>;
-  return {
-    round: oneOf(o.round, ['windows', 'cage', 'linux'] as const, 'windows'),
-    roundRejections: Math.max(0, Math.floor(num(o.roundRejections, 0))),
-    totalRejections: Math.max(0, Math.floor(num(o.totalRejections, 0))),
-    completed: bool(o.completed, false),
-    method:
-      o.method === null
-        ? null
-        : oneOf(o.method, ['persistence', 'audio', 'linux', 'skipped'] as const, 'persistence'),
-  };
-}
-
-export function validateSession(o: Record<string, unknown> | null): SessionState {
-  if (!o || o.v !== 1) return structuredClone(DEFAULT_SESSION);
-  const dodges: Record<string, number> = {};
-  if (o.dodges && typeof o.dodges === 'object') {
-    for (const [k, n] of Object.entries(o.dodges as Record<string, unknown>)) {
-      if (typeof n === 'number' && Number.isFinite(n)) dodges[k] = n;
-    }
-  }
-  return {
-    v: 1,
-    identity: validateIdentity(o.identity),
-    captcha: validateCaptcha(o.captcha),
-    casino: validateCasino(o.casino),
-    lastPlayfulWasRick: bool(o.lastPlayfulWasRick, false),
-    threat: Math.max(0, num(o.threat, 0)),
-    unload: oneOf(o.unload, ['idle', 'armed', 'fired'] as const, 'idle'),
-    guiltIndex: Math.max(0, Math.floor(num(o.guiltIndex, 0))),
-    dodges,
-    appendixOpened: bool(o.appendixOpened, false),
-    identityPrompted: bool(o.identityPrompted, false),
-    loadBearingShown: bool(o.loadBearingShown, false),
-    subway: validateSubway(o.subway),
-  };
-}
-
-/** Subway players are capped (see scenes/subway/logic.ts); anything else resets to none. */
-export const SUBWAY_MAX = 12;
-function validateSubway(v: unknown): SubwayState {
-  const o = v && typeof v === 'object' ? (v as { on?: unknown; count?: unknown }) : {};
-  const n = o.count;
-  const on = bool(o.on, false);
-  return {
-    on,
-    // Players only exist while the mode is on.
-    count:
-      on && typeof n === 'number' && Number.isFinite(n)
-        ? Math.min(SUBWAY_MAX, Math.max(0, Math.floor(n)))
-        : 0,
-  };
-}
-
-export function readPrefs(): Prefs {
-  return validatePrefs(parse(safeGet('local', PREFS_KEY)));
-}
-export function writePrefs(patch: Partial<Omit<Prefs, 'v'>>): Prefs {
-  const next = { ...readPrefs(), ...patch, v: 1 as const };
-  safeSet('local', PREFS_KEY, JSON.stringify(next));
-  return next;
-}
-export function readSession(): SessionState {
-  return validateSession(parse(safeGet('session', SESSION_KEY)));
-}
-export function writeSession(patch: Partial<Omit<SessionState, 'v'>>): SessionState {
-  const next = { ...readSession(), ...patch, v: 1 as const };
-  safeSet('session', SESSION_KEY, JSON.stringify(next));
-  return next;
-}
-
 export interface KeyInfo {
   area: Area;
   key: string;
   bytes: number;
 }
-/** Every uvcr:* key currently stored (for the /legal/ disclosure table). */
+/** Every uvcr:* key currently stored (for the /privacy/ table). */
 export function listKeys(): KeyInfo[] {
   const out: KeyInfo[] = [];
   for (const area of ['local', 'session'] as const) {
@@ -346,11 +133,9 @@ export function listKeys(): KeyInfo[] {
 }
 
 /** Remove every uvcr:* key in both areas. */
+/** Remove every key this site ever wrote, in both areas. */
 export function clearAll(): void {
   for (const { area, key } of listKeys()) safeRemove(area, key);
-  for (const area of ['local', 'session'] as const) {
-    for (const k of [PREFS_KEY, SESSION_KEY]) safeRemove(area, k);
-  }
 }
 
 export function writeRaw(area: Area, key: string, value: string): void {

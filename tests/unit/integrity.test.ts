@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { checkResumeText, checkGroundedCopy, normalizeNumber } from '../../src/lib/integrity';
 import { renderResumeMarkdown, renderResumeText } from '../../src/lib/resumeText';
-import { caseFiles } from '../../src/content/copy/projects';
+import { caseFiles } from '../../src/content/site/projects';
 
 const rules = (text: string, scope: Parameters<typeof checkResumeText>[1] = 'meta') =>
   checkResumeText(text, scope).map((v) => v.rule);

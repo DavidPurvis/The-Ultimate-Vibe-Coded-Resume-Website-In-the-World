@@ -1,11 +1,14 @@
 /**
  * Résumé integrity guard — the Résumé Context Pack's §8 constraints, made executable.
  * Runs over the rendered résumé HTML text, the PDF text layer, resume.md, llms.txt, page metadata,
- * the /projects/ page and blog posts. Any violation fails tests / the build.
+ * the /projects/ page. Any violation fails tests / the build.
  */
-import { ABSENT_TECH, GO_LANG, VERIFIED_NUMBERS } from '../content/facts';
+import { ABSENT_TECH, GO_LANG } from '../content/resume/lexicon';
+import { normalizeNumber, VERIFIED_NUMBERS } from '../content/resume/numbers';
 
-export type Scope = 'resume' | 'pdf' | 'md' | 'llms' | 'meta' | 'projects' | 'blog';
+export { normalizeNumber };
+
+export type Scope = 'resume' | 'pdf' | 'md' | 'llms' | 'meta' | 'projects';
 
 export interface Violation {
   rule: string;
@@ -13,8 +16,8 @@ export interface Violation {
   index: number;
 }
 
-/** Blog posts get the claim rules (no invented tech, titles or honors), not the number whitelist. */
-const ALL: readonly Scope[] = ['resume', 'pdf', 'md', 'llms', 'meta', 'projects', 'blog'];
+/** Every surface that states facts about David. */
+const ALL: readonly Scope[] = ['resume', 'pdf', 'md', 'llms', 'meta', 'projects'];
 const RESUME_LIKE: readonly Scope[] = ['resume', 'pdf', 'md'];
 
 /** Numbers allowed per scope in addition to VERIFIED_NUMBERS and years. */
@@ -30,13 +33,6 @@ export function canonicalize(text: string): string {
     .replace(/[“”]/g, '"')
     .replace(/ /g, ' ')
     .replace(/[ \t]+/g, ' ');
-}
-
-/** Normalise a matched numeric token for whitelist comparison ("~125" → "125", "1000" → "1,000"). */
-export function normalizeNumber(token: string): string {
-  let t = token.trim().replace(/^~/, '');
-  if (/^\d{4,}$/.test(t)) t = Number(t).toLocaleString('en-US');
-  return t;
 }
 
 const YEAR = /^(19|20)\d{2}$/;

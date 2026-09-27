@@ -1,31 +1,32 @@
 ---
-import ModeToggle from './ModeToggle.astro';
-import Memo from './Memo.astro';
-import { exits, footer } from '../content/copy/global';
-import { adsCopy } from '../content/copy/ads';
-import { memos } from '../content/copy/memos';
+/** The ordinary footer. The form number appears only where the Department operates. */
 import { url } from '../lib/paths';
+
+interface Props {
+  formNumber?: string;
+}
+const { formNumber } = Astro.props;
+const repo = 'https://github.com/DavidPurvis/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World';
 ---
 
-<footer class="site-footer">
-  <div class="container site-footer__inner">
-    <div class="site-footer__row">
-      <div class="hatch-arena" data-hatch-arena>
-        <a class="hatch" href={`${url('/resume/')}?mode=recruiter`} data-escape data-hatch>
-          {exits.hatch}
+<footer class="site-foot">
+  <div class="container site-foot__inner">
+    <ul class="site-foot__links">
+      <li>
+        <a href={url('/privacy/')}>Privacy</a>
+      </li>
+      <li>
+        <a href={url('/how-it-was-built/')}>How it was built</a>
+      </li>
+      <li>
+        <a href={url('/credits/')}>Credits</a>
+      </li>
+      <li>
+        <a href={repo} rel="noopener noreferrer">
+          Source
         </a>
-      </div>
-      <ModeToggle />
-    </div>
-    <div class="site-footer__row">
-      {footer.links.map((l) => (
-        <a href={url(l.path)}>{l.label}</a>
-      ))}
-    </div>
-    <p class="fine">{footer.tagline}</p>
-    <p class="fine chaos-only">{adsCopy.blockerNote}</p>
-    <p class="fine">{footer.copyright}</p>
+      </li>
+    </ul>
+    {formNumber && <p class="fine site-foot__form">{formNumber}</p>}
   </div>
-  <Memo text={memos.konami} />
-  <Memo text={memos.resumeHint(url('/resume/'))} />
 </footer>

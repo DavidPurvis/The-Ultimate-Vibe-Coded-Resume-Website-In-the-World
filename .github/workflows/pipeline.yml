@@ -1,0 +1,163 @@
+# Build once. Test, measure and deploy those same bytes.
+#
+# check → build → { e2e × 4, lighthouse } → deploy (main only)
+#
+# Only the build job runs a build. It verifies the PDFs and scans dist before anything is uploaded,
+# then writes site.sha256. Every later job downloads the artifact through .github/actions/verified-site,
+# which fails unless dist matches the manifest exactly, so the deployed site is the one that passed.
+
+name: Pipeline
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pipeline-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# The same site origin and base path for building, serving, testing and deploying.
+env:
+  SITE_URL: ${{ vars.SITE_URL }}
+  BASE_PATH: ${{ vars.BASE_PATH }}
+
+jobs:
+  check:
+    name: Format, typecheck, unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npx vitest run --coverage
+
+  build:
+    name: Build, PDF verify, scan
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # Chromium prints the four PDFs in postbuild.
+      - run: npx playwright install --with-deps chromium
+      - name: Production build (PDFs printed and verified) + scan
+        run: npm run build && npm run scan
+      - name: Manifest
+        run: |
+          set -euo pipefail
+          (cd dist && find . -type f -print0 | sort -z | xargs -0 sha256sum) > site.sha256
+          echo "$(wc -l < site.sha256) files, manifest $(sha256sum site.sha256 | cut -c1-16)"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: dist
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/upload-artifact@v7
+        with:
+          name: site-manifest
+          path: site.sha256
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: build-reports
+          path: reports/
+          if-no-files-found: ignore
+
+  e2e:
+    name: E2E (${{ matrix.project }})
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { project: chromium, browser: chromium }
+          - { project: mobile, browser: chromium }
+          - { project: firefox, browser: firefox }
+          - { project: webkit, browser: webkit }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: ./.github/actions/verified-site
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      # playwright.config.ts serves the downloaded dist (npm run serve:dist).
+      - run: npx playwright test --project=${{ matrix.project }}
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-${{ matrix.project }}
+          path: playwright-report/
+          if-no-files-found: ignore
+
+  lighthouse:
+    name: Lighthouse budgets
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: ./.github/actions/verified-site
+      - run: npx playwright install --with-deps chromium
+      - name: Run Lighthouse CI
+        run: |
+          export CHROME_PATH="$(node -e "console.log(require('@playwright/test').chromium.executablePath())")"
+          npx --yes @lhci/cli@0.15.1 autorun
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: [e2e, lighthouse]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # No install and no build here: only the verified artifact is published.
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github/actions
+      - uses: ./.github/actions/verified-site
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+      - id: deployment
+        uses: actions/deploy-pages@v5

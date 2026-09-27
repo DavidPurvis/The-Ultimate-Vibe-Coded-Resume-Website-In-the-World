@@ -1,0 +1,35 @@
+---
+/**
+ * The home page's first impression: an ordinary, well-made personal site. The CTA is a real link
+ * to the résumé; with JavaScript, the Department intercepts it and opens a case instead. The case
+ * panel (the default slot) takes the CTA's place.
+ */
+import { home } from '../content/site/home';
+import { identity } from '../content/resume/identity';
+import { LANES } from '../content/resume/resolve';
+
+const summary = LANES.gen.summary;
+import { url } from '../lib/paths';
+---
+
+<section class="arrival" aria-labelledby="arrival-name">
+  <p class="kicker">{home.kicker}</p>
+  <h1 id="arrival-name">{identity.name}</h1>
+  <p class="lede arrival__lede">{summary?.text}</p>
+  <div class="btn-row arrival__cta">
+    <a class="btn btn--primary" href={url('/resume/')} data-case-cta>
+      {home.cta}
+    </a>
+    <a class="btn" href={url('/projects/')}>
+      {home.projects}
+    </a>
+  </div>
+  <noscript>
+    <p class="real-error arrival__noscript">
+      <span>
+        {home.noscript} <a href={url('/resume/')}>{home.noscriptLink}</a>.
+      </span>
+    </p>
+  </noscript>
+  <slot />
+</section>

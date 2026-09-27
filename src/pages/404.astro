@@ -1,48 +1,33 @@
 ---
-import Base from '../layouts/Base.astro';
-import Icon from '../components/Icon.astro';
-import { ROUTES } from '../content/copy/meta';
-import { notFoundCopy as N } from '../content/copy/errors';
+import Site from '../layouts/Site.astro';
+import { ROUTES } from '../content/site/meta';
+import { notFoundCopy as N } from '../content/site/errors';
 import { url } from '../lib/paths';
 ---
 
-<Base route={ROUTES.notFound} noindex>
-  <div class="nf card" data-nf-arena>
+<Site route={ROUTES.notFound} noindex>
+  <div class="nf card">
     <p class="kicker">{N.kicker}</p>
-    <h1>
-      <Icon set="fluent" name="stop-sign" size={48} /> {N.h1}
-    </h1>
+    <h1>{N.h1}</h1>
     <p class="lede">{N.body}</p>
     <div class="btn-row">
-      <a class="btn btn--primary" href={url('/')}>
-        {N.home}
-      </a>
-      <a class="btn" href={`${url('/resume/')}?mode=recruiter`} data-escape>
+      <a class="btn btn--primary" href={url('/resume/')}>
         {N.resume}
       </a>
-      <a class="btn btn--ghost" href={url('/')} data-nf-fast>
-        <span data-label>{N.fast}</span>
+      <a class="btn" href={url('/')}>
+        {N.home}
       </a>
     </div>
   </div>
-</Base>
-
-<script>
-  import '../scenes/not-found';
-</script>
+</Site>
 
 <style>
   .nf {
     max-width: 44rem;
     margin: var(--s-7) auto;
     padding: var(--s-6);
-    min-height: 18rem;
-    position: relative;
   }
   .nf h1 {
-    display: flex;
-    gap: var(--s-3);
-    align-items: center;
     font-size: clamp(1.8rem, 5vw, 2.8rem);
   }
 </style>

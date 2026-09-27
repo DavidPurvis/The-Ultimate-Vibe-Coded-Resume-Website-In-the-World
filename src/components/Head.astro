@@ -1,8 +1,9 @@
 ---
 import { createHash } from 'node:crypto';
-import { BOOT_SCRIPT } from '../lib/boot';
+import { BOOT_RESUME, BOOT_SITE } from '../lib/boot';
+import { buildCsp } from '../lib/csp';
 import { absoluteUrl, url } from '../lib/paths';
-import { OG_IMAGE_ALT } from '../content/copy/meta';
+import { OG_IMAGE_ALT } from '../content/site/meta';
 import plexUrl from '@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url';
 import frauncesUrl from '@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2?url';
 
@@ -13,28 +14,23 @@ interface Props {
   ogTitle?: string;
   noindex?: boolean;
   preloadDisplay?: boolean;
+  /** Which pre-paint script: the site's (case hint) or the résumé's (no storage access). */
+  boot?: 'site' | 'resume';
 }
-const { title, description, path, ogTitle, noindex = false, preloadDisplay = true } = Astro.props;
+const {
+  title,
+  description,
+  path,
+  ogTitle,
+  noindex = false,
+  preloadDisplay = true,
+  boot = 'site',
+} = Astro.props;
 const canonical = absoluteUrl(path, Astro.site);
 const ogImage = absoluteUrl('/og.png', Astro.site);
-const bootHash = createHash('sha256').update(BOOT_SCRIPT).digest('base64');
-const csp = [
-  "default-src 'self'",
-  `script-src 'self' 'sha256-${bootHash}'`,
-  "style-src 'self'",
-  "img-src 'self' data:",
-  "font-src 'self'",
-  "connect-src 'self'",
-  // 'self' is DOOM's own frame (/doom-engine/), the only place WebAssembly may compile.
-  "frame-src 'self' https://www.youtube-nocookie.com",
-  "media-src 'none'",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'none'",
-  // No upgrade-insecure-requests: Pages is HTTPS-only and every subresource is same-origin and
-  // path-relative (scan-dist enforces it), so it adds nothing — and WebKit applies it to plain-HTTP
-  // localhost, breaking local and CI runs.
-].join('; ');
+const bootScript = boot === 'resume' ? BOOT_RESUME : BOOT_SITE;
+const bootHash = createHash('sha256').update(bootScript).digest('base64');
+const csp = buildCsp(bootHash);
 const isProd = import.meta.env.PROD;
 ---
 
@@ -65,7 +61,7 @@ const isProd = import.meta.env.PROD;
 <meta name="twitter:title" content={ogTitle ?? title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
-<script is:inline set:html={BOOT_SCRIPT} />
+<script is:inline set:html={bootScript} />
 <link rel="preload" href={plexUrl} as="font" type="font/woff2" crossorigin />
 {preloadDisplay && (
   <link rel="preload" href={frauncesUrl} as="font" type="font/woff2" crossorigin />

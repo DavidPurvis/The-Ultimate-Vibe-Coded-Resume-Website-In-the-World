@@ -1,22 +1,22 @@
 import { expect, test } from '@playwright/test';
 import { BASE, HTML_ROUTES } from './helpers';
 import { readdirSync } from 'node:fs';
-import { ROUTES, DECOYS } from '../../src/content/copy/meta';
+
+/** Every index.html in the build, as a route relative to the base path. */
+function builtRoutes(dir = 'dist', prefix = ''): string[] {
+  const out: string[] = [];
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    if (e.isDirectory()) out.push(...builtRoutes(`${dir}/${e.name}`, `${prefix}${e.name}/`));
+    else if (e.name === 'index.html') out.push(prefix);
+  }
+  return out;
+}
 
 test.describe('routes', () => {
-  test('the route list covers every page in the site map', () => {
-    const fromMeta = Object.values(ROUTES)
-      .map((r) => r.path)
-      .filter((p) => p !== '/404.html')
-      .concat(DECOYS.map((d) => `/r/${d.slug}/`))
-      .concat(
-        readdirSync('src/blog')
-          .filter((f) => f.endsWith('.md'))
-          .map((f) => `/blog/${f.replace(/\.md$/, '')}/`),
-      )
-      .map((p) => p.slice(1))
-      .sort();
-    expect([...HTML_ROUTES].sort()).toEqual(fromMeta);
+  test('the route table is exactly the set of pages the build produced', () => {
+    // og-card is a build-time render target for og.png; doom-engine is DOOM's frame, not a page.
+    const built = builtRoutes().filter((r) => r !== 'og-card/' && !r.startsWith('doom-engine/'));
+    expect(built.sort()).toEqual([...HTML_ROUTES].sort());
   });
 
   test('every page has complete metadata and exactly one h1 @smoke', async ({ request }) => {
@@ -31,6 +31,8 @@ test.describe('routes', () => {
       expect(html, r).toMatch(/<meta property="og:image" content="https:\/\/[^"]+og\.png"/);
       expect(html, r).toMatch(/<meta name="twitter:card" content="summary_large_image"/);
       expect((html.match(/<h1[\s>]/g) ?? []).length, r).toBe(1);
+      // No modes, no themes: the system decides light or dark.
+      expect(html, r).not.toMatch(/data-(mode|theme)=/);
     }
   });
 
@@ -50,7 +52,7 @@ test.describe('routes', () => {
       }
     }
     expect(broken).toEqual([]);
-    expect(seen.size).toBeGreaterThan(40);
+    expect(seen.size).toBeGreaterThan(15);
   });
 
   test('machine-readable files are served with the right types', async ({ request }) => {

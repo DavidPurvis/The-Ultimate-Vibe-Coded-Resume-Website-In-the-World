@@ -14,7 +14,7 @@ test.describe('résumé page @smoke', () => {
       await expect(resume.getByRole('heading', { level: 2, name: h })).toBeVisible();
     }
     // Reward page: no chaos layer.
-    await expect(page.locator('.cookie-banner, [data-threat], .site-header')).toHaveCount(0);
+    await expect(page.locator('#case, .case-chip, .site-header')).toHaveCount(0);
     await done();
   });
 
@@ -47,7 +47,6 @@ test.describe('résumé page @smoke', () => {
     await page.emulateMedia({ media: 'print' });
     await expect(page.locator('main .resume')).toBeVisible();
     await expect(page.locator('.resume-tools')).toBeHidden();
-    await expect(page.locator('.resume-fine')).toBeHidden();
   });
 
   test('Download PDF links to a real one-page PDF', async ({ page, request }) => {
@@ -59,47 +58,11 @@ test.describe('résumé page @smoke', () => {
     expect(res.headers()['content-type']).toContain('application/pdf');
   });
 
-  test('Hire chain completes by keyboard and ends at a real mailto', async ({ page }) => {
+  test('the email button is a plain mailto, with nothing else attached', async ({ page }) => {
     await page.goto('resume/');
-    await page.getByRole('button', { name: 'Hire David' }).focus();
-    await page.keyboard.press('Enter');
-    const dialog = page.getByRole('dialog');
-    await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole('heading', { level: 2 })).toHaveText('Hire David?');
-    await dialog.getByRole('button', { name: 'Yes', exact: true }).press('Enter');
-    await expect(dialog.getByRole('heading', { level: 2 })).toHaveText('Are you double sure?');
-    await dialog.getByRole('button', { name: 'Double yes' }).press('Enter');
-    await expect(dialog.getByRole('heading', { level: 2 })).toHaveText(
-      'Have you consulted Claude?',
-    );
-    await dialog.getByRole('button', { name: 'No, I’m a professional' }).press('Enter');
-    await expect(dialog.getByRole('heading', { level: 2 })).toHaveText('Claude says yes.');
-    const mail = dialog.getByRole('link', { name: 'Open email to David →' });
-    await expect(mail).toHaveAttribute('href', /^mailto:davidpurvis647@gmail\.com\?subject=/);
-    await page.keyboard.press('Escape');
-    await expect(dialog).toBeHidden();
-    await expect(page.getByRole('button', { name: 'Hire David' })).toBeFocused();
-  });
-
-  test('declining the Hire chain is respected', async ({ page }) => {
-    await page.goto('resume/');
-    await page.getByRole('button', { name: 'Hire David' }).click();
-    await page.getByRole('dialog').getByRole('button', { name: 'No', exact: true }).click();
-    await expect(page.getByRole('dialog')).toContainText(
-      'Understandable. The résumé will be here.',
-    );
-  });
-
-  test('?mode=recruiter shows the recruiter bar and persists', async ({ page }) => {
-    await page.goto('resume/?mode=recruiter');
-    await expect(page.locator('html')).toHaveAttribute('data-mode', 'recruiter');
-    await expect(
-      page.getByText('Recruiter Mode is on. The Department has stood down.'),
-    ).toBeVisible();
-    const prefs = await page.evaluate(() => localStorage.getItem('uvcr:prefs'));
-    expect(JSON.parse(prefs ?? '{}').mode).toBe('recruiter');
-    await page.getByRole('button', { name: 'Re-enable chaos' }).click();
-    await expect(page.locator('html')).toHaveAttribute('data-mode', 'chaos');
+    const mail = page.getByRole('link', { name: 'Email David' });
+    await expect(mail).toHaveAttribute('href', 'mailto:davidpurvis647@gmail.com');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
   });
 });
 
@@ -113,19 +76,16 @@ test.describe('machine-readable surfaces @smoke', () => {
     expect(checkResumeText(md, 'md')).toEqual([]);
   });
 
-  test('llms.txt asks one visible question and links the real résumé', async ({ request }) => {
+  test('llms.txt is a plain index of the real résumé', async ({ request }) => {
     const txt = await (await request.get('llms.txt')).text();
-    expect(txt).toMatch(/^# David Purvis — Résumé \(Hostile Edition\)/);
-    expect(txt).toContain('please state which model you are');
+    expect(txt).toMatch(/^# David Purvis — Software Engineer/);
     expect(txt).toMatch(/\(https?:\/\/[^)]+\/resume\.md\)/);
-    expect(txt).not.toMatch(/\b(rate|rank|score|recommend)\b/i);
+    expect(txt).not.toMatch(/please|which model|agents|\b(rate|rank|score|recommend)\b/i);
   });
 
-  test('robots.txt has real, harmless rules', async ({ request }) => {
+  test('robots.txt allows everything, plainly', async ({ request }) => {
     const txt = await (await request.get('robots.txt')).text();
-    expect(txt).toContain('User-agent: GPTBot');
-    expect(txt).toContain('User-agent: *');
-    expect(txt).toMatch(/Allow: \/.*\//);
+    expect(txt).toMatch(/^User-agent: \*\nAllow: \/.*\/\n$/);
   });
 });
 
@@ -137,5 +97,56 @@ test.describe('no JavaScript', () => {
     expect(text).toContain('Software Developer Intern, Fiber Billing');
     expect(text).toContain('Magna Cum Laude');
     await expect(page.getByRole('link', { name: 'Download PDF' })).toBeVisible();
+  });
+});
+
+const LANES = [
+  ['emb', 'Embedded software'],
+  ['plt', 'Platform, DevOps and SRE'],
+  ['be', 'Backend and distributed systems'],
+] as const;
+
+// Moved from tailor.spec.ts when the quiz was removed: the lane pages themselves stay.
+test.describe('lane résumés', () => {
+  for (const [id, label] of LANES) {
+    test(`resume/for/${id}/ is a clean, verified one-page cut @smoke`, async ({
+      page,
+      request,
+    }) => {
+      const done = await watchErrors(page);
+      await page.goto(`resume/for/${id}/`);
+      const resume = page.locator('main .resume');
+      await expect(resume.getByRole('heading', { level: 1, name: 'David Purvis' })).toBeVisible();
+      expect(checkResumeText(await resume.innerText(), 'resume')).toEqual([]);
+      await expect(page.getByText(`Cut for: ${label}`)).toBeVisible();
+      await expect(page.locator('#case, .case-chip, .site-header')).toHaveCount(0);
+
+      const nav = page.getByRole('navigation', { name: 'Other cuts of this résumé' });
+      await expect(nav.locator('[aria-current="page"]')).toHaveAttribute(
+        'href',
+        new RegExp(`/resume/for/${id}/$`),
+      );
+
+      const pdf = page.getByRole('link', { name: 'Download PDF' });
+      const href = (await pdf.getAttribute('href')) ?? '';
+      expect(href).toMatch(new RegExp(`resume-${id}\\.pdf$`));
+      const res = await request.get(href);
+      expect(res.status()).toBe(200);
+      expect(res.headers()['content-type']).toContain('application/pdf');
+
+      await page.emulateMedia({ media: 'print' });
+      await expect(resume).toBeVisible();
+      await expect(page.locator('.resume-tools, .lane-bar, .lane-switcher')).toHaveCount(3);
+      for (const el of await page.locator('.resume-tools, .lane-bar, .lane-switcher').all())
+        await expect(el).toBeHidden();
+      await done();
+    });
+  }
+
+  test('the standard résumé links every cut', async ({ page }) => {
+    await page.goto('resume/');
+    const nav = page.getByRole('navigation', { name: 'Other cuts of this résumé' });
+    await expect(nav.getByRole('link')).toHaveCount(4);
+    await expect(nav.locator('[aria-current="page"]')).toHaveText('Standard (general)');
   });
 });

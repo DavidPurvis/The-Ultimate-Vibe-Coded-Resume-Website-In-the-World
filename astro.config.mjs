@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import { chunkGraph } from './scripts/build/chunk-graph.mjs';
 
 // Custom domain later? Set SITE_URL + BASE_PATH (e.g. BASE_PATH=/) and add public/CNAME.
 const site = process.env.SITE_URL || 'https://davidpurvis.github.io';
@@ -17,6 +18,7 @@ export default defineConfig({
     assets: '_assets',
   },
   vite: {
+    plugins: [chunkGraph()],
     build: {
       // Never inline scripts/assets as data: or inline <script>; CSP allows only one hashed boot script.
       assetsInlineLimit: 0,

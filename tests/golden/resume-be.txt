@@ -1,0 +1,34 @@
+David Purvis
+Broomfield, CO · davidpurvis647@gmail.com · linkedin.com/in/dgp0 · github.com/DavidPurvis
+
+Summary
+Software engineer with two years of production integration work — REST API extraction, scheduled batch loading into a financial system of record, and high-throughput parsing across 100+ schema variants. MS in Computer Science in progress at CU Boulder, focused on network and distributed systems.
+
+Experience
+Salesforce Administrator — City of Aspen, Strategy & Innovation Office · Aspen, CO · Apr 2025 – May 2026
+• Served as the sole technical resource for the city’s Salesforce org, the system of record for permitting and financial operations across 22 departments in a 300+ employee municipal government.
+• Built a daily batch integration extracting financial records via REST and loading journal entries into Oracle Financials, with automated status and failure reporting; eliminated ~125 hours of annual manual data entry.
+• Migrated the org’s full inventory of legacy automation to the current platform framework ahead of a vendor retirement deadline, isolating and correcting a runtime order-of-execution defect introduced by the transition.
+IT Support Specialist — City of Aspen · Aspen, CO · Oct 2024 – Apr 2025
+Whitewater Rafting Guide / Instructor — Whitewater Rafting, LLC · Glenwood Springs, CO · May 2022 – Nov 2024 (seasonal)
+• Led trips of up to 20 rafts and 120 customers; trained new guides on technique and safety protocol.
+Software Developer Intern, Fiber Billing — C Spire · Ridgeland, MS · Jun 2021 – Jul 2021
+• Developed an adaptive parser that normalized 100+ schema variants into a single billing ingest path, sustaining 1,000 files per minute.
+• Automated SFTP transfer and parsing between Linux hosts; integrated the pipeline into the existing continuous integration process.
+
+Projects
+Self-Hosted Service Infrastructure — Proxmox VE, Docker, Python, CI/CD
+• Built a CI/CD pipeline from pull request through build to deployment for containerized services on a Proxmox host, including a self-hosted OpenSpeedTest instance and a Python scraper that monitors rafting availability and posts notifications to Discord.
+Match Analytics Dashboard — React, REST API integration
+• Built a React dashboard over a third-party match-statistics API, extracting 459 opening-duel events and 258 clutch events across 21 matches into six tabs of performance metrics; documented zeroed percentage fields in the primary endpoint and computed them from a secondary array endpoint.
+
+Technical Skills
+Languages: Python, JavaScript, SQL, Bash; Java, C (coursework)
+Backend: REST API integration, batch and scheduled data pipelines, high-throughput parsing, schema normalization
+Infrastructure: Linux, Docker, Proxmox VE, CI/CD, Git
+
+Education
+University of Colorado Boulder — MS, Computer Science (Professional) · Expected May 2028
+Coursework: Network Systems, Graduate Algorithms
+Mississippi State University — BS, Computer Science, AI Concentration · May 2023 · Magna Cum Laude · 3.76 GPA
+Coursework: Operating Systems, Algorithms, Software Architecture and Design, Software Testing and QA, Programming Language Implementation.

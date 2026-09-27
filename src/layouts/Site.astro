@@ -1,0 +1,53 @@
+---
+/**
+ * Layout S: every page that isn't the résumé. No global scripts; each page brings its own.
+ * `printResume` embeds the GEN résumé for print (the theatrical page prints the résumé; plain
+ * pages print themselves).
+ */
+import '../styles/fonts';
+import '../styles/tokens.css';
+import '../styles/core.css';
+import '../styles/print.css';
+import Head from '../components/Head.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import ResumeDocument from '../components/ResumeDocument.astro';
+import type { RouteMeta } from '../content/site/meta';
+import { url } from '../lib/paths';
+
+interface Props {
+  route: RouteMeta;
+  printResume?: boolean;
+  formNumber?: string;
+  noindex?: boolean;
+}
+const { route, printResume = false, formNumber, noindex = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-layout="site">
+  <head>
+    <Head title={route.title} description={route.description} path={route.path} noindex={noindex} />
+    <slot name="head" />
+  </head>
+  <body class="layout-s" data-print-resume={printResume ? '' : undefined}>
+    <a class="skip-link" href={url('/resume/')}>
+      Skip to the résumé
+    </a>
+    <SiteHeader currentPath={route.path}>
+      <slot name="chip" slot="chip" />
+    </SiteHeader>
+    <main id="main" tabindex="-1">
+      <div class="container">
+        <slot />
+      </div>
+    </main>
+    <SiteFooter {...(formNumber ? { formNumber } : {})} />
+    {printResume && (
+      <div class="print-only" aria-hidden="true">
+        <ResumeDocument idPrefix="print" embedded />
+      </div>
+    )}
+    <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  </body>
+</html>
