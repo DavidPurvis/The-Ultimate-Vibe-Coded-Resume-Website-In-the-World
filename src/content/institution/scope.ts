@@ -14,6 +14,6 @@ export const scope = {
     { value: 'unspecified', label: 'I was told there would be a PDF' },
   ] as const satisfies readonly { value: LaneChoice; label: string }[],
   submit: 'Submit scope',
-  empty: 'Scope cannot be empty. "None" is not a scope.',
+  empty: 'Scope cannot be empty. “None” is not a scope.',
   accepted: 'Scope accepted. Approved in principle.',
 };

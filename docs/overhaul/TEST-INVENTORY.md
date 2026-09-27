@@ -169,3 +169,8 @@ check → build → { e2e (chromium, mobile, firefox, webkit), lighthouse } → 
 - **Each browser in its own job.** The four Playwright projects run in parallel on the downloaded site.
 
 `tests/unit/pipeline.test.ts` (new) pins these properties against the workflow text: the job graph, `npm run build` only in `build`, the manifest written there after the scan, every consumer through the verified-site action, the E2E matrix equal to the Playwright projects, `deploy` gated to `main` with no install, and the action's changed/missing/extra checks.
+
+## Changes made in P8
+
+- `narrative.spec.ts` J5 and J11 now check that a closed case has no escape row: "Request expedited processing" and "Open the résumé directly" leave with the case, and the disposition's own link is the way on.
+- `tests/dom/steps.test.ts` follows the findings copy to typographic quotes.

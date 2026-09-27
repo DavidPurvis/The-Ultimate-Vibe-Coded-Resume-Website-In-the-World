@@ -53,14 +53,13 @@ html[data-case] .case,
 }
 .case__label {
   font: 600 0.75rem/1.4 var(--font-body);
-  font-variant-caps: all-small-caps;
+  text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--ink-2);
   margin: 0 0 var(--s-2);
 }
 .case__number {
   font-family: var(--font-mono);
-  font-variant-caps: normal;
   letter-spacing: 0.02em;
 }
 .case h2 {
@@ -96,6 +95,10 @@ html[data-case] .case,
   padding-top: var(--s-4);
   border-top: 1px solid var(--rule);
 }
+/* A closed case has nothing left to escape: the disposition's own link is the way on. */
+.case[data-step='authorized'] .case__foot {
+  display: none;
+}
 .case__direct {
   display: inline-flex;
   align-items: center;
@@ -110,7 +113,8 @@ html[data-case] .case,
   font: 500 0.8125rem/1.3 var(--font-mono);
   color: var(--ink-2);
   border: 1px solid var(--rule);
-  border-radius: var(--r-pill);
+  /* Not a pill: a long step label wraps to two lines on a phone. */
+  border-radius: var(--r-2);
   padding: var(--s-1) var(--s-3);
 }
 
@@ -227,8 +231,9 @@ html[data-case] .case,
   border-bottom: 1px solid var(--rule);
 }
 .service-table thead th {
+  font-size: 0.75rem;
   font-weight: 600;
-  font-variant-caps: all-small-caps;
+  text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--ink-2);
 }

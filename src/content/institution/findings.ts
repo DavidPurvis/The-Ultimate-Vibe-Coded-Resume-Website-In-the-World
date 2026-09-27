@@ -24,7 +24,7 @@ export const findingsCopy = {
 
 /** Primary-contributor phrasing for the risk line. */
 export const primaryLabel: Record<FindingId, string> = {
-  REPEATED_REQUEST: 'repeated selection of "View résumé."',
+  REPEATED_REQUEST: 'repeated selection of “View résumé.”',
   PERSISTENCE: 'persistence after reassignment.',
   EXTERNAL_CONSULTATION: 'external consultation.',
   EXTRACTION: 'clipboard activity.',

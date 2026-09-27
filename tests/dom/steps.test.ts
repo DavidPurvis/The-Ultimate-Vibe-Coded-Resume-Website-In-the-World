@@ -360,7 +360,7 @@ describe('findings', () => {
     await done;
     const text = t.root.textContent ?? '';
     expect(text).toMatch(/Risk score: 0\.\d{4}\./);
-    expect(text).toContain('Repeated selection of "View résumé."');
+    expect(text).toContain('Repeated selection of “View résumé.”');
     expect(text).toContain('Persistence: 2 release attempts after reassignment.');
     expect(text).toContain('Events transmitted: 0');
     expect(text).not.toContain('Global Privacy Control');

@@ -17,7 +17,7 @@ import { url } from '../lib/paths';
       <p class="kicker">DEPARTMENT OF RECRUITER VERIFICATION · FORM DRV-1</p>
       <h1>David Purvis</h1>
       <p class="role">Software Engineer · Broomfield, CO</p>
-      <p class="line">This website is screening you.</p>
+      <p class="line">Access to this résumé is subject to review.</p>
       <div class="stamp">
         <img src={url('/illustrations/stamp-ring.svg')} alt="" width="270" height="270" />
         <span>
@@ -54,8 +54,8 @@ import { url } from '../lib/paths';
     content: '';
     position: absolute;
     inset: 28px;
-    border: 3px dashed #b9ae96;
-    border-radius: 18px;
+    border: 2px solid #c9bda3;
+    border-radius: 14px;
     pointer-events: none;
   }
   .kicker {
@@ -75,6 +75,7 @@ import { url } from '../lib/paths';
     margin: 0 0 56px;
   }
   .line {
+    max-width: 720px;
     font: italic 600 48px/1.2 var(--font-display);
     color: #0b6b6b;
     margin: 0;

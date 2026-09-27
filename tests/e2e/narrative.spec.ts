@@ -207,6 +207,9 @@ test.describe('the Access Request', () => {
     await page.getByRole('button', { name: 'Request expedited processing' }).click();
     await expect(heading(page)).toHaveText('Case closed');
     await expect(page.locator('#case')).toContainText('It was always available.');
+    // Nothing is left to escape: the panel's escape row goes with the case.
+    await expect(page.getByRole('button', { name: 'Request expedited processing' })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: 'Open the résumé directly' })).toHaveCount(0);
     await page.getByRole('link', { name: 'Open résumé' }).click();
     await expect(page).toHaveURL(/\/resume\/$/);
   });
@@ -290,6 +293,7 @@ test.describe('the Access Request', () => {
     await expect(page).toHaveURL(/\/resume\/$/);
     await page.goBack();
     await expect(heading(page)).toHaveText('Case closed');
+    await expect(page.getByRole('button', { name: 'Request expedited processing' })).toHaveCount(0);
     await page.getByRole('link', { name: 'View résumé' }).click();
     await expect(page).toHaveURL(/\/resume\/$/);
   });

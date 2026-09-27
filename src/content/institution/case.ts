@@ -35,7 +35,7 @@ export const dispositionCopy = {
   heading: 'Case closed',
   stamp: 'Approved',
   stampAppeal: 'Original decision also approved',
-  summary: 'Case closed: visitor obtained document linked from homepage.',
+  summary: 'Resolution: visitor obtained document linked from homepage.',
   route: {
     adjudicated: 'Disposition: access granted after adjudication.',
     'appeal-reconciled': 'Disposition: access granted on appeal, which was unnecessary.',
@@ -62,7 +62,7 @@ export const findingLines: Record<
   { status?: string; findings: (n: number) => string; disposition: (n: number) => string }
 > = {
   REPEATED_REQUEST: {
-    findings: () => 'Repeated selection of "View résumé."',
+    findings: () => 'Repeated selection of “View résumé.”',
     disposition: (n) => `Résumé requests on file: ${n + 1}.`,
   },
   PERSISTENCE: {
