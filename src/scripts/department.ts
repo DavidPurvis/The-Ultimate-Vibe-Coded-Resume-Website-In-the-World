@@ -3,7 +3,8 @@
  * own: no dialog opens, no focus moves and no media loads unless the visitor asks. What it does:
  * Direct access, display settings, the directory menu, the optional overlays the visitor switched
  * on, explicitly requested procedures (DOOM docked, cookie administration, advertising), and the
- * case record (this page's department, the status line and at most one notice).
+ * case record (this page's department, the status line and at most one notice), and Request
+ * résumé's release procedure, loaded only when a plain activation asks for it.
  * Every procedure is loaded on request and dropped if the request went stale meanwhile.
  */
 import { initMode, isChaos, onModeChange, setMode } from '../lib/mode';
@@ -13,6 +14,7 @@ import { installTestHooks } from '../lib/testHooks';
 import { cleanupLegacy } from '../runtime/legacy';
 import { initTheme } from '../scenes/theme';
 import { initCaseRecord } from '../case/notices';
+import { initReleaseLinks } from '../case/request';
 
 installTestHooks();
 initMode();
@@ -120,6 +122,7 @@ function initRequests(): void {
 
 initDirectAccess();
 initCaseRecord();
+initReleaseLinks();
 initTheme();
 initMenus();
 initOverlays();

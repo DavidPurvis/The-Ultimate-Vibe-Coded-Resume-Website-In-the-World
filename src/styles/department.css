@@ -275,3 +275,17 @@
   min-height: var(--target);
   font-weight: 600;
 }
+
+/* ---------- the résumé release procedure ---------- */
+.release {
+  width: min(100% - 2rem, 36rem);
+}
+.release h2 {
+  font: 600 1.5rem/1.25 var(--font-body);
+  margin: 0 0 var(--s-3);
+}
+.release__approved {
+  font: 600 1.75rem/1.2 var(--font-body);
+  color: var(--stamp);
+  margin: var(--s-3) 0 var(--s-5);
+}
