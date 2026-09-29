@@ -26,9 +26,12 @@ test.describe('résumé release', () => {
     page,
   }) => {
     const done = await watchErrors(page);
-    // Recreation works on its own, entered directly.
+    // Recreation works on its own, entered directly. Wait for the cube's engine to arrive (drawn,
+    // or its drawing kept where the browser has no WebGL) so nothing is left half-loaded.
     await page.goto('cube/');
-    await expect(page.locator('[data-cube-stage] canvas')).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator('[data-cube-stage] canvas[data-engine]')).toBeAttached({
+      timeout: 20_000,
+    });
     await page.goto('doom/');
     await expect(page.getByRole('button', { name: '▶ Play DOOM' })).toBeVisible();
     await page.goto('./');
@@ -114,8 +117,8 @@ test.describe('résumé release', () => {
       .getByRole('link', { name: 'Request résumé' })
       .click({ modifiers: [process.platform === 'darwin' ? 'Meta' : 'Control'] });
     const tab = await opened;
-    await tab.waitForLoadState();
-    expect(tab.url()).toMatch(/\/resume\/$/);
+    // A new tab starts at about:blank before it navigates.
+    await tab.waitForURL(/\/resume\/$/);
     await expect(dialog(page)).toHaveCount(0);
   });
 
