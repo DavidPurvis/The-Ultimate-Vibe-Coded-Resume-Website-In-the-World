@@ -11,17 +11,17 @@ export default defineConfig({
         'src/domain/**/*.ts',
         'src/doom/logic.ts',
         'src/content/resume/**/*.ts',
-        'src/runtime/persistence.ts',
+        'src/case/**/*.ts',
         'src/runtime/activation.ts',
       ],
-      // Build-time helpers (icon inlining, the inline boot strings) are exercised by the build and
-      // the scanner, not by unit tests.
-      exclude: ['src/lib/icons.ts', 'src/lib/boot.ts'],
+      // Build-time helpers (icon inlining, the inline boot strings, the newsletter's content
+      // collection) are exercised by the build and the scanner, not by unit tests.
+      exclude: ['src/lib/icons.ts', 'src/lib/boot.ts', 'src/lib/blog.ts'],
       thresholds: {
         lines: 90,
         branches: 85,
-        // The case's pure core carries the progress and fairness proofs: hold it higher.
-        'src/domain/**': { lines: 95, branches: 90 },
+        // The case core decides what the visitor is told: hold it higher.
+        'src/case/**': { lines: 95, branches: 90 },
       },
     },
   },

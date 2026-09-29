@@ -1,10 +1,13 @@
 # Build once. Test, measure and deploy those same bytes.
 #
-# check → build → { e2e × 4, lighthouse } → deploy (main only)
+# check → build → { e2e × 4, e2e-hooks, lighthouse } → deploy (main only)
 #
-# Only the build job runs a build. It verifies the PDFs and scans dist before anything is uploaded,
-# then writes site.sha256. Every later job downloads the artifact through .github/actions/verified-site,
-# which fails unless dist matches the manifest exactly, so the deployed site is the one that passed.
+# Only the build job builds the site that ships. It verifies the PDFs and scans dist (which proves
+# there are no test hooks in it) before anything is uploaded, then writes site.sha256. Every later
+# job that tests, measures or deploys the site downloads that artifact through
+# .github/actions/verified-site, which fails unless dist matches the manifest exactly, so the
+# deployed site is the one that passed. e2e-hooks alone makes a second, test-only build
+# (npm run build:hooks, into dist-hooks/) for the @hooks specs; it is never uploaded.
 
 name: Pipeline
 
@@ -114,6 +117,30 @@ jobs:
           path: playwright-report/
           if-no-files-found: ignore
 
+  e2e-hooks:
+    name: E2E (test hooks)
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # Forced roulette samples and stub gameplay, for the specs tagged @hooks only.
+      - name: Test-hooks build (dist-hooks, never deployed)
+        run: npm run build:hooks
+      - run: npm run test:e2e:hooks
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-hooks
+          path: playwright-report/
+          if-no-files-found: ignore
+
   lighthouse:
     name: Lighthouse budgets
     needs: build
@@ -135,7 +162,7 @@ jobs:
 
   deploy:
     name: Deploy to GitHub Pages
-    needs: [e2e, lighthouse]
+    needs: [e2e, e2e-hooks, lighthouse]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10

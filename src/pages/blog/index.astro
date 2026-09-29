@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Site.astro';
+import PageHero from '../../components/PageHero.astro';
+import { ROUTES } from '../../content/site/meta';
+import { blogCopy as B } from '../../content/copy/blog';
+import { posts, postFormId, readingMinutes } from '../../lib/blog';
+import { url } from '../../lib/paths';
+
+const all = await posts();
+---
+
+<Base route={ROUTES.blog}>
+  <link
+    slot="head"
+    rel="alternate"
+    type="application/rss+xml"
+    title={B.channelTitle}
+    href={url('/blog/rss.xml')}
+  />
+  <PageHero kicker={B.kicker} title={B.h1} sub={B.sub} />
+  <ol class="posts" role="list">
+    {all.map((p, i) => (
+      <li class="post-card card">
+        <p class="card__form-id">
+          {postFormId(i)} · {B.readingTime(readingMinutes(p.body ?? ''))}
+        </p>
+        <h2>
+          <a href={url(`/blog/${p.id}/`)}>{p.data.title}</a>
+        </h2>
+        <p>{p.data.summary}</p>
+        <p class="fine">
+          {B.filedUnder}: {p.data.tags.join(', ')}
+        </p>
+      </li>
+    ))}
+  </ol>
+  <p class="section fine">
+    <a href={url('/blog/rss.xml')}>{B.rss}</a> · {B.rssNote}
+  </p>
+</Base>
+
+<style>
+  .posts {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--s-4);
+    max-width: 46rem;
+  }
+  .post-card {
+    padding: var(--s-5);
+  }
+  .post-card h2 {
+    font-size: 1.5rem;
+  }
+  .post-card h2 a {
+    color: var(--ink);
+    text-decoration-thickness: 2px;
+  }
+</style>

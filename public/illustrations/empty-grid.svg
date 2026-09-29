@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <title>An empty grid</title>
+  <g fill="none" stroke="#9CA3AF" stroke-width="3" stroke-dasharray="8 6">
+    <rect x="8" y="8" width="224" height="224" rx="8"/>
+    <path d="M82 8 V232 M158 8 V232 M8 82 H232 M8 158 H232"/>
+  </g>
+  <rect x="44" y="102" width="152" height="36" rx="6" fill="#FFFDF8" stroke="#1A0033" stroke-width="3"/>
+  <text x="120" y="125" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-weight="700" font-size="11" fill="#1A0033" letter-spacing="1">NO IMAGES SUPPLIED</text>
+</svg>

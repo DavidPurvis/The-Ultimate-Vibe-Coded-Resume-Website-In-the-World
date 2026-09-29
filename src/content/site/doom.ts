@@ -44,4 +44,12 @@ export const doomCopy = {
     'Someone once built an entire operating system alone. Running DOOM inside a résumé is the least this website could do.',
   tributeLink: 'In memoriam: Terry A. Davis',
   source: 'Engine source (GPL-2.0)',
+  dock: {
+    open: 'Play DOOM here (docked)',
+    title: 'DOOM',
+    close: 'Close DOOM',
+    /** `{size}` is S, M or L. */
+    size: 'Size: {size}',
+    full: 'Full page',
+  },
 };

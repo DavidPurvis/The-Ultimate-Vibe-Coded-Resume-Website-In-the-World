@@ -11,8 +11,9 @@ export function buildCsp(bootHash: string): string {
     "img-src 'self' data:",
     "font-src 'self'",
     "connect-src 'self'",
-    // The only frame is DOOM's engine, on this site (/doom-engine/).
-    "frame-src 'self'",
+    // DOOM's engine (/doom-engine/, this site) and YouTube's privacy-enhanced player, which is
+    // inserted only after the visitor presses an explicit play control.
+    "frame-src 'self' https://www.youtube-nocookie.com",
     "media-src 'none'",
     "object-src 'none'",
     "base-uri 'self'",

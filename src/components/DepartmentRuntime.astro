@@ -1,0 +1,22 @@
+---
+/**
+ * The Department's runtime and the markup of its explicitly requested procedures. Everything
+ * here is inert until the visitor asks for it: the dialogs are closed, the DOOM player is a
+ * template, and nothing is fetched.
+ */
+import CookieBanner from './CookieBanner.astro';
+import RickrollDialog from './RickrollDialog.astro';
+import DoomPlayer from './DoomPlayer.astro';
+import { doomCopy } from '../content/site/doom';
+---
+
+<CookieBanner />
+<RickrollDialog />
+<template data-doom-template>
+  <DoomPlayer />
+</template>
+<span hidden data-doom-dock-copy={JSON.stringify(doomCopy.dock)}></span>
+
+<script>
+  import '../scripts/department';
+</script>

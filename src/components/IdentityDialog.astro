@@ -1,0 +1,189 @@
+---
+/** Classification: one dialog, opened only from Visitor Services. See scenes/identity. */
+import SceneDialog from './SceneDialog.astro';
+import Stamp from './Stamp.astro';
+import { classification as C, MODEL_IDS, models } from '../content/copy/identity';
+---
+
+<SceneDialog id="identity" title={C.choose.title} closeLabel={C.closeLabel}>
+  <section data-phase="choose">
+    <p>{C.choose.lede}</p>
+    <div class="btn-row id-choices" role="group" aria-label={C.choose.legend}>
+      <button type="button" class="btn" data-id="human">
+        {C.choose.human}
+      </button>
+      <button type="button" class="btn" data-id="automated">
+        {C.choose.automated}
+      </button>
+      <button type="button" class="btn" data-id="withhold">
+        {C.choose.withhold}
+      </button>
+    </div>
+  </section>
+
+  <section data-phase="human" hidden>
+    <p>{C.human.lede}</p>
+    <div class="btn-row">
+      <button type="button" class="btn btn--primary" data-id="confirm-human">
+        {C.human.confirm}
+      </button>
+      <button type="button" class="btn btn--ghost" data-id="back">
+        {C.human.back}
+      </button>
+    </div>
+  </section>
+
+  <section data-phase="model" hidden>
+    <p>{C.model.lede}</p>
+    <fieldset class="id-models">
+      <legend>{C.model.legend}</legend>
+      {MODEL_IDS.map((id) => (
+        <label class="id-model">
+          <input type="radio" name="model" value={id} />
+          <span>{models[id].label}</span>
+        </label>
+      ))}
+    </fieldset>
+    <p class="id-error" role="alert" data-id-error hidden>
+      {C.model.emptyError}
+    </p>
+    <div class="btn-row">
+      <button type="button" class="btn btn--primary" data-id="submit">
+        {C.model.submit}
+      </button>
+      <button type="button" class="btn btn--ghost" data-id="back">
+        {C.model.back}
+      </button>
+    </div>
+  </section>
+
+  <section data-phase="confirm" hidden>
+    <p>{C.confirm.lede}</p>
+    <p class="id-confirm-line" data-id-confirm-line></p>
+    <div class="btn-row">
+      <button type="button" class="btn btn--primary" data-id="keep" data-id-keep-label></button>
+      <button type="button" class="btn" data-id="double">
+        {C.confirm.double}
+      </button>
+      <button type="button" class="btn" data-id="prompt">
+        {C.confirm.prompt}
+      </button>
+      <button type="button" class="btn btn--ghost" data-id="back">
+        {C.confirm.change}
+      </button>
+    </div>
+  </section>
+
+  <section data-phase="result" hidden>
+    <div class="id-result-stamp" data-id-stamp></div>
+    <p class="id-result-line" data-id-result></p>
+    <p class="fine" data-id-analysis></p>
+    <div class="btn-row">
+      <button type="button" class="btn btn--primary" data-close>
+        {C.result.done}
+      </button>
+      <button type="button" class="btn" data-id="transcribe">
+        {C.result.transcribe}
+      </button>
+    </div>
+  </section>
+
+  <section data-phase="transcribe" hidden>
+    <p>{C.transcribe.lede}</p>
+    <blockquote class="id-quote" id="id-quote">
+      {C.transcribe.quote}
+    </blockquote>
+    <p class="fine">{C.transcribe.note}</p>
+    <label class="id-textarea">
+      <span>{C.transcribe.label}</span>
+      <textarea
+        rows="4"
+        data-id-text
+        aria-describedby="id-quote id-privacy"
+        autocomplete="off"
+      ></textarea>
+    </label>
+    <p class="fine" id="id-privacy">
+      {C.transcribe.privacy}
+    </p>
+    <div class="btn-row">
+      <button type="button" class="btn btn--primary" data-id="transcribed">
+        {C.transcribe.submit}
+      </button>
+      <button type="button" class="btn" data-id="skip-transcription">
+        {C.transcribe.skip}
+      </button>
+    </div>
+  </section>
+
+  <template data-stamp-template>
+    <Stamp text="STAMP" rotate={-6} />
+  </template>
+</SceneDialog>
+
+<style>
+  .id-choices {
+    margin: var(--s-4) 0;
+  }
+  .id-models {
+    border: 1px solid var(--rule);
+    padding: var(--s-3) var(--s-4);
+    margin: 0 0 var(--s-4);
+    display: grid;
+    gap: var(--s-1);
+  }
+  .id-models legend {
+    font-weight: 600;
+    padding: 0 var(--s-2);
+  }
+  .id-model {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    min-height: var(--target);
+    padding: 0 var(--s-2);
+    cursor: pointer;
+  }
+  .id-model input {
+    width: 1.25rem;
+    height: 1.25rem;
+    accent-color: var(--action);
+  }
+  .id-error {
+    color: var(--stamp);
+    font-weight: 600;
+  }
+  .id-confirm-line {
+    font: italic 500 1.125rem/1.4 var(--font-display);
+  }
+  .id-quote {
+    margin: 0 0 var(--s-2);
+    padding: var(--s-3) var(--s-4);
+    border-left: 4px solid var(--stamp);
+    background: var(--warn-bg);
+    color: var(--warn-ink);
+    font: 400 1rem/1.5 var(--font-mono);
+  }
+  .id-textarea {
+    display: grid;
+    gap: var(--s-1);
+    font-weight: 600;
+    margin-bottom: var(--s-3);
+  }
+  .id-textarea textarea {
+    font: 400 1rem/1.5 var(--font-mono);
+    border: 1.5px solid var(--ink-2);
+    padding: var(--s-2) var(--s-3);
+    background: var(--card);
+    color: var(--ink);
+    resize: vertical;
+  }
+  .id-result-stamp {
+    margin: var(--s-3) 0 var(--s-4);
+    font-size: 1.1rem;
+  }
+  .id-result-line {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+</style>

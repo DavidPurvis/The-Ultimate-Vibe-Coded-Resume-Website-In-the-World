@@ -1,0 +1,211 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Site.astro';
+import type { RouteMeta } from '../../content/site/meta';
+import { applications, blogCopy as B } from '../../content/copy/blog';
+import { goldfishName, personnelCopy, r6 } from '../../content/copy/personnel';
+import { shown, shownAll } from '../../content/pending';
+import { posts, postFormId, readingMinutes, type Post } from '../../lib/blog';
+import { url } from '../../lib/paths';
+
+export async function getStaticPaths() {
+  const all = await posts();
+  return all.map((post, i) => ({
+    params: { slug: post.id },
+    props: { post, index: i, prev: all[i - 1] ?? null, next: all[i + 1] ?? null },
+  }));
+}
+
+interface Props {
+  post: Post;
+  index: number;
+  prev: Post | null;
+  next: Post | null;
+}
+const { post, index, prev, next } = Astro.props;
+const { Content } = await render(post);
+const formId = postFormId(index);
+const route: RouteMeta = {
+  path: `/blog/${post.id}/`,
+  title: `${post.data.title} · David Purvis`,
+  description: post.data.summary,
+  formId,
+};
+const facts = post.data.facts ?? [];
+const r6Stats = shownAll(r6.stats);
+---
+
+<Base route={route}>
+  <link
+    slot="head"
+    rel="alternate"
+    type="application/rss+xml"
+    title={B.channelTitle}
+    href={url('/blog/rss.xml')}
+  />
+  <article class="post" aria-labelledby="post-title" data-post={post.id}>
+    <p class="kicker">
+      {formId} · {B.readingTime(readingMinutes(post.body ?? ''))}
+    </p>
+    <h1 id="post-title">{post.data.title}</h1>
+    <p class="post__summary">{post.data.summary}</p>
+    <div class="post__body prose" data-post-body>
+      <Content />
+    </div>
+
+    {facts.includes('applications') && shown(applications) && (
+      <aside class="fact card" aria-label={B.declassified}>
+        <p class="kicker">{B.declassified}</p>
+        <p>
+          {applications.label}: <strong>{applications.text}</strong>
+        </p>
+      </aside>
+    )}
+    {facts.includes('goldfish') && shown(goldfishName) && (
+      <aside class="fact card" aria-label={B.declassified}>
+        <p class="kicker">{B.declassified}</p>
+        <p>
+          {goldfishName.label}: <strong>{goldfishName.text}</strong>
+        </p>
+      </aside>
+    )}
+    {facts.includes('r6') && (
+      <aside class="fact card" aria-label={personnelCopy.r6Heading}>
+        <p class="kicker">{personnelCopy.r6Heading}</p>
+        {r6Stats.length > 0 && (
+          <dl class="fact__stats">
+            {r6Stats.map((s) => (
+              <div>
+                <dt>{s.label}</dt>
+                <dd>{s.text}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+        <p>
+          <a href={personnelCopy.r6ProfileUrl} rel="noopener noreferrer">
+            {B.r6Link}
+          </a>
+        </p>
+      </aside>
+    )}
+
+    <p class="fine post__tags">
+      {B.filedUnder}: {post.data.tags.join(', ')}
+    </p>
+    <nav class="post__nav" aria-label="More newsletters">
+      {prev ? (
+        <a href={url(`/blog/${prev.id}/`)}>
+          {B.prev} {prev.data.title}
+        </a>
+      ) : (
+        <span />
+      )}
+      <a href={url('/blog/')}>{B.back}</a>
+      {next ? (
+        <a href={url(`/blog/${next.id}/`)}>
+          {next.data.title} {B.next}
+        </a>
+      ) : (
+        <span />
+      )}
+    </nav>
+  </article>
+</Base>
+
+<script>
+  // The simulation only downloads on the post that contains it.
+  if (document.querySelector('[data-aem-sim]')) void import('../../scenes/aem');
+</script>
+
+<style>
+  .post {
+    max-width: 44rem;
+  }
+  .post h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+  .post__summary {
+    font: italic 400 1.2rem/1.5 var(--font-display);
+    color: var(--ink-2);
+    margin-bottom: var(--s-6);
+  }
+  .post__body :global(h2) {
+    margin-top: var(--s-6);
+    font-size: 1.5rem;
+  }
+  .post__body :global(li + li) {
+    margin-top: var(--s-1);
+  }
+  .post__body :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--rule);
+    margin: var(--s-6) 0;
+  }
+  .post__body :global(.aem-sim) {
+    margin: var(--s-5) 0;
+    padding: var(--s-4);
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+  }
+  .post__body :global(.aem-sim__panel + .aem-sim__panel) {
+    margin-top: var(--s-4);
+  }
+  .post__body :global(.aem-sim__title) {
+    font-weight: 700;
+    margin-bottom: var(--s-2);
+  }
+  .post__body :global(.aem-sim__canvas) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--r-1);
+  }
+  .post__body :global(.aem-sim__stats) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-1) var(--s-5);
+    margin: var(--s-2) 0 0;
+  }
+  .post__body :global(.aem-sim__stats dt) {
+    font: 600 0.7rem var(--font-mono);
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .post__body :global(.aem-sim__stats dd) {
+    margin: 0;
+    font-weight: 700;
+  }
+  .post__body :global(.aem-sim__verdict) {
+    font-weight: 700;
+    min-height: 1.5em;
+  }
+  .fact {
+    padding: var(--s-4);
+    margin: var(--s-5) 0;
+  }
+  .fact__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-4);
+  }
+  .fact__stats dd {
+    margin: 0;
+    font-weight: 700;
+  }
+  .post__nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--s-3);
+    margin-top: var(--s-6);
+    border-top: 1px solid var(--rule);
+    padding-top: var(--s-4);
+  }
+  .post__nav a {
+    min-height: var(--target);
+    display: inline-flex;
+    align-items: center;
+  }
+</style>

@@ -26,6 +26,10 @@ export function modality(): ModalityProfile {
   };
 }
 
+/** Shorthands for the attractions, read at the moment of use. */
+export const reducedMotion = (): boolean => modality().reducedMotion();
+export const finePointer = (): boolean => modality().finePointer();
+
 export type Input = 'mouse' | 'touch' | 'pen' | 'keyboard';
 
 /** What produced an activation. Keyboard-activated clicks have detail 0 and no pointer type. */

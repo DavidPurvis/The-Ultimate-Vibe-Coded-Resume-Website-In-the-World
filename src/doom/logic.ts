@@ -36,3 +36,7 @@ export function progressPct(left: number, total: number): number {
 /** The frame's address: same origin, under the site base, sound as a query flag. */
 export const engineSrc = (base: string, sound: boolean): string =>
   `${base.replace(/\/?$/, '/')}doom-engine/play.html?sound=${sound ? 1 : 0}`;
+
+/** The docked player's widths, cycled by its size button. */
+export const DOCK_SIZES = ['22rem', '34rem', '48rem'] as const;
+export const nextSize = (i: number): number => (i + 1) % DOCK_SIZES.length;

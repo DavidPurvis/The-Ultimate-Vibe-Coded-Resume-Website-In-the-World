@@ -174,3 +174,22 @@ check → build → { e2e (chromium, mobile, firefox, webkit), lighthouse } → 
 
 - `narrative.spec.ts` J5 and J11 now check that a closed case has no escape row: "Request expedited processing" and "Open the résumé directly" leave with the case, and the disposition's own link is the way on.
 - `tests/dom/steps.test.ts` follows the findings copy to typographic quotes.
+
+## Department of David Purvis, Stage 0
+
+The Recruiter Verification case was removed, along with its tests:
+- the domain, property, replay and step suites;
+- the kernel, signals and persistence DOM tests;
+- `narrative.spec`.
+
+**New:**
+
+| File | What it covers |
+| --- | --- |
+| `tests/unit/case/{state,policy,evidence}.test.ts` | Validation (missing, old, malformed, duplicate or unknown IDs); counting at the root and under the GitHub Pages base; thresholds; notice priority and context; evidence counts only explicit, completed actions |
+| `tests/unit/storage.test.ts` (extended) | Field-by-field preferences and session: old records keep valid values, transcription text is never kept, blocked storage falls back to memory |
+| `tests/dom/scenes.test.ts` | The scene registry's cancellation contract: replacement, `stillActive`, a failed start, a late or stale import, Direct access |
+| `tests/dom/mode.test.ts` | Direct access: `?mode=`, saved preference, switching stops scenes, closes dialogs and drops the novelty theme |
+| `tests/unit/voice.test.ts`, `tests/unit/copy.test.ts` (rewritten) | The Department's voice and copy hygiene |
+
+**E2E:** `access.spec`, `privacy.spec`, `privacy-page.spec` and `boundary.spec` were rewritten for the front desk and the restored storage.

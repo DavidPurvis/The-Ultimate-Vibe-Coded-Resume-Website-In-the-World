@@ -6,6 +6,7 @@ import { absoluteUrl, url } from '../lib/paths';
 import { OG_IMAGE_ALT } from '../content/site/meta';
 import plexUrl from '@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url';
 import frauncesUrl from '@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2?url';
+import plexSemiboldUrl from '@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-600-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -63,6 +64,13 @@ const isProd = import.meta.env.PROD;
 <meta name="twitter:image" content={ogImage} />
 <script is:inline set:html={bootScript} />
 <link rel="preload" href={plexUrl} as="font" type="font/woff2" crossorigin />
+{
+  /* The Department's headings, navigation and buttons are Plex Sans 600: without it in the first
+     paint, the header and the front desk's buttons reflow when it arrives (layout shift). */
+  boot === 'site' && (
+    <link rel="preload" href={plexSemiboldUrl} as="font" type="font/woff2" crossorigin />
+  )
+}
 {preloadDisplay && (
   <link rel="preload" href={frauncesUrl} as="font" type="font/woff2" crossorigin />
 )}

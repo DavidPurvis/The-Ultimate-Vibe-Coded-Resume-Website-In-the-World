@@ -7,14 +7,14 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { gz, makeSite, staticClosure, toDistPath, type Chunk } from '../../scripts/scan-dist/load';
-import { budgetRows, POLICIES, runPolicies } from '../../scripts/scan-dist/policies';
+import { budgetRows, expectedPages, POLICIES, runPolicies } from '../../scripts/scan-dist/policies';
 import { BOOT_RESUME, BOOT_SITE } from '../../src/lib/boot';
 import { buildCsp, ENGINE_CSP } from '../../src/lib/csp';
 import { renderLlmsTxt } from '../../src/lib/machineText';
 import { renderResumeMarkdown, renderResumeText } from '../../src/lib/resumeText';
 import { LANES, type LaneId } from '../../src/content/resume/resolve';
 import { ROUTES } from '../../src/content/site/meta';
-import { institutionStrings } from '../../src/content/institution/strings';
+import { departmentStrings } from '../../src/content/department/strings';
 
 type Files = Record<string, string>;
 type Graph = Record<string, Chunk>;
@@ -75,15 +75,18 @@ function fixture(): { files: Files; graph: Graph } {
     '_assets/home.js': chunk('_assets/home.js', {
       isEntry: true,
       imports: ['_assets/lifecycle.js'],
-      dynamicImports: ['_assets/ceremony.js'],
-      modules: ['src/runtime/kernel.ts', 'src/scripts/home.ts'],
+      dynamicImports: ['_assets/release.js'],
+      modules: ['src/scripts/department.ts', 'src/scenes/identity/index.ts'],
     }),
     '_assets/lifecycle.js': chunk('_assets/lifecycle.js', {
       modules: ['src/runtime/lifecycle.ts'],
     }),
-    '_assets/ceremony.js': chunk('_assets/ceremony.js', {
+    '_assets/release.js': chunk('_assets/release.js', {
       isDynamicEntry: true,
-      modules: ['src/steps/ceremony.ts'],
+      modules: ['src/case/release.ts'],
+    }),
+    '_assets/vendor-three.js': chunk('_assets/vendor-three.js', {
+      modules: ['node_modules/three/build/three.module.js'],
     }),
     '_assets/print.js': chunk('_assets/print.js', {
       isEntry: true,
@@ -136,6 +139,12 @@ function fixture(): { files: Files; graph: Graph } {
                   : [],
         });
   }
+  // Share decoys and newsletter posts: department pages with no scripts of their own.
+  for (const route of expectedPages())
+    if (!(`${route}index.html` in files) && route.endsWith('/'))
+      files[`${route}index.html`] = page(route);
+  // The cube loads three.js on request.
+  files['_assets/vendor-three.js'] = 'Math.random();"https://jcgt.org/published/0007/04/01/"';
   return { files, graph };
 }
 
@@ -301,12 +310,12 @@ describe('csp', () => {
 describe('text.forbidden', () => {
   it('flags scam-flow phrasing and form numbers with a 7 anywhere served', () => {
     const fx = variant((f) => {
-      patch(f, 'index.html', '</main>', '<p>Case DRV-123457</p></main>');
+      patch(f, 'index.html', '</main>', '<p>Case DDP-123457</p></main>');
       append(f, '_assets/home.js', '"Verify you are human"');
     });
     expect(problems('text.forbidden', fx)).toEqual([
       '_assets/home.js: real-CAPTCHA phrasing: /verify you are human/i',
-      'index.html: form numbers never contain a 7: /DRV-\\d*7\\d*\\b/',
+      'index.html: form numbers never contain a 7: /\\b(?:DRV|DDP)-\\d*7\\d*\\b/',
     ]);
   });
 });
@@ -346,14 +355,14 @@ describe('js.appApis', () => {
     const fx = variant((f) => {
       append(
         f,
-        '_assets/ceremony.js',
+        '_assets/release.js',
         'Notification.requestPermission();navigator.hardwareConcurrency;',
       );
       append(f, '_assets/doom.js', 'e.clipboardData;');
     });
     expect(problems('js.appApis', fx).map((p) => p.split(':').slice(0, 2).join(':'))).toEqual([
-      '_assets/ceremony.js: permission prompt API',
-      '_assets/ceremony.js: fingerprinting API',
+      '_assets/release.js: permission prompt API',
+      '_assets/release.js: fingerprinting API',
       '_assets/doom.js: clipboard access',
     ]);
   });
@@ -452,34 +461,35 @@ describe('budgets', () => {
     const rows = new Map(
       budgetRows(siteOf(fixture())).map(([r, total, budget]) => [r, { total, budget }]),
     );
-    expect(rows.get('/')?.budget).toBe(12 * 1024);
+    expect(rows.get('/')?.budget).toBe(16 * 1024);
     expect(rows.get('/resume/')?.budget).toBe(2 * 1024);
-    expect(rows.get('/projects/')).toEqual({ total: 0, budget: 0 });
+    expect(rows.get('/projects/')).toEqual({ total: 0, budget: 14 * 1024 });
+    expect(rows.get('/tribute/')).toEqual({ total: 0, budget: 0 });
   });
 
   it('rejects a page over budget, and any script on a page budgeted at 0 KB', () => {
     const fx = variant((f) => {
-      f['_assets/home.js'] = noise(20_000);
+      f['_assets/home.js'] = noise(25_000);
       patch(
         f,
-        'projects/index.html',
+        'tribute/index.html',
         '</main>',
         `<script type="module" src="${BASE}/_assets/doom.js"></script></main>`,
       );
     });
-    expect(gz(fx.files['_assets/home.js'] ?? '')).toBeGreaterThan(12 * 1024);
+    expect(gz(fx.files['_assets/home.js'] ?? '')).toBeGreaterThan(16 * 1024);
     expect(
       problems('budgets', fx).map((p) => p.replace(/[\d.]+ KB gz over/, 'N KB gz over')),
-    ).toEqual(['/: N KB gz over 12.0 KB', '/projects/: N KB gz over 0.0 KB']);
+    ).toEqual(['/: N KB gz over 16.0 KB', '/tribute/: N KB gz over 0.0 KB']);
   });
 
   it('holds lazy chunks to their own budget, and keeps heavy chunks out of static closures', () => {
     const fx = variant((f) => {
-      f['_assets/ceremony.js'] = noise(12_000);
+      f['_assets/release.js'] = noise(20_000);
       f['_assets/lifecycle.js'] = noise(40_000);
     });
     const found = problems('budgets', fx);
-    expect(found.some((p) => /^_assets\/ceremony\.js: lazy chunk .* over 6 KB$/.test(p))).toBe(
+    expect(found.some((p) => /^_assets\/release\.js: lazy chunk .* over 12 KB$/.test(p))).toBe(
       true,
     );
     expect(
@@ -488,15 +498,35 @@ describe('budgets', () => {
   });
 });
 
+describe('budgets.vendor', () => {
+  it('keeps each vendored engine lazy and under its own cap, and exempts only its dice', () => {
+    expect(problems('js.appApis', fixture())).toEqual([]);
+    const fx = variant((f, g) => {
+      g['_assets/home.js']?.imports.push('_assets/vendor-three.js');
+      f['_assets/vendor-three.js'] = `${noise(280_000)}Math.random();navigator.sendBeacon("/x");`;
+    });
+    expect(
+      problems('budgets', fx).map((p) => p.replace(/[\d.]+ KB gz over/, 'N KB gz over')),
+    ).toEqual([
+      '/: N KB gz over 16.0 KB',
+      "_assets/vendor-three.js: vendored engine in a page's static closure",
+      '_assets/vendor-three.js: N KB gz over 200 KB',
+    ]);
+    expect(problems('js.appApis', fx)).toEqual([
+      '_assets/vendor-three.js: transmit API: /sendBeacon|XMLHttpRequest|\\bWebSocket\\b|\\bEventSource\\b/',
+    ]);
+  });
+});
+
 describe('routes.coverage', () => {
   it('fails on a missing route and on a page outside the route table', () => {
     const fx = variant((f) => {
       delete f['tribute/index.html'];
-      f['casino/index.html'] = page('casino/');
+      f['annex/index.html'] = page('annex/');
     });
     expect(problems('routes.coverage', fx)).toEqual([
       '.: route missing from the build: /tribute/',
-      '.: page not in the route table: /casino/',
+      '.: page not in the route table: /annex/',
     ]);
   });
 });
@@ -515,9 +545,9 @@ describe('boundary.resume', () => {
 
   it('allows the lifecycle module, and nothing else of the runtime, steps or domain', () => {
     for (const m of [
-      'src/steps/release.ts',
-      'src/domain/case.ts',
-      'src/content/institution/case.ts',
+      'src/scenes/casino/index.ts',
+      'src/case/policy.ts',
+      'src/content/department/case.ts',
     ])
       expect(
         problems(
@@ -529,8 +559,8 @@ describe('boundary.resume', () => {
       ).toContain(`resume/index.html: loads ${m} (via _assets/print.js)`);
   });
 
-  it('rejects the case record key and institutional copy on the résumé', () => {
-    const sentence = institutionStrings().find((s) => !/[&<>"]/.test(s)) ?? '';
+  it('rejects the case record key and departmental copy on the résumé', () => {
+    const sentence = departmentStrings().find((s) => !/[&<>"]/.test(s)) ?? '';
     expect(sentence.length).toBeGreaterThan(0);
     const fx = variant((f) => {
       append(f, '_assets/print.js', '"uvcr:case"');
@@ -540,9 +570,9 @@ describe('boundary.resume', () => {
     const found = problems('boundary.resume', fx);
     expect(found).toContain('resume/index.html: _assets/print.js mentions the case record');
     expect(found).toContain(
-      `resume/for/emb/index.html: institutional copy: "${sentence.slice(0, 50)}"`,
+      `resume/for/emb/index.html: departmental copy: "${sentence.slice(0, 50)}"`,
     );
-    expect(found).toContain(`resume.md: institutional copy: "${sentence.slice(0, 50)}"`);
+    expect(found).toContain(`resume.md: departmental copy: "${sentence.slice(0, 50)}"`);
   });
 });
 

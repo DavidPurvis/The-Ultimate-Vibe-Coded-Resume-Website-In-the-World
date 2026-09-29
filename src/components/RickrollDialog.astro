@@ -1,0 +1,61 @@
+---
+import SceneDialog from './SceneDialog.astro';
+import { rickDialog } from '../content/copy/rick';
+import { url } from '../lib/paths';
+---
+
+<SceneDialog id="rickroll" title={rickDialog.title} closeLabel={rickDialog.closeLabel} wide>
+  <p>{rickDialog.body}</p>
+  <div class="rick-slot" data-rick-slot></div>
+  <div class="rick-fallback" data-rick-fallback hidden>
+    <img
+      src={url('/illustrations/dancer-fallback.svg')}
+      alt={rickDialog.fallbackAlt}
+      width="480"
+      height="270"
+    />
+    <p>{rickDialog.fallback}</p>
+    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" rel="noopener noreferrer" target="_blank">
+      {rickDialog.watch}
+    </a>
+  </div>
+  <div class="btn-row">
+    <a class="btn btn--primary" href="#" data-rick-continue hidden>
+      {rickDialog.continue}
+    </a>
+    <button type="button" class="btn" data-close>
+      {rickDialog.close}
+    </button>
+    <button type="button" class="btn btn--ghost btn--small" data-rick-notloading>
+      {rickDialog.notLoading}
+    </button>
+  </div>
+</SceneDialog>
+
+<style>
+  .rick-slot {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: var(--r-2);
+    overflow: hidden;
+    margin-bottom: var(--s-4);
+  }
+  .rick-slot:empty {
+    display: none;
+  }
+  .rick-slot :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .rick-fallback {
+    text-align: center;
+    margin-bottom: var(--s-4);
+  }
+  .rick-fallback img {
+    border-radius: var(--r-2);
+  }
+</style>

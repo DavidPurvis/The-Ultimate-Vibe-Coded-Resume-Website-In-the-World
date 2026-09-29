@@ -1,14 +1,14 @@
 /**
  * Résumé integrity guard — the Résumé Context Pack's §8 constraints, made executable.
  * Runs over the rendered résumé HTML text, the PDF text layer, resume.md, llms.txt, page metadata,
- * the /projects/ page. Any violation fails tests / the build.
+ * the /projects/ page and the newsletter's posts. Any violation fails tests / the build.
  */
 import { ABSENT_TECH, GO_LANG } from '../content/resume/lexicon';
 import { normalizeNumber, VERIFIED_NUMBERS } from '../content/resume/numbers';
 
 export { normalizeNumber };
 
-export type Scope = 'resume' | 'pdf' | 'md' | 'llms' | 'meta' | 'projects';
+export type Scope = 'resume' | 'pdf' | 'md' | 'llms' | 'meta' | 'projects' | 'blog';
 
 export interface Violation {
   rule: string;
@@ -17,7 +17,7 @@ export interface Violation {
 }
 
 /** Every surface that states facts about David. */
-const ALL: readonly Scope[] = ['resume', 'pdf', 'md', 'llms', 'meta', 'projects'];
+const ALL: readonly Scope[] = ['resume', 'pdf', 'md', 'llms', 'meta', 'projects', 'blog'];
 const RESUME_LIKE: readonly Scope[] = ['resume', 'pdf', 'md'];
 
 /** Numbers allowed per scope in addition to VERIFIED_NUMBERS and years. */

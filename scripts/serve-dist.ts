@@ -1,5 +1,6 @@
 /**
- * Minimal static server that serves ./dist under the real GitHub Pages base path,
+ * Minimal static server that serves ./dist (or DIST_DIR, e.g. dist-hooks) under the real GitHub
+ * Pages base path,
  * mirroring Pages behaviour closely enough for e2e, PDF rendering and Lighthouse:
  *  - directories → index.html, missing trailing slash → 301
  *  - unknown paths → dist/404.html with status 404
@@ -9,7 +10,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)), 'dist');
+const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)), process.env.DIST_DIR || 'dist');
 const BASE = (
   process.env.BASE_PATH || '/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World'
 ).replace(/\/$/, '');

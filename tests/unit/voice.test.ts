@@ -1,104 +1,87 @@
 /**
- * The institution's voice (C4, C5): it is completely serious about itself. No exclamation marks,
- * no winking, short notices and step bodies, and a finding never repeats word for word from one
- * surface to the next.
+ * The Department's voice: it is completely serious about itself. It explains procedures, never
+ * the comedy; it never exclaims or winks; notices are short; and every notice ID has its words.
  */
 import { describe, expect, it } from 'vitest';
-import * as caseCopy from '../../src/content/institution/case';
-import * as ceremonyCopy from '../../src/content/institution/ceremony';
-import * as scopeCopy from '../../src/content/institution/scope';
-import * as previewCopy from '../../src/content/institution/preview';
-import * as releaseCopy from '../../src/content/institution/release';
-import * as findingsCopy from '../../src/content/institution/findings';
-import * as ackCopy from '../../src/content/institution/acknowledgment';
-import type { FindingId } from '../../src/domain/findings';
-import { SERVICE_IDS } from '../../src/domain/assessment';
+import * as caseCopy from '../../src/content/department/case';
+import * as shellCopy from '../../src/content/department/shell';
+import { NOTICE_IDS } from '../../src/case/state';
+import { releaseSummary } from '../../src/case/policy';
 
 const BANNED = [
-  'lol',
-  'lmao',
-  'jk',
-  'just kidding',
-  'oops',
-  'haha',
-  'epic',
-  'vibe',
-  'satire',
-  'parody',
+  /\blol\b/i,
+  /\blmao\b/i,
+  /\bjk\b/i,
+  /just kidding/i,
+  /\boops\b/i,
+  /\bhaha\b/i,
+  /\bepic\b/i,
+  /\bvibe/i,
+  /\bsatire\b/i,
+  /\bparody\b/i,
+  /house is rigged/i,
+  /verifies nothing/i,
+  /contains no jokes/i,
 ];
 
-/** Every string the institution can say, with templates filled in with sample values. */
+/** Every string the Department can say, with templates filled in. */
 function sayings(value: unknown, out: string[] = []): string[] {
   if (typeof value === 'string') out.push(value);
   else if (typeof value === 'function') {
     const f = value as (...a: unknown[]) => unknown;
-    for (const args of [[1], [2], ['DRV-123456'], ['Backend', 2], [3, 2]]) sayings(f(...args), out);
+    const none = releaseSummary(
+      { departments: [], issuedNotices: [], released: false },
+      {
+        classification: null,
+        verification: null,
+        allocationLosses: 0,
+        appendixOpened: false,
+        cookiePending: false,
+      },
+    );
+    sayings(f(none), out);
+    sayings(
+      f({
+        ...none,
+        departments: 3,
+        classification: 'withheld',
+        verification: 'skipped',
+        allocationLosses: 2,
+        appendixOpened: true,
+        supported: true,
+      }),
+      out,
+    );
   } else if (Array.isArray(value)) for (const v of value) sayings(v, out);
   else if (value && typeof value === 'object')
     for (const v of Object.values(value)) sayings(v, out);
   return out;
 }
 
-// findingLines is a Record<FindingId, …>, so its keys are every finding.
-const FINDING_IDS = Object.keys(caseCopy.findingLines) as FindingId[];
+const all = [caseCopy, shellCopy].flatMap((m) => sayings(m));
 const words = (s: string) => s.split(/\s+/).filter(Boolean).length;
-const all = [
-  caseCopy,
-  scopeCopy,
-  previewCopy,
-  releaseCopy,
-  ceremonyCopy,
-  findingsCopy,
-  ackCopy,
-].flatMap((m) => sayings(m));
 
-describe('institutional voice', () => {
-  it('never exclaims', () => {
-    expect(all.length).toBeGreaterThan(100);
+describe('departmental voice', () => {
+  it('never exclaims, winks or explains the joke', () => {
+    expect(all.length).toBeGreaterThan(15);
     expect(all.filter((s) => s.includes('!'))).toEqual([]);
+    for (const s of all) for (const re of BANNED) expect(s, s).not.toMatch(re);
   });
 
-  it('never winks', () => {
-    const hits = all.filter((s) =>
-      BANNED.some((w) => new RegExp(`(^|[^a-z])${w}([^a-z]|$)`, 'i').test(s)),
+  it('every notice has its words, and a notice is short', () => {
+    for (const id of NOTICE_IDS) {
+      const text = caseCopy.notices[id];
+      expect(text, id).toBeTruthy();
+      expect(words(text), id).toBeLessThanOrEqual(25);
+    }
+  });
+
+  it('the determination cites only what was recorded, or says nothing was supplied', () => {
+    const none = sayings(caseCopy.determinationSummary)[0] ?? '';
+    expect(none).toBe('No departments consulted. No supporting declarations were supplied.');
+    const full = sayings(caseCopy.determinationSummary)[1] ?? '';
+    expect(full).toBe(
+      '3 departments consulted. Classification: withheld. Verification: skipped. 2 unsuccessful allocations on file. Removed material: reviewed.',
     );
-    expect(hits).toEqual([]);
-  });
-
-  it('keeps notices to 25 words and step bodies to 45', () => {
-    expect(words(caseCopy.notice.text)).toBeLessThanOrEqual(25);
-    const bodies = [
-      scopeCopy.scope.body,
-      previewCopy.preview.body,
-      releaseCopy.release.body,
-      ceremonyCopy.ceremony.body,
-      findingsCopy.findingsCopy.body,
-      ackCopy.acknowledgment.pending.body,
-      ackCopy.acknowledgment.acknowledged.body,
-      ackCopy.acknowledgment.appealed.body,
-      caseCopy.dispositionCopy.summary,
-    ];
-    for (const b of bodies) expect(words(b), b).toBeLessThanOrEqual(45);
-  });
-
-  it('a finding reads differently on every surface it appears on (C4)', () => {
-    for (const id of FINDING_IDS) {
-      const l = caseCopy.findingLines[id];
-      const surfaces = [l.status, l.findings(2), l.disposition(2)].filter(Boolean);
-      expect(new Set(surfaces).size, id).toBe(surfaces.length);
-    }
-    for (const id of SERVICE_IDS) {
-      const svc = ceremonyCopy.services[id];
-      if (!svc.cited) continue;
-      expect(svc.cited).not.toBe(svc.verdict);
-      for (const f of FINDING_IDS) {
-        const l = caseCopy.findingLines[f];
-        expect([l.status, l.findings(2), l.disposition(2)]).not.toContain(svc.cited);
-      }
-    }
-  });
-
-  it('never mentions a form number with a 7 in it', () => {
-    expect(all.filter((s) => /DRV-\d*7/.test(s))).toEqual([]);
   });
 });

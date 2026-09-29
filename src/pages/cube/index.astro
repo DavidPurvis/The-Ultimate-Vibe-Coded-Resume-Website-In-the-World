@@ -1,0 +1,154 @@
+---
+/** DDP-19: The Tungsten Cube Experience. three.js loads (lazily) on this page only. */
+import Base from '../../layouts/Site.astro';
+import PageHero from '../../components/PageHero.astro';
+import { ROUTES } from '../../content/site/meta';
+import { cubeCopy as C } from '../../content/copy/cube';
+import { url } from '../../lib/paths';
+import { kgToLb, massKg } from '../../scenes/cube/logic';
+
+const MAX = 10_000;
+const kg = massKg();
+const specs = C.specs(kg.toFixed(1), kgToLb(kg).toFixed(1));
+const fmt = (n: number) => n.toLocaleString('en-US');
+---
+
+<Base route={ROUTES.cube}>
+  <PageHero kicker={C.kicker} title={C.h1} lede={C.lede} />
+
+  <figure class="cube-stage" data-cube-stage>
+    <img
+      src={url('/illustrations/tungsten-cube.svg')}
+      alt={C.fallbackAlt}
+      width="320"
+      height="300"
+      data-cube-fallback
+    />
+    <canvas role="img" aria-label={C.canvasLabel} hidden></canvas>
+  </figure>
+
+  <div class="cube-controls js-only chaos-only" role="group" aria-label={C.h1}>
+    <button type="button" class="btn btn--primary" data-cube-heft>
+      {C.heft}
+    </button>
+    <button type="button" class="btn" data-cube-summon>
+      {C.summon('0', fmt(MAX))}
+    </button>
+    <button type="button" class="btn btn--ghost" data-cube-clear>
+      {C.clear}
+    </button>
+  </div>
+  <p class="fine js-only chaos-only" data-cube-count>
+    {C.onFloor('0')}
+  </p>
+  <p class="fine js-only" role="status" data-cube-status></p>
+
+  <section class="cube-specs card" aria-labelledby="cube-specs">
+    <h2 id="cube-specs">{C.specsTitle}</h2>
+    <dl>
+      {specs.map(([k, v]) => (
+        <div>
+          <dt>{k}</dt>
+          <dd>{v}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  <section class="cube-faq" aria-labelledby="cube-faq">
+    <h2 id="cube-faq">{C.faqTitle}</h2>
+    {C.faq.map(([q, a]) => (
+      <details>
+        <summary>{q}</summary>
+        <p>{a}</p>
+      </details>
+    ))}
+  </section>
+
+  <span
+    hidden
+    data-cube-copy={JSON.stringify({
+      summon: C.summon('{n}', '{max}'),
+      full: C.full,
+      thud: C.thud,
+      calmThud: C.calmThud,
+      noWebgl: C.noWebgl,
+      onFloor: C.onFloor('{n}'),
+      max: MAX,
+    })}
+  ></span>
+</Base>
+
+<script>
+  import '../../scenes/cube/page';
+</script>
+
+<style>
+  .cube-stage {
+    position: relative;
+    margin: 0 0 var(--s-4);
+    aspect-ratio: 16 / 10;
+    max-width: 56rem;
+    border-radius: var(--r-2);
+    background: radial-gradient(ellipse at 50% 35%, var(--card), transparent 70%);
+    overflow: hidden;
+  }
+  .cube-stage img,
+  .cube-stage canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .cube-stage img {
+    object-fit: contain;
+    padding: 8%;
+  }
+  .cube-stage canvas {
+    touch-action: none;
+    cursor: grab;
+  }
+  .cube-stage canvas[hidden],
+  .cube-stage img[hidden] {
+    display: none;
+  }
+  .cube-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+  .cube-specs {
+    max-width: 40rem;
+    margin-top: var(--s-6);
+    padding: var(--s-4) var(--s-5);
+  }
+  .cube-specs dl {
+    display: grid;
+    gap: var(--s-2);
+    margin: 0;
+  }
+  .cube-specs dl > div {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: var(--s-3);
+  }
+  .cube-specs dt {
+    font: 600 0.8rem/1.5 var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .cube-specs dd {
+    margin: 0;
+  }
+  .cube-faq {
+    max-width: 40rem;
+    margin-top: var(--s-6);
+  }
+  .cube-faq summary {
+    min-height: var(--target);
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    cursor: pointer;
+  }
+</style>

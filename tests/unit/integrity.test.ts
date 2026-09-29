@@ -39,6 +39,7 @@ describe('integrity fixtures — each violates exactly the named rule', () => {
   it('Go the language is flagged; "Go home" is not', () => {
     expect(rules('Wrote services in Go')).toContain('R10');
     expect(rules('Go home')).not.toContain('R10');
+    expect(rules('Go directly to résumé')).not.toContain('R10');
   });
 });
 

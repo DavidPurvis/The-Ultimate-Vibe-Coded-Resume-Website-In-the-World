@@ -9,7 +9,13 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 
 const ROOT = process.cwd();
-const OUT = resolve(ROOT, 'reports', 'chunk-graph.json');
+// A test-hooks build (dist-hooks/) records its graph separately, so it never replaces the graph
+// the scanner reads for the production artifact.
+const OUT = resolve(
+  ROOT,
+  'reports',
+  process.env.PUBLIC_TEST_HOOKS === '1' ? 'chunk-graph.hooks.json' : 'chunk-graph.json',
+);
 
 /** @returns {import('vite').Plugin} */
 export function chunkGraph() {

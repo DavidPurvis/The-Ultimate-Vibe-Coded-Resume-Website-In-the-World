@@ -31,7 +31,7 @@ test.describe('routes', () => {
       expect(html, r).toMatch(/<meta property="og:image" content="https:\/\/[^"]+og\.png"/);
       expect(html, r).toMatch(/<meta name="twitter:card" content="summary_large_image"/);
       expect((html.match(/<h1[\s>]/g) ?? []).length, r).toBe(1);
-      // No modes, no themes: the system decides light or dark.
+      // No mode or theme in the HTML itself: the boot script applies the visitor's preference.
       expect(html, r).not.toMatch(/data-(mode|theme)=/);
     }
   });

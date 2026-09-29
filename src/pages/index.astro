@@ -1,28 +1,146 @@
 ---
+/**
+ * The Department's front desk and directory. The first screen states the Department's authority
+ * and offers the résumé two ways: Request résumé (a real link, enhanced later with the release
+ * procedure) and Go directly to résumé (a link that never changes). Nothing opens, moves focus or
+ * loads media until the visitor asks; every control below works as a link without JavaScript,
+ * or is hidden until JavaScript is available.
+ */
 import Site from '../layouts/Site.astro';
-import ArrivalHero from '../components/ArrivalHero.astro';
-import CasePanel from '../components/CasePanel.astro';
+import IdentityDialog from '../components/IdentityDialog.astro';
+import ModeToggle from '../components/ModeToggle.astro';
+import ThemeCycle from '../components/ThemeCycle.astro';
+import ParodyAd from '../components/ParodyAd.astro';
 import { ROUTES } from '../content/site/meta';
 import { home } from '../content/site/home';
+import { opening, shell } from '../content/department/shell';
+import { DIRECTORY, directory } from '../content/department/directory';
+import { frontDesk } from '../content/department/frontDesk';
+import { modes } from '../content/copy/global';
+import { PARODY_ADS } from '../content/copy/ads';
+import { doomCopy } from '../content/site/doom';
 import { identity } from '../content/resume/identity';
-import { entityEncode } from '../lib/paths';
-import '../styles/institution.css';
+import { entityEncode, url } from '../lib/paths';
 
 const mail = `<a href="${entityEncode(`mailto:${identity.email}`)}">${entityEncode(identity.email)}</a>`;
 ---
 
-<Site route={ROUTES.home} printResume formNumber={home.formNumber}>
-  <p id="case-chip" class="case-chip" slot="chip" hidden></p>
-  <ArrivalHero>
-    <CasePanel />
-  </ArrivalHero>
-  <div id="notice-slot" class="notice-slot"></div>
-  <section
-    id="contact"
-    class="contact-block"
-    aria-labelledby="contact-heading"
-    data-evidence="contact"
-  >
+<Site route={ROUTES.home} printResume>
+  <section class="opening" aria-labelledby="opening-heading">
+    <h1 id="opening-heading">{opening.title}</h1>
+    <p class="lede">{opening.lede}</p>
+    <dl class="record">
+      <div>
+        <dt>{opening.subjectLabel}</dt>
+        <dd>{opening.subject}</dd>
+      </div>
+      <div>
+        <dt>{opening.capabilityLabel}</dt>
+        <dd>{opening.capability}</dd>
+      </div>
+    </dl>
+    <div class="btn-row">
+      <a class="btn btn--primary" href={url('/resume/')} data-release>
+        {shell.requestResume}
+      </a>
+      <a class="btn" href={url('/resume/')}>
+        {shell.directResume}
+      </a>
+    </div>
+  </section>
+
+  <section id="directory" class="directory" aria-labelledby="directory-heading">
+    <h2 id="directory-heading">{directory.heading}</h2>
+    <p class="fine">{directory.lede}</p>
+    {DIRECTORY.map((c) => (
+      <section id={c.id} class="dept" aria-labelledby={`${c.id}-heading`}>
+        <h3 id={`${c.id}-heading`}>{c.title}</h3>
+        <p class="dept__lede">{c.description}</p>
+        <ul class="services">
+          {c.services.map((s) => (
+            <li class="service">
+              <div class="service__name">
+                {s.path ? <a href={url(s.path)}>{s.label}</a> : <span>{s.label}</span>}
+              </div>
+              <p class="service__desc">{s.description}</p>
+              {s.control === 'classification' && (
+                <div class="service__action js-only">
+                  <button type="button" class="btn btn--small" data-open-identity>
+                    {frontDesk.classify}
+                  </button>
+                </div>
+              )}
+              {s.control === 'overlays' && (
+                <div class="service__action js-only chaos-only">
+                  <button
+                    type="button"
+                    class="switch"
+                    role="switch"
+                    aria-checked="false"
+                    aria-describedby="overlay-hud-hint"
+                    data-hud-toggle
+                  >
+                    <span class="switch__track" aria-hidden="true" />
+                    <span>{modes.hud}</span>
+                  </button>
+                  <span id="overlay-hud-hint" class="fine">
+                    {modes.hudHint}
+                  </span>
+                  <button
+                    type="button"
+                    class="switch"
+                    role="switch"
+                    aria-checked="false"
+                    aria-describedby="overlay-subway-hint"
+                    data-subway-toggle
+                  >
+                    <span class="switch__track" aria-hidden="true" />
+                    <span>{modes.subway}</span>
+                  </button>
+                  <span id="overlay-subway-hint" class="fine">
+                    {modes.subwayHint}
+                  </span>
+                </div>
+              )}
+              {s.control === 'ads' && (
+                <details class="service__action archive">
+                  <summary>{frontDesk.adsOpen}</summary>
+                  <ParodyAd placement="inline" seed="archive" />
+                  <span hidden data-parody-ads={JSON.stringify(PARODY_ADS)} />
+                </details>
+              )}
+              {s.control === 'display' && (
+                <div class="service__action js-only">
+                  <ThemeCycle />
+                </div>
+              )}
+              {s.control === 'direct-access' && (
+                <div class="service__action js-only">
+                  <ModeToggle hintId="direct-access-hint-facilities" />
+                </div>
+              )}
+              {s.control === 'cookies' && (
+                <div class="service__action js-only chaos-only">
+                  <button type="button" class="btn btn--small" data-cookie-admin>
+                    {frontDesk.cookies}
+                  </button>
+                </div>
+              )}
+              {s.path === '/doom/' && (
+                <div class="service__action js-only chaos-only">
+                  <button type="button" class="btn btn--small" data-doom-dock>
+                    {doomCopy.dock.open}
+                  </button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </section>
+
+  <section id="contact" class="contact-block" aria-labelledby="contact-heading">
     <h2 id="contact-heading">{home.contactHeading}</h2>
     <p>{home.contactLead}</p>
     <ul class="contact-block__list">
@@ -39,8 +157,9 @@ const mail = `<a href="${entityEncode(`mailto:${identity.email}`)}">${entityEnco
       </li>
     </ul>
   </section>
+  <IdentityDialog slot="after" />
 </Site>
 
 <script>
-  import '../scripts/home';
+  import '../scenes/identity';
 </script>

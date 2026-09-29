@@ -4,9 +4,26 @@
  */
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import { getIconData, iconToHTML, iconToSVG, replaceIDs } from '@iconify/utils';
+import type { IconifyJSON } from '@iconify/types';
 import { ICON_MANIFEST, type IconSet } from '../content/credits';
 
 const require = createRequire(import.meta.url);
+const cache = new Map<string, IconifyJSON>();
+
+function iconSet(pkg: string): IconifyJSON {
+  let set = cache.get(pkg);
+  if (!set) {
+    set = JSON.parse(readFileSync(require.resolve(`${pkg}/icons.json`), 'utf8')) as IconifyJSON;
+    cache.set(pkg, set);
+  }
+  return set;
+}
+
+const PKG: Record<Exclude<IconSet, 'lucide'>, string> = {
+  fluent: '@iconify-json/fluent-emoji-flat',
+  game: '@iconify-json/game-icons',
+};
 
 /** Returns inline <svg> markup. `label` → role="img" + aria-label; otherwise aria-hidden. */
 export function getSvg(
@@ -22,26 +39,36 @@ export function getSvg(
     ? { role: 'img', 'aria-label': opts.label }
     : { 'aria-hidden': 'true', focusable: 'false' };
   const cls = ['icon', `icon--${set}`, opts.className].filter(Boolean).join(' ');
-  const raw = readFileSync(require.resolve(`lucide-static/icons/${name}.svg`), 'utf8');
-  const inner = raw
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/^[\s\S]*?<svg[^>]*>/, '')
-    .replace(/<\/svg>\s*$/, '')
-    .trim();
-  const attrs: Record<string, string> = {
-    xmlns: 'http://www.w3.org/2000/svg',
-    width: String(size),
-    height: String(size),
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
-    'stroke-width': '2',
-    'stroke-linecap': 'round',
-    'stroke-linejoin': 'round',
-    class: cls,
-    ...a11y,
-  };
-  return `<svg ${Object.entries(attrs)
-    .map(([k, v]) => `${k}="${v}"`)
-    .join(' ')}>${inner}</svg>`;
+
+  if (set === 'lucide') {
+    const raw = readFileSync(require.resolve(`lucide-static/icons/${name}.svg`), 'utf8');
+    const inner = raw
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/^[\s\S]*?<svg[^>]*>/, '')
+      .replace(/<\/svg>\s*$/, '')
+      .trim();
+    const attrs: Record<string, string> = {
+      xmlns: 'http://www.w3.org/2000/svg',
+      width: String(size),
+      height: String(size),
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': '2',
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+      class: cls,
+      ...a11y,
+    };
+    return `<svg ${Object.entries(attrs)
+      .map(([k, v]) => `${k}="${v}"`)
+      .join(' ')}>${inner}</svg>`;
+  }
+
+  const data = getIconData(iconSet(PKG[set]), name);
+  if (!data) throw new Error(`Icon ${set}:${name} missing from ${PKG[set]}`);
+  const svg = iconToSVG(data, { height: size });
+  // replaceIDs generates unique ids so repeated icons never collide on one page.
+  const body = replaceIDs(svg.body);
+  return iconToHTML(body, { ...svg.attributes, class: cls, ...a11y });
 }

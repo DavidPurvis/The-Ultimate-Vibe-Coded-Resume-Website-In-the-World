@@ -40,14 +40,13 @@ import { privacyCopy as C } from '../../content/site/privacy';
       </noscript>
     </section>
 
-    <section class="section" aria-labelledby="noticed-h">
-      <h2 id="noticed-h">{C.noticedHeading}</h2>
+    <section class="section" aria-labelledby="media-h">
+      <h2 id="media-h">{C.mediaHeading}</h2>
       <ul>
-        {C.noticed.map((n) => (
+        {C.media.map((n) => (
           <li>{n}</li>
         ))}
       </ul>
-      <p>{C.gpc}</p>
     </section>
 
     <section class="section" aria-labelledby="never-h">
@@ -57,7 +56,6 @@ import { privacyCopy as C } from '../../content/site/privacy';
           <li>{n}</li>
         ))}
       </ul>
-      <p>{C.doom}</p>
       <p class="fine">{C.legacy}</p>
     </section>
   </div>

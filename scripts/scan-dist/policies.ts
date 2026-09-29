@@ -4,9 +4,10 @@
  * JS budgets and the résumé boundary come from the build's chunk graph.
  */
 import { createHash } from 'node:crypto';
+import { readdirSync } from 'node:fs';
 import { buildCsp, ENGINE_CSP } from '../../src/lib/csp';
-import { ROUTES } from '../../src/content/site/meta';
-import { institutionStrings } from '../../src/content/institution/strings';
+import { DECOYS, ROUTES } from '../../src/content/site/meta';
+import { departmentStrings } from '../../src/content/department/strings';
 import { checkResumeText, formatViolations } from '../../src/lib/integrity';
 import {
   CSS_BUDGET_KB,
@@ -14,6 +15,7 @@ import {
   HEAVY_CHUNK_KB,
   JS_BUDGET_KB,
   LAZY_CHUNK_BUDGET_KB,
+  VENDOR_CHUNK_BUDGET_KB,
 } from './budgets';
 import { gz, kb, staticClosure, toDistPath, type Page, type Site } from './load';
 
@@ -25,6 +27,8 @@ export interface Problem {
 export type Policy = (site: Site) => Problem[];
 
 const isEngine = (f: string) => f.startsWith('doom-engine/');
+/** A vendored engine's chunk (named in astro.config.mjs), e.g. _assets/vendor-three.<hash>.js. */
+const vendorOf = (f: string) => /^_assets\/(vendor-[a-z]+)\./.exec(f)?.[1] ?? null;
 const appJs = (site: Site) =>
   Object.keys(site.files).filter((f) => f.endsWith('.js') && !isEngine(f));
 const isResume = (p: Page) => p.route === 'resume/' || p.route.startsWith('resume/for/');
@@ -97,7 +101,7 @@ const FORBIDDEN_TEXT: [RegExp, string][] = [
   [/execCommand\(\s*['"]copy/, 'clipboard access'],
   [/\.exe\b/i, 'executable reference'],
   [/g-recaptcha|recaptcha|turnstile|cf-challenge|hcaptcha/i, 'CAPTCHA vendor lookalike'],
-  [/DRV-\d*7\d*\b/, 'form numbers never contain a 7'],
+  [/\b(?:DRV|DDP)-\d*7\d*\b/, 'form numbers never contain a 7'],
   [/\[(EMAIL|PHONE|USERNAME)\]/, 'unfilled placeholder'],
 ];
 
@@ -139,10 +143,17 @@ const APP_JS_FORBIDDEN: [RegExp, string][] = [
   [/Math\.random\(/, 'unseeded randomness'],
 ];
 
-/** P4, P5, D2: app code cannot transmit, prompt, fingerprint, read the clipboard or roll dice. */
+/**
+ * P4, P5, D2: app code cannot transmit, prompt, fingerprint, read the clipboard or roll dice. The
+ * vendored engines are held to everything except the dice: three.js and matter.js use
+ * Math.random internally, for IDs and jitter the site never reads.
+ */
 const appApis: Policy = (site) =>
   appJs(site).flatMap((f) =>
-    APP_JS_FORBIDDEN.filter(([re]) => re.test(site.files[f] ?? '')).map(([re, why]) => ({
+    APP_JS_FORBIDDEN.filter(
+      ([re, why]) =>
+        !(vendorOf(f) && why === 'unseeded randomness') && re.test(site.files[f] ?? ''),
+    ).map(([re, why]) => ({
       policy: 'js.appApis',
       file: f,
       message: `${why}: ${re}`,
@@ -164,6 +175,12 @@ const externalUrls: Policy = (site) =>
               u.startsWith('https://github.com/DavidPurvis') ||
               u.startsWith('https://www.linkedin.com/in/dgp0') ||
               u.startsWith('http://www.w3.org/') ||
+              // YouTube's privacy-enhanced player (CSP frame-src), inserted only by an explicit
+              // play control, and the ordinary watch link offered beside it.
+              u.startsWith('https://www.youtube-nocookie.com/embed/') ||
+              u.startsWith('https://www.youtube.com/watch') ||
+              // A citation in three.js's source; never fetched.
+              u === 'https://jcgt.org/published/0007/04/01/' ||
               // Part of an Emscripten error message in the vendored DOOM engine; never fetched.
               u === 'https://github.com/emscripten-core/emscripten/wiki/Linking'
             ),
@@ -249,6 +266,23 @@ const budgets: Policy = (site) => {
   const reachable = new Set(site.pages.flatMap((p) => [...staticClosure(site, p.moduleScripts)]));
   for (const f of appJs(site)) {
     const size = gz(site.files[f] ?? '');
+    const vendor = vendorOf(f);
+    if (vendor) {
+      const cap = VENDOR_CHUNK_BUDGET_KB[vendor] ?? 0;
+      if (reachable.has(f))
+        out.push({
+          policy: 'budgets.vendor',
+          file: f,
+          message: "vendored engine in a page's static closure",
+        });
+      if (size > cap * 1024)
+        out.push({
+          policy: 'budgets.vendor',
+          file: f,
+          message: `${kb(size)} KB gz over ${cap} KB`,
+        });
+      continue;
+    }
     if (!reachable.has(f) && size > LAZY_CHUNK_BUDGET_KB * 1024)
       out.push({
         policy: 'budgets.lazy',
@@ -265,12 +299,23 @@ const budgets: Policy = (site) => {
   return out;
 };
 
-/** The pages built are exactly the route table (plus the 404, the OG card and DOOM's frame). */
-const routeCoverage: Policy = (site) => {
-  const expected = new Set(
+/**
+ * Every page the build should produce, dist-relative: the route table, the share decoys, one page
+ * per newsletter post (src/blog/*.md), the 404 and the OG card. DOOM's engine frame is not a page.
+ */
+export function expectedPages(blogDir = 'src/blog'): Set<string> {
+  const out = new Set(
     Object.values(ROUTES).map((r) => (r.path === '/404.html' ? '404.html' : r.path.slice(1))),
   );
-  expected.add('og-card/');
+  for (const d of DECOYS) out.add(`r/${d.slug}/`);
+  for (const f of readdirSync(blogDir)) if (f.endsWith('.md')) out.add(`blog/${f.slice(0, -3)}/`);
+  out.add('og-card/');
+  return out;
+}
+
+/** The pages built are exactly the expected pages. */
+const routeCoverage: Policy = (site) => {
+  const expected = expectedPages();
   const built = new Set(site.pages.filter((p) => p.kind !== 'engine').map((p) => p.route));
   return [
     ...[...expected].filter((r) => !built.has(r)).map((r) => `route missing from the build: /${r}`),
@@ -278,12 +323,12 @@ const routeCoverage: Policy = (site) => {
   ].map((message) => ({ policy: 'routes.coverage', file: '.', message }));
 };
 
-/** A-10, C3: the résumé loads nothing of the case, stores nothing, and says nothing institutional. */
+/** The résumé loads nothing of the Department, stores nothing, and says nothing departmental. */
 const resumeBoundary: Policy = (site) => {
   const out: Problem[] = [];
-  const strings = institutionStrings();
+  const strings = departmentStrings();
   const FORBIDDEN_MODULE =
-    /^src\/(steps|domain|content\/institution)\/|^src\/runtime\/(?!lifecycle\.ts$)/;
+    /^src\/(scenes|case|domain|content\/(department|copy))\/|^src\/runtime\/(?!lifecycle\.ts$)|^src\/lib\/(scene|mode|storage)\.ts$/;
   for (const p of site.pages.filter(isResume)) {
     const fail = (m: string) => out.push({ policy: 'boundary.resume', file: p.file, message: m });
     const closure = staticClosure(site, p.moduleScripts);
@@ -293,8 +338,7 @@ const resumeBoundary: Policy = (site) => {
       if ((site.files[f] ?? '').includes('uvcr:case')) fail(`${f} mentions the case record`);
     }
     if (p.html.includes('uvcr:case')) fail('the page mentions the case record');
-    for (const s of strings)
-      if (p.html.includes(s)) fail(`institutional copy: "${s.slice(0, 50)}"`);
+    for (const s of strings) if (p.html.includes(s)) fail(`departmental copy: "${s.slice(0, 50)}"`);
   }
   for (const f of ['resume.md', 'llms.txt'])
     for (const s of strings)
@@ -302,7 +346,7 @@ const resumeBoundary: Policy = (site) => {
         out.push({
           policy: 'boundary.resume',
           file: f,
-          message: `institutional copy: "${s.slice(0, 50)}"`,
+          message: `departmental copy: "${s.slice(0, 50)}"`,
         });
   return out;
 };

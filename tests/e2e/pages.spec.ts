@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { watchErrors } from './helpers';
 import { checkResumeText } from '../../src/lib/integrity';
 import { LEDGER } from '../../src/content/credits';
-import { institutionStrings } from '../../src/content/institution/strings';
+import { departmentStrings } from '../../src/content/department/strings';
 
 test.describe('projects', () => {
   test('rendered project text passes the integrity guard @smoke', async ({ page }) => {
@@ -69,14 +69,14 @@ test.describe('404', () => {
   });
 });
 
-test.describe('outside the institution', () => {
-  test('plain pages carry no institutional copy and no case', async ({ request }) => {
-    const strings = institutionStrings();
-    // The colophon and privacy page describe the Department on purpose; these pages never do.
-    for (const r of ['projects/', 'credits/', 'tribute/', 'doom/']) {
-      const html = await (await request.get(r)).text();
-      expect(html, r).not.toContain('id="case"');
-      for (const s of strings) expect(html, `${r}: ${s}`).not.toContain(s);
-    }
+test.describe('outside the Department', () => {
+  test('the tribute carries no status, notices, procedures or scripts of its own', async ({
+    request,
+  }) => {
+    const html = await (await request.get('tribute/')).text();
+    expect(html).toMatch(/<html[^>]* data-plain/);
+    expect(html).not.toMatch(/data-status|data-notice-slot|data-mode-toggle|data-parody-ad/);
+    expect(html).not.toMatch(/<script type="module"/);
+    expect(html).not.toContain(departmentStrings().find((s) => s.startsWith('Suspends')) ?? '');
   });
 });

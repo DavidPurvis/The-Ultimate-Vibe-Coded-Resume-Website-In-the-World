@@ -2,9 +2,9 @@
 import type { BlockId } from '../resume/types';
 
 export const projectsCopy = {
-  kicker: 'Projects',
+  kicker: 'Form DDP-11 · Records · Projects',
   h1: 'Projects',
-  sub: 'Described under the same integrity rules as the résumé.',
+  sub: 'Things David built because he wanted them to exist. The technical record under each is held to the same integrity rules as the résumé.',
   stackLabel: 'Stack',
   knownIssueLabel: 'Known issue',
   footer: 'Source code for individual projects isn’t linked here yet. David’s GitHub profile:',
@@ -16,6 +16,8 @@ export interface CaseFile {
   n: number;
   name: string;
   stack: string;
+  /** Why it exists, in the plainest terms (David’s words, from the handoff). */
+  motive?: string;
   body: string[];
   knownIssue?: string;
 }
@@ -26,6 +28,7 @@ export const caseFiles: CaseFile[] = [
     block: 'P1',
     n: 1,
     name: 'Car Thing Media Controller',
+    motive: 'David wanted a desk media controller.',
     stack: 'Python, aiohttp, dbus-next, systemd, MPRIS, OAuth',
     body: [
       'Repurposed a discontinued Spotify Car Thing (an embedded Linux touch device) into a desk media controller.',
@@ -40,6 +43,7 @@ export const caseFiles: CaseFile[] = [
     block: 'P2',
     n: 2,
     name: 'Stream Deck + Bring-Up on Linux',
+    motive: 'David wanted the buttons to work on Linux.',
     stack: 'USB HID, udev, PipeWire',
     body: [
       'Brought a Stream Deck + (dial and touchscreen model) up on Fedora-based Linux without vendor software.',
@@ -64,6 +68,7 @@ export const caseFiles: CaseFile[] = [
     block: 'P4',
     n: 4,
     name: 'Match Analytics Dashboard',
+    motive: 'David wanted to inspect his team’s match statistics.',
     stack: 'React, REST API integration',
     body: [
       'Built a React dashboard consuming a third-party match-statistics API for a five-player team, extracting 459 opening-duel events and 258 clutch events across 21 matches into six tabs of performance metrics.',

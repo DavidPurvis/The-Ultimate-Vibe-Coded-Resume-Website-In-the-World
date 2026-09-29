@@ -1,0 +1,94 @@
+---
+import Site from '../../layouts/Site.astro';
+import PageHero from '../../components/PageHero.astro';
+import { ROUTES } from '../../content/site/meta';
+import { legalCopy as L, standingTerms, tos } from '../../content/copy/legal';
+import { url } from '../../lib/paths';
+---
+
+<Site route={ROUTES.legal}>
+  <PageHero kicker={L.kicker} title={L.h1} lede={L.lede} />
+
+  <section aria-labelledby="tos-h">
+    <h2 id="tos-h" class="sr-only">
+      {tos.label}
+    </h2>
+    <div class="tos" tabindex="0" role="region" aria-label={tos.label} data-tos>
+      {tos.initial.map((p) => (
+        <p>{p}</p>
+      ))}
+      <div data-tos-more></div>
+      <div class="tos__sentinel" data-tos-sentinel aria-hidden="true"></div>
+    </div>
+    <p class="js-only">
+      <button type="button" class="btn" data-tos-accept aria-disabled="true">
+        {tos.button}
+      </button>
+    </p>
+    <p class="tos__receipt" data-tos-receipt aria-live="polite"></p>
+    <noscript>
+      {tos.appended.map((p) => (
+        <p>{p}</p>
+      ))}
+    </noscript>
+    <span hidden data-tos-copy={JSON.stringify(tos)}></span>
+  </section>
+
+  <section class="section" aria-labelledby="conditions-h">
+    <h2 id="conditions-h">{L.conditionsHeading}</h2>
+    <dl class="terms">
+      {standingTerms.map((t) => (
+        <div class="term">
+          <dt>{t.heading}</dt>
+          <dd>{t.body}</dd>
+        </div>
+      ))}
+    </dl>
+    <p class="fine">
+      {L.privacyNote} <a href={url('/privacy/')}>{L.privacyLink}</a>.
+    </p>
+  </section>
+</Site>
+
+<script>
+  import '../../scenes/legal';
+</script>
+
+<style>
+  .tos {
+    height: 18rem;
+    overflow: auto;
+    border: 1px solid var(--ink-2);
+    padding: var(--s-4);
+    background: var(--card);
+    max-width: 40rem;
+  }
+  .tos :global(p) {
+    margin-bottom: var(--s-6);
+  }
+  .tos__sentinel {
+    height: 1px;
+  }
+  .tos__receipt {
+    font-weight: 600;
+  }
+  .tos__receipt:empty {
+    display: none;
+  }
+  .terms {
+    display: grid;
+    gap: 0;
+    max-width: 44rem;
+    border-top: 1px solid var(--rule);
+  }
+  .term {
+    padding-block: var(--s-3);
+    border-bottom: 1px solid var(--rule);
+  }
+  .term dt {
+    font-weight: 600;
+  }
+  .term dd {
+    margin: var(--s-1) 0 0;
+  }
+</style>

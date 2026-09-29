@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 300" width="320" height="300">
+  <title>A four-inch tungsten cube</title>
+  <defs>
+    <linearGradient id="top" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d9dde3"/>
+      <stop offset="1" stop-color="#9aa1ab"/>
+    </linearGradient>
+    <linearGradient id="left" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5f6670"/>
+      <stop offset="1" stop-color="#7d858f"/>
+    </linearGradient>
+    <linearGradient id="right" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8a929c"/>
+      <stop offset="1" stop-color="#4a5058"/>
+    </linearGradient>
+    <radialGradient id="shadow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#000" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="160" cy="262" rx="130" ry="22" fill="url(#shadow)"/>
+  <path d="M160 40 L270 95 L160 150 L50 95 Z" fill="url(#top)" stroke="#2f343a" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M50 95 L160 150 L160 260 L50 205 Z" fill="url(#left)" stroke="#2f343a" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M270 95 L160 150 L160 260 L270 205 Z" fill="url(#right)" stroke="#2f343a" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M92 90 L160 56 L200 76" fill="none" stroke="#fff" stroke-opacity="0.6" stroke-width="4" stroke-linecap="round"/>
+  <path d="M178 170 L250 134" fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="10" stroke-linecap="round"/>
+  <text x="105" y="190" font-family="monospace" font-size="15" font-weight="700" fill="#e4e7eb" fill-opacity="0.55" transform="skewY(27)">W</text>
+</svg>

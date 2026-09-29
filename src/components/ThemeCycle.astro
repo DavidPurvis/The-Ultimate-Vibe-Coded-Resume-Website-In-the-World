@@ -1,0 +1,25 @@
+---
+import Icon from './Icon.astro';
+import { themes } from '../content/copy/global';
+---
+
+<div class="theme-tools chaos-only" data-theme-tools>
+  <button type="button" class="btn btn--small" data-theme-cycle>
+    <Icon name="moon" />
+    <span data-theme-label>
+      {themes.buttonPrefix} {themes.labels.dark} →
+    </span>
+  </button>
+  <button type="button" class="btn btn--small btn--ghost" data-theme-reset hidden>
+    <Icon name="rotate-ccw" />
+    <span>{themes.reset}</span>
+  </button>
+</div>
+
+<style>
+  .theme-tools {
+    display: inline-flex;
+    gap: var(--s-1);
+    align-items: center;
+  }
+</style>

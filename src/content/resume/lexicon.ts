@@ -17,7 +17,7 @@ export const ABSENT_TECH =
   /\b(?:C\+\+|Rust|Kubernetes|k8s|Terraform|Ansible|AWS|Azure|GCP|FreeRTOS|Zephyr|RTOS|Yocto|Buildroot|device tree|kernel module|JTAG|SWD|CAN bus|Cortex-M|FPGA|VHDL|Verilog|SystemVerilog|MISRA|ISO 26262|DO-178C)(?![\w+])/i;
 
 /** Case-sensitive "Go" the language, excluding ordinary English uses. */
-export const GO_LANG = /\bGo\b(?!\s+(?:home|to|back|outside|ahead|on))/;
+export const GO_LANG = /\bGo\b(?!\s+(?:home|to|back|outside|ahead|on|directly))/;
 
 /**
  * Technology vocabulary the validator tracks: a framing may only use a term its fact carries (for

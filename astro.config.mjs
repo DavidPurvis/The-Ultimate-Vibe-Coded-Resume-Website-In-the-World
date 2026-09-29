@@ -23,6 +23,17 @@ export default defineConfig({
       // Never inline scripts/assets as data: or inline <script>; CSP allows only one hashed boot script.
       assetsInlineLimit: 0,
       cssCodeSplit: true,
+      rollupOptions: {
+        output: {
+          // The two vendored engines get chunks of their own, so the scanner can budget them
+          // separately and hold application code to its own rules.
+          manualChunks(id) {
+            if (id.includes('/node_modules/three/')) return 'vendor-three';
+            if (id.includes('/node_modules/matter-js/')) return 'vendor-matter';
+            return undefined;
+          },
+        },
+      },
     },
   },
   devToolbar: { enabled: false },
