@@ -96,13 +96,11 @@ export function initCaseRecord(): void {
   const department = departmentOf(route);
   if (department && !isDirectAccess()) updateCase({ t: 'visit', department });
 
+  // The line is already in the first paint with tier 0's words; only the words change here.
   const renderStatus = (): void => {
-    if (isDirectAccess()) {
-      status.hidden = true;
-      return;
-    }
-    text.textContent = copy.status[statusTier(readSession().caseFile.departments.length)];
-    status.hidden = false;
+    status.hidden = isDirectAccess();
+    if (!status.hidden)
+      text.textContent = copy.status[statusTier(readSession().caseFile.departments.length)];
   };
   renderStatus();
 

@@ -83,9 +83,11 @@ const caseCopy: CaseCopy = { status, notices, noticeLabel, cookie: cookieInvitat
     {!plain && (
       <div class="case-bar" data-case-bar data-case-copy={JSON.stringify(caseCopy)}>
         <div class="container case-bar__inner">
-          <p class="case-status" data-status hidden>
+          {/* In the first paint (tier 0 wording) whenever JavaScript is on and Direct access is off,
+              so the case record only ever changes its words, never the layout. */}
+          <p class="case-status js-only chaos-only" data-status>
             <span class="case-status__label">{statusLabel}</span>
-            <span data-status-text />
+            <span data-status-text>{status[0]}</span>
           </p>
           <div class="notice-slot" data-notice-slot />
         </div>

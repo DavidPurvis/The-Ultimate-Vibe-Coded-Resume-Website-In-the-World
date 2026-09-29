@@ -126,7 +126,10 @@
   gap: var(--s-2);
   padding-block: var(--s-2);
 }
-.case-bar__inner:has(.case-status[hidden]):has(.notice-slot:empty) {
+/* No JavaScript: no case record, so no bar. Direct access: no status, and no bar unless a notice
+   is somehow present. Both are decided before first paint (boot script), so nothing shifts. */
+html:not([data-js]) .case-bar,
+html[data-mode='recruiter'] .case-bar:has(.notice-slot:empty) {
   display: none;
 }
 .case-status {

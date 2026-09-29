@@ -20,7 +20,7 @@ function page(route: string, category: string | null): void {
   }`;
   document.body.innerHTML = `<main id="main" tabindex="-1"></main>
     <div class="case-bar" data-case-bar data-case-copy='${JSON.stringify(COPY).replace(/'/g, '&#39;')}'>
-      <p data-status hidden><span data-status-text></span></p>
+      <p data-status><span data-status-text>Request received.</span></p>
       <div data-notice-slot></div>
     </div>`;
 }
