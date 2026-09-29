@@ -87,11 +87,11 @@ test.describe('DOOM', () => {
     );
     await expect(page.locator('iframe')).toHaveCount(0);
     await expect(page.locator('[data-doom-page] [data-doom-poster]')).toBeVisible();
-    const stored = await page.evaluate(() => [
-      ...Object.keys(localStorage),
-      ...Object.keys(sessionStorage),
-    ]);
-    expect(stored.filter((k) => k.startsWith('uvcr:'))).toEqual([]);
+    // The sound switch is never stored. (The tab's case record notes the visit, and only that.)
+    const stored = await page.evaluate(() => ({ ...localStorage, ...sessionStorage }));
+    expect(Object.keys(stored).filter((k) => k.startsWith('uvcr:'))).toEqual(['uvcr:session']);
+    expect(JSON.parse(stored['uvcr:session'] ?? '{}').caseFile.departments).toEqual(['doom']);
+    expect(JSON.stringify(stored)).not.toMatch(/sound/);
   });
 
   test('loading never pulls focus from wherever the visitor went next', async ({ page }) => {

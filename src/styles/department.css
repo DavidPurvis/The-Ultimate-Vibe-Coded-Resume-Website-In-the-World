@@ -155,6 +155,17 @@
 .notice__text {
   margin: 0;
 }
+.notice__label {
+  margin-right: var(--s-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.875rem;
+}
+.notice__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
 
 /* ---------- the front desk and directory ---------- */
 .opening h1 {

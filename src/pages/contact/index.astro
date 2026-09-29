@@ -1,12 +1,16 @@
 ---
 import Base from '../../layouts/Site.astro';
 import PageHero from '../../components/PageHero.astro';
-import DestLink from '../../components/DestLink.astro';
 import Icon from '../../components/Icon.astro';
 import { ROUTES } from '../../content/site/meta';
 import { contactCopy as C } from '../../content/copy/contact';
 import { PHONE_MAX, formatPhone } from '../../lib/format';
 import { DRUM_CHARS } from '../../scenes/contact/logic';
+import { EMAIL } from '../../content/resume/identity';
+import { entityEncode } from '../../lib/paths';
+
+// Entity-encoded, like everywhere else the address appears.
+const mail = `<a href="${entityEncode(`mailto:${EMAIL}`)}">${entityEncode(EMAIL)}</a>`;
 ---
 
 <Base route={ROUTES.contact}>
@@ -91,9 +95,12 @@ import { DRUM_CHARS } from '../../scenes/contact/logic';
     </section>
   </div>
 
-  <p class="section coward">
-    <DestLink dest="email">{C.coward}</DestLink>
-  </p>
+  <section class="section ordinary" aria-labelledby="ordinary-h">
+    <h2 id="ordinary-h">{C.ordinary.heading}</h2>
+    <p>
+      {C.ordinary.lead} <span set:html={mail} />.
+    </p>
+  </section>
 </Base>
 
 <script>

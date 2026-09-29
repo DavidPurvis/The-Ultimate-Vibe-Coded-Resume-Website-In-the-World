@@ -10,11 +10,11 @@ import { url } from '../../lib/paths';
 <Base route={ROUTES.rick}>
   <PageHero kicker={R.kicker} title={R.h1} lede={R.body} />
   <div class="btn-row">
-    <button type="button" class="btn btn--primary" data-rick-begin data-continue="/projects/">
+    <button type="button" class="btn btn--primary" data-rick-begin>
       <Icon name="play" />
       {R.begin}
     </button>
-    <a class="btn" href={url('/projects/')}>
+    <a class="btn" href={url('/#recreation')}>
       {R.skip}
     </a>
   </div>

@@ -3,7 +3,7 @@
  * budget, then surrender. Keyboard never triggers movement; touch gets an ordinary control;
  * reduced motion gets text-only escalation.
  */
-import { Disposer } from './scene';
+import type { Scope } from '../runtime/lifecycle';
 import { finePointer, reducedMotion } from '../runtime/modality';
 import { isChaos } from './mode';
 import { readSession, writeSession } from './storage';
@@ -34,7 +34,7 @@ function setLabel(el: HTMLElement, text: string): void {
   else el.textContent = text;
 }
 
-export function runaway(o: RunawayOpts, d: Disposer): { surrendered(): boolean; reset(): void } {
+export function runaway(o: RunawayOpts, d: Scope): { surrendered(): boolean; reset(): void } {
   const radius = o.radius ?? 90;
   const distance = o.distance ?? 140;
   const cooldown = o.cooldownMs ?? 250;

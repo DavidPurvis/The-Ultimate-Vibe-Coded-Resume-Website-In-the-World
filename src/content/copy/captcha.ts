@@ -118,34 +118,33 @@ export const captchaCopy = {
 export const rounds = {
   windows: {
     prompt: ['Select all images of ', 'windows', '.'],
-    sub: 'If there are none, click Verify. (There are some.)',
+    sub: 'If there are none, select Verify.',
     headlines: {
-      none: 'You appear to be evaluating the walls between the windows.',
-      'software-only':
-        'Please include windows that can be opened without administrator privileges.',
+      none: 'The walls between the windows have been reviewed. The windows have not.',
+      'software-only': 'Please include windows that open without administrator privileges.',
       'physical-only':
-        'Your selection is incompatible with our operating system procurement policy.',
-      all: 'Overqualification detected. Please demonstrate a more realistic level of uncertainty.',
-      mixed: 'Your answers disagree with a policy we have not written yet.',
+        'The selection conflicts with the Department’s operating system procurement policy.',
+      all: 'Overqualification noted. Please demonstrate a more realistic level of uncertainty.',
+      mixed: 'The answers disagree with a policy that has not yet been written.',
     },
     sublines: [
-      'Incorrect. Please try again.',
-      'You missed one. (You didn’t.)',
-      'Real humans are more selective. Moving on. The windows will remember this.',
+      'The selection has been returned for correction.',
+      'One window was not selected. Every window was selected.',
+      'The review will proceed. The windows have been informed.',
     ],
   },
   cage: {
     prompt: ['Select all images of ', 'Nicolas Cage', '.'],
-    sub: 'Our attorneys have replaced every celebrity photograph with a legally nervous rectangle.',
-    flipped: 'Update: legal has approved cabbages. Please continue selecting Nicolas Cage.',
+    sub: 'The Department’s attorneys have replaced every celebrity photograph with a legally nervous rectangle.',
+    flipped: 'Update: Legal has approved cabbages. Please continue selecting Nicolas Cage.',
     /** Used instead when licensed photos are dropped in (see src/content/cagePhotos.ts). */
     photo: {
       flipped:
-        'Update: legal has approved the photographs. Please continue selecting Nicolas Cage.',
+        'Update: Legal has approved the photographs. Please continue selecting Nicolas Cage.',
       headlines: {
-        none: 'You’ve selected no Nicolas Cages. Mr. Cage noticed.',
-        all: 'Nicolas Cage detected in 9/9 tiles. That is a lot of Cage.',
-        some: 'You missed one. It was Nicolas Cage. They were all Nicolas Cage.',
+        none: 'No Nicolas Cages were selected. Mr. Cage has been notified.',
+        all: 'Nicolas Cage detected in 9 of 9 tiles. The quantity has been noted.',
+        some: 'One tile was missed. It was Nicolas Cage. Every tile was Nicolas Cage.',
       },
       caption: 'No endorsement implied. Mr. Cage has not reviewed this résumé. Yet.',
     },
@@ -155,21 +154,21 @@ export const rounds = {
       '.',
     ],
     headlines: {
-      none: 'You’ve selected no cabbages. The cabbages noticed.',
-      all: 'Cabbage detected in 9/9 tiles. So are you.',
-      some: 'You missed one. It was a cabbage. They were all cabbages.',
+      none: 'No cabbages were selected. The cabbages have been notified.',
+      all: 'Cabbage detected in 9 of 9 tiles, and provisionally in the reviewer.',
+      some: 'One tile was missed. It was a cabbage. Every tile was a cabbage.',
     },
     sublines: [
-      'Our models indicate you may be a robot, or a very tired recruiter.',
-      'Have you considered that you are the cabbage?',
-      'Fine. You’ve proven you’re either human or extremely persistent, and both are hireable.',
+      'The review indicates a robot, or a very tired recruiter.',
+      'The Department has considered whether you are the cabbage.',
+      'Persistence has been accepted as evidence of humanity. The review will conclude.',
     ],
   },
   linux: {
     prompt: ['Select all images of ', 'Linux', '.'],
     empty: 'No images supplied. Your task remains fully specified.',
-    pass: 'Correct. You have successfully refrained from installing a graphical interface.',
-    footnote: 'Linux has graphical interfaces. The joke does not.',
+    pass: 'Correct. No graphical interface was installed.',
+    footnote: 'Linux has graphical interfaces. This round does not.',
   },
 };
 
@@ -180,12 +179,14 @@ export const audio = {
   done: 'Silence complete.',
   label: 'Transcribe the silence',
   submit: 'Submit silence',
-  result: 'Transcription accepted. Flawless. Audio challenge passed. Humanity confirmed by ear.',
+  result: 'Transcription accepted. The silence was transcribed exactly.',
   start: 'Play the silence',
 };
 
 export const completion = {
-  title: 'HUMANITY: PROVISIONALLY CONFIRMED',
+  /** The payoff, shown as the heading once any round concludes. */
+  headline: 'Review complete.',
+  title: 'Humanity: provisionally confirmed',
   method: {
     persistence: 'Method: persistence',
     audio: 'Method: audio',
@@ -197,7 +198,11 @@ export const completion = {
     'Appeal window: closed (it was a window)',
   ],
   next: 'Visit Character Review',
-  skippedReceipt: 'Verification skipped. The inspection has been recorded as completed.',
+  skipped: {
+    headline: 'Verification skipped.',
+    body: 'The skip has been recorded. Nothing on this site depends on verification.',
+  },
+  noscript: 'Verification needs JavaScript. Nothing on this site depends on it.',
 };
 
 export const progressStatuses: CopyRecord[] = [
@@ -212,10 +217,10 @@ export const progressStatuses: CopyRecord[] = [
 ];
 
 export const progress = {
-  label: 'Processing humanity',
+  label: 'Processing the review',
   final: '99.4%: the last 0.6% is character development.',
   skip: 'Skip',
   skipFastLabels: ['Skip (fast)', 'Skip (faster)'],
   skipFastFinal: 'Skip (it gave up)',
-  continueAnyway: 'Continue anyway →',
+  continueAnyway: 'Continue',
 };

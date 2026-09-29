@@ -1,4 +1,9 @@
-/** Verification on /verify/: DOM wiring for the pure reducer, plus the progress record. */
+/**
+ * Verification on /verify/: DOM wiring for the pure reducer, plus the progress record. Every
+ * timer, interval and listener belongs to the page's scope; transient work (the feedback lock,
+ * the tile fade, the audio countdown) lives in a child scope that Direct access or leaving the
+ * page cancels. A cancelled feedback lock settles at once instead of leaving Verify disabled.
+ */
 import {
   captchaReducer,
   initialCaptcha,
@@ -25,8 +30,9 @@ import { toast } from '../../lib/toast';
 import { reducedMotion } from '../../runtime/modality';
 import { makeRng } from '../../lib/rng';
 import { runaway } from '../../lib/runaway';
-import { Disposer } from '../../lib/scene';
 import { url } from '../../lib/paths';
+import { onModeChange } from '../../lib/mode';
+import { Scope } from '../../runtime/lifecycle';
 import { CAP, CONTINUE_AFTER_MS, nextProgress, STATUS_MS, TICK_MS } from '../progress/logic';
 
 const root = document.querySelector<HTMLElement>('[data-captcha]');
@@ -64,6 +70,27 @@ function shuffle<T>(xs: readonly T[]): T[] {
 
 let state: CaptchaState = initialCaptcha;
 let order: CaptchaTile[] = shuffle(windowTiles);
+
+/* ---------- lifecycle ---------- */
+const page = new Scope();
+page.on(window, 'pagehide', (e) => {
+  if (!(e as PageTransitionEvent).persisted) page.dispose();
+});
+let work = page.child();
+/** Something to finish immediately if the transient work is cancelled mid-way. */
+let settle: (() => void) | null = null;
+function cancelWork(): void {
+  const s = settle;
+  settle = null;
+  work.dispose();
+  work = page.child();
+  s?.();
+}
+onModeChange((m) => {
+  if (m !== 'recruiter') return;
+  cancelWork();
+  progressD?.dispose();
+});
 
 function restore(): void {
   const snap = readSession().captcha;
@@ -157,7 +184,7 @@ function renderGrid(stagger = false): void {
   if (stagger && !reducedMotion()) {
     buttons.forEach((b, i) => {
       b.classList.add('is-fading');
-      setTimeout(() => b.classList.remove('is-fading'), 60 * i + 30);
+      work.timeout(() => b.classList.remove('is-fading'), 60 * i + 30);
     });
   }
   grid.replaceChildren(...buttons);
@@ -191,15 +218,27 @@ function showDone(): void {
   if (!challenge || !done) return;
   challenge.hidden = true;
   done.hidden = false;
-  const title = $('[data-cn-done-headline]');
-  if (title) title.textContent = state.feedback?.headline ?? rounds.linux.pass;
+  const line = $('[data-cn-done-headline]');
+  if (line) line.textContent = state.feedback?.headline ?? rounds.linux.pass;
+  const title = $('#cn-done-title');
   const method = $('[data-cn-method]');
   if (method)
     method.textContent =
       state.method === 'audio' ? completion.method.audio : completion.method.linux;
   title?.focus({ preventScroll: true });
-  announce(title?.textContent ?? '');
+  announce(`${completion.headline} ${line?.textContent ?? ''}`);
   runProgress();
+}
+
+function showSkipped(focus: boolean): void {
+  const challenge = $('[data-cn-challenge]');
+  const skipped = $('[data-cn-skipped]');
+  if (!challenge || !skipped) return;
+  challenge.hidden = true;
+  skipped.hidden = false;
+  if (!focus) return;
+  $('#cn-skipped-title')?.focus({ preventScroll: true });
+  announce(completion.skipped.headline);
 }
 
 function dispatch(e: CaptchaEvent): void {
@@ -214,13 +253,16 @@ function dispatch(e: CaptchaEvent): void {
     const verify = $<HTMLButtonElement>('[data-cn-verify]');
     verify?.setAttribute('aria-disabled', 'true');
     root?.querySelectorAll('.cn__tile').forEach((t) => t.classList.add('is-fading'));
-    setTimeout(() => {
+    const done = () => {
+      settle = null;
       const advancing = state.advanceTo;
       if (advancing === 'cage') order = shuffle(cageTiles);
       else if (!advancing) order = shuffle(order);
       dispatch({ t: 'FEEDBACK_DONE' });
       verify?.removeAttribute('aria-disabled');
-    }, FEEDBACK_LOCK_MS());
+    };
+    settle = done;
+    work.timeout(done, FEEDBACK_LOCK_MS());
     return;
   }
   if (e.t === 'FEEDBACK_DONE') {
@@ -237,10 +279,10 @@ function dispatch(e: CaptchaEvent): void {
 }
 
 /* ---------- Progress (Zeno) ---------- */
-let progressD: Disposer | null = null;
+let progressD: Scope | null = null;
 function runProgress(): void {
-  progressD?.run();
-  const d = new Disposer();
+  progressD?.dispose();
+  const d = page.child();
   progressD = d;
   const bar = $<HTMLProgressElement>('[data-progress-bar]');
   const pct = $('[data-progress-pct]');
@@ -252,7 +294,7 @@ function runProgress(): void {
   let p = 0;
   let s = 0;
   const finish = () => {
-    d.run();
+    d.dispose();
     if (next) {
       next.hidden = false;
       next.textContent = completion.next;
@@ -282,8 +324,8 @@ function runProgress(): void {
   d.timeout(() => {
     if (skip) skip.textContent = P.continueAnyway;
   }, CONTINUE_AFTER_MS);
-  skip?.addEventListener('click', finish, { once: true });
-  fast?.addEventListener('click', finish, { once: true });
+  if (skip) d.on(skip, 'click', finish, { once: true });
+  if (fast) d.on(fast, 'click', finish, { once: true });
   if (fast && arena) {
     runaway(
       {
@@ -313,8 +355,9 @@ if (root) {
   renderGrid();
   renderFeedback();
   if (state.phase === 'complete') showDone();
+  else if (readSession().captcha?.method === 'skipped') showSkipped(false);
 
-  root.addEventListener('click', (e) => {
+  page.on(root, 'click', (e) => {
     const t = e.target as HTMLElement;
     const tile = t.closest<HTMLElement>('[data-tile]');
     if (tile) {
@@ -337,9 +380,11 @@ if (root) {
       return;
     }
     if (t.closest('[data-cn-skip]')) {
+      cancelWork();
       dispatch({ t: 'SKIP' });
       bump('captchaSkip');
-      return; // the link navigates
+      showSkipped(true);
+      return;
     }
     if (t.closest('[data-cn-audio-play]')) {
       const cd = $('[data-cn-countdown]');
@@ -349,7 +394,7 @@ if (root) {
       const tick = () => {
         if (cd) cd.textContent = audio.countdown[i] ?? '';
         i += 1;
-        if (i <= audio.countdown.length) setTimeout(tick, reducedMotion() ? 250 : 1000);
+        if (i <= audio.countdown.length) work.timeout(tick, reducedMotion() ? 250 : 1000);
         else {
           if (cd) cd.textContent = audio.done;
           announce(audio.done);
@@ -358,7 +403,8 @@ if (root) {
         }
       };
       if (cd) cd.textContent = audio.playing;
-      setTimeout(tick, 400);
+      cancelWork(); // pressing play again restarts the silence rather than overlapping it
+      work.timeout(tick, 400);
       return;
     }
     if (t.closest('[data-cn-audio-submit]')) dispatch({ t: 'AUDIO_PASS' });

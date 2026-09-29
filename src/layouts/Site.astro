@@ -26,7 +26,14 @@ import DepartmentRuntime from '../components/DepartmentRuntime.astro';
 import type { RouteMeta } from '../content/site/meta';
 import { categoryOfPath } from '../content/department/directory';
 import { shell } from '../content/department/shell';
-import { statusLabel } from '../content/department/case';
+import {
+  cookieInvitation,
+  noticeLabel,
+  notices,
+  status,
+  statusLabel,
+} from '../content/department/case';
+import type { CaseCopy } from '../case/notices';
 import { url } from '../lib/paths';
 
 interface Props {
@@ -49,6 +56,9 @@ const {
 const isHome = route.path === '/';
 const category = isHome || plain ? null : categoryOfPath(route.path);
 const related = category?.services.filter((s) => s.path && s.path !== route.path) ?? [];
+// The category a page's notices are chosen for (the front desk is Visitor Services' intake).
+const pageCategory = isHome ? 'visitor-services' : (category?.id ?? null);
+const caseCopy: CaseCopy = { status, notices, noticeLabel, cookie: cookieInvitation };
 ---
 
 <!doctype html>
@@ -62,6 +72,7 @@ const related = category?.services.filter((s) => s.path && s.path !== route.path
       {...(ogTitle ? { ogTitle } : {})}
     />
     <meta name="department-route" content={route.path} />
+    {pageCategory && <meta name="department-category" content={pageCategory} />}
     <slot name="head" />
   </head>
   <body class:list={['layout-s', bodyClass]} data-print-resume={printResume ? '' : undefined}>
@@ -70,7 +81,7 @@ const related = category?.services.filter((s) => s.path && s.path !== route.path
     </a>
     <SiteHeader currentPath={route.path} plain={plain} />
     {!plain && (
-      <div class="case-bar">
+      <div class="case-bar" data-case-bar data-case-copy={JSON.stringify(caseCopy)}>
         <div class="container case-bar__inner">
           <p class="case-status" data-status hidden>
             <span class="case-status__label">{statusLabel}</span>

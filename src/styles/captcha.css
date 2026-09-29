@@ -170,6 +170,11 @@
   margin-top: var(--s-4);
   font-weight: 700;
 }
+/* The panel keeps its own light palette in every display setting, so its quiet buttons do too. */
+.cn .btn--ghost {
+  --btn-ink: var(--cn-ink);
+  --btn-border: var(--cn-ink);
+}
 .cn__done h2 {
   font: 700 1.5rem/1.3 var(--font-comic);
 }

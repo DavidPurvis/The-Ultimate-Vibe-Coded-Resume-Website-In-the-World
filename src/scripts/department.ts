@@ -2,7 +2,8 @@
  * The Department's runtime, on every page except the sincere tribute. It starts nothing on its
  * own: no dialog opens, no focus moves and no media loads unless the visitor asks. What it does:
  * Direct access, display settings, the directory menu, the optional overlays the visitor switched
- * on, and explicitly requested procedures (DOOM docked, cookie administration, advertising).
+ * on, explicitly requested procedures (DOOM docked, cookie administration, advertising), and the
+ * case record (this page's department, the status line and at most one notice).
  * Every procedure is loaded on request and dropped if the request went stale meanwhile.
  */
 import { initMode, isChaos, onModeChange, setMode } from '../lib/mode';
@@ -11,6 +12,7 @@ import { readPrefs, readSession, writePrefs, writeSession } from '../lib/storage
 import { installTestHooks } from '../lib/testHooks';
 import { cleanupLegacy } from '../runtime/legacy';
 import { initTheme } from '../scenes/theme';
+import { initCaseRecord } from '../case/notices';
 
 installTestHooks();
 initMode();
@@ -117,6 +119,7 @@ function initRequests(): void {
 }
 
 initDirectAccess();
+initCaseRecord();
 initTheme();
 initMenus();
 initOverlays();

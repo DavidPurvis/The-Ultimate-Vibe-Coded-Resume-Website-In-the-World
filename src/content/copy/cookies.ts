@@ -1,4 +1,7 @@
-/** Totalitarian cookie banner, 3,000 fictional partners, biscotti, and the load-bearing error. */
+/**
+ * Cookie administration: the consent form, 3,000 fictional partners, biscotti, the certificate, and
+ * the load-bearing error. Opened only on request; it sets no cookies and stores one preference.
+ */
 import type { CopyRecord } from '../types';
 
 export const banner = {
@@ -16,34 +19,36 @@ export const banner = {
   reject: 'Reject All',
   rejectLabels: ['Reject… all?', 'Fine. Reject All'],
   close: 'Close',
-  regionLabel: 'Cookie compliance (parody)',
+  closeLabel: 'Close cookie administration',
 };
 
 export const receipts = {
   accept: {
-    title: 'CONSENT CERTIFICATE',
+    title: 'Consent certificate',
     lines: [
-      'Cookies accepted: all (conceptually)',
-      'Liabilities extended: yes',
-      'Spiritual surrender: pending paperwork',
-      'Actual cookies set: 0',
-      'Choice transmitted: no',
-      'Stored on your device: ONE (1) boolean. We felt bad about it.',
+      'Cookies accepted: all (conceptually).',
+      'Liabilities extended: yes.',
+      'Spiritual surrender: pending paperwork.',
+      'Actual cookies set: 0.',
+      'Choice transmitted: no.',
+      'Stored on your device: one (1) preference.',
     ],
   },
   reject: {
-    title: 'REJECTION NOTICE',
+    title: 'Rejection notice',
     lines: [
       'The cookies have been informed. Their representative has requested a meeting.',
-      'Actual cookies set: 0. Actual cookies rejected: 0. Feelings hurt: several.',
+      'Actual cookies set: 0. Actual cookies rejected: 0.',
+      'Stored on your device: one (1) preference.',
     ],
   },
   managed: {
-    title: 'PREFERENCE RECEIPT',
+    title: 'Preference receipt',
     lines: [
       'Preferences saved.',
       'Preferences applied to: nothing.',
       'Preferences respected: deeply.',
+      'Stored on your device: one (1) preference.',
     ],
   },
 };
@@ -293,7 +298,6 @@ export const vendorWords = {
 
 export const vendorsDialog = {
   title: 'Manage 3,000 Fictional Partners',
-  closeLabel: 'Close partner settings',
   categoriesHeading: 'Cookie categories',
   partnersHeading: 'Partners',
   page: (n: number, total: number) => `Page ${n} of ${total}`,
@@ -303,10 +307,10 @@ export const vendorsDialog = {
   reset: 'Reset',
   resetToast: 'All 3,000 partners have been re-enabled. They never left.',
   biscottiButton: 'Accept all biscotti',
-  save: 'Save & close',
-  close: 'Close',
+  save: 'Save preferences',
+  back: 'Back to the consent form',
   footer:
-    'No tracking preferences were changed. No choice was transmitted. These switches are connected to nothing, which is the most honest thing about them.',
+    'No tracking preferences were changed. No choice was transmitted. These switches are connected to nothing.',
 };
 
 export const biscotti = {

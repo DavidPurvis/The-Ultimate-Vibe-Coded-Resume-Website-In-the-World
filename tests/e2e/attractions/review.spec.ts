@@ -35,11 +35,12 @@ test.describe('character review, loadout, research, causes', () => {
     await done();
   });
 
-  test('about: the skipped-CAPTCHA receipt shows only when asked', async ({ page }) => {
-    await page.goto('about/');
-    await expect(page.locator('[data-skipped-receipt]')).toBeHidden();
+  test('about: a skipped verification is recorded where it happened, not announced here', async ({
+    page,
+  }) => {
     await page.goto('about/?skipped=1');
-    await expect(page.locator('[data-skipped-receipt]')).toBeVisible();
+    await expect(page.locator('[data-skipped-receipt]')).toHaveCount(0);
+    await expect(page.locator('[data-notice-slot] [data-notice]')).toHaveCount(0);
   });
 
   test('form numbers skip 7 everywhere on the review page', async ({ page }) => {

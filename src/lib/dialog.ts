@@ -8,6 +8,12 @@ export interface OpenOpts {
 const openers = new WeakMap<HTMLDialogElement, HTMLElement | null>();
 const closers = new WeakMap<HTMLDialogElement, (rv: string) => void>();
 
+/** Nothing else has claimed focus since the dialog closed. */
+function focusIsFree(d: HTMLDialogElement): boolean {
+  const a = document.activeElement;
+  return !a || a === document.body || d.contains(a);
+}
+
 function wire(d: HTMLDialogElement): void {
   if (d.dataset.wired) return;
   d.dataset.wired = '1';
@@ -21,7 +27,12 @@ function wire(d: HTMLDialogElement): void {
     const opener = openers.get(d);
     openers.delete(d);
     cb?.(d.returnValue || 'close');
-    if (opener && document.contains(opener)) opener.focus({ preventScroll: true });
+    // The close event arrives a task later: if another dialog has opened (a replacement) or focus
+    // has moved on by itself, leave it where it is. Otherwise return to the opener, or to main if
+    // the opener has left the page.
+    if (document.querySelector('dialog[open]') || !focusIsFree(d)) return;
+    const back = opener && document.contains(opener) ? opener : document.getElementById('main');
+    back?.focus({ preventScroll: true });
   });
 }
 

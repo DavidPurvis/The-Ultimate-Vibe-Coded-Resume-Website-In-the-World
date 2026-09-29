@@ -1,4 +1,4 @@
-/** Link Roulette. */
+/** Hyperlink allocation: every destination is available; allocation is pending. */
 import type { DestId } from '../types';
 
 export const casinoCopy = {
@@ -7,18 +7,18 @@ export const casinoCopy = {
   lede: 'Links to David’s GitHub, LinkedIn, email and résumé PDF are allocated by wheel. Every destination is available. Allocation is completed no later than the third request.',
   picker: 'Please select the information you would like to be prevented from accessing.',
   attempting: (label: string, display: string) =>
-    `You are attempting to visit: ${label} (${display}).`,
+    `The requested destination is available. Allocation is pending. Requested: ${label} (${display}).`,
   oddsSign: [
     'Published odds: 25% each. Actual odds: proprietary.',
-    'House edge: 95%. The house is me. I am also the edge.',
+    'Processing fee: one recruiter-minute per request.',
   ],
-  rulesHeading: 'House rules',
+  rulesHeading: 'Allocation rules',
   rules: [
-    'Spins are final.',
-    'The outcome is decided before the wheel moves (see How This Was Built).',
+    'Allocations are final.',
+    'The outcome is determined before the wheel moves (see How it was built).',
     'No money is involved. Chips are denominated in recruiter-minutes.',
-    'The third spin always pays.',
-    'The résumé itself is never on the table.',
+    'Allocation is completed no later than the third request.',
+    'The résumé itself is never allocated by wheel.',
   ],
   chips: [
     { value: 1, label: 'Recruiter-Minute', color: 'cream' },
@@ -31,11 +31,13 @@ export const casinoCopy = {
   spinning: 'Allocating hyperlinks according to market conditions…',
   attempt: (n: number, label: string) => `Attempt ${n} for ${label}.`,
   resultAnnounce: (outcome: string) => `Result: ${outcome}.`,
+  /** Every unsuccessful allocation says this first; the outcome's own line follows. */
+  pending: 'Your request remains within the processing period.',
   outcomes: {
     RICKROLL: {
-      title: 'Musical due diligence required.',
-      button: 'Proceed to due diligence',
-      after: 'Your persistence has been added to the hiring file.',
+      title: 'Musical material must be reviewed before allocation.',
+      button: 'Review the musical material',
+      after: 'Your persistence has been added to the file.',
     },
     RIP: {
       title: 'This link has transitioned to a non-operational lifestyle.',
@@ -45,11 +47,11 @@ export const casinoCopy = {
       after: 'F received. Hyperlink revived through community support.',
     },
     HYPERLINK: {
-      title: 'Retention policy applied. The résumé has been allocated instead.',
-      button: (label: string) => `Proceed to ${label}`,
+      title: 'Allocation complete.',
+      button: (label: string) => `Open ${label}`,
     },
     'DOUBLE OR NOTHING': {
-      title: 'You have won the opportunity to continue having an opportunity.',
+      title: 'You have been allocated the opportunity to continue having an opportunity.',
     },
   },
   sound: { off: 'Sound: off', on: 'Sound: on' },
@@ -64,7 +66,7 @@ export const casinoCopy = {
 export const destCards: Record<DestId, { label: string; blurb: string }> = {
   github: { label: 'GitHub', blurb: 'Code, allegedly.' },
   linkedin: { label: 'LinkedIn', blurb: 'The emotionally unsafe one.' },
-  email: { label: 'Email', blurb: 'Direct correspondence. Rigged.' },
+  email: { label: 'Email', blurb: 'Direct correspondence.' },
   pdf: { label: 'Résumé PDF', blurb: 'One page. Earned.' },
   repo: { label: 'This website’s source code', blurb: 'Even this link.' },
 };

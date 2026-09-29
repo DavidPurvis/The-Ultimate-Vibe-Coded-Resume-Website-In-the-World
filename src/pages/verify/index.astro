@@ -104,21 +104,33 @@ import '../../styles/captcha.css';
         </div>
       </details>
 
-      <p class="cn__skip">
-        <a href={`${url('/about/')}?skipped=1`} data-cn-skip>
+      <p class="cn__skip js-only">
+        <button type="button" class="btn btn--ghost" data-cn-skip>
           {C.skip}
-        </a>
+        </button>
       </p>
       <noscript>
-        <p class="real-error">
-          The ceremonial CAPTCHA needs JavaScript to reject you properly. You may simply
-          <a href={url('/about/')}>continue to Character Review</a>.
-        </p>
+        <p>{completion.noscript}</p>
       </noscript>
     </section>
 
+    <section class="cn__done" data-cn-skipped hidden aria-labelledby="cn-skipped-title">
+      <h2 id="cn-skipped-title" tabindex="-1">
+        {completion.skipped.headline}
+      </h2>
+      <p>{completion.skipped.body}</p>
+      <p>
+        <a class="btn" href={url('/about/')}>
+          {completion.next}
+        </a>
+      </p>
+    </section>
+
     <section class="cn__done" data-cn-done hidden aria-labelledby="cn-done-title">
-      <h2 id="cn-done-title" tabindex="-1" data-cn-done-headline></h2>
+      <h2 id="cn-done-title" tabindex="-1">
+        {completion.headline}
+      </h2>
+      <p class="cn__done-line" data-cn-done-headline></p>
       <div class="receipt">
         <p class="receipt__title">{completion.title}</p>
         <ul>

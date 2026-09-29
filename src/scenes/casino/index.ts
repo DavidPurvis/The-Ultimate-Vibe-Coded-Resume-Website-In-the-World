@@ -1,7 +1,9 @@
 /**
- * Link Roulette. Pick a destination, place a chip, watch a decision that was already made:
+ * Hyperlink allocation. Pick a destination, place a chip, watch a decision that was already made:
  * outcome → wedge → angle (see logic.ts). The attempt is persisted before the wheel moves, the
- * Spin button locks until the result lands, and the third spin always pays.
+ * Spin button locks until the result lands, and the third request is always allocated. A loss is
+ * recorded only when a completed spin renders an unsuccessful outcome; an interrupted spin
+ * (Direct access, navigation) records nothing.
  */
 import { register, start, stop, type SceneCtx } from '../../lib/scene';
 import { readPrefs, readSession, writePrefs, writeSession } from '../../lib/storage';
@@ -219,6 +221,7 @@ function land(p: NonNullable<typeof pending>): void {
   setLocked(false);
   announce(C.resultAnnounce(p.outcome));
   renderResult(p.outcome, p.dest);
+  if (p.outcome !== 'HYPERLINK') writeSession({ casinoLosses: readSession().casinoLosses + 1 });
 }
 
 function realLink(id: DestId): HTMLAnchorElement {
@@ -247,6 +250,7 @@ function renderResult(outcome: Outcome, id: DestId): void {
       onclick: spin,
     });
   let title = '';
+  const pendingLine = () => el('p', { className: 'result__pending', textContent: C.pending });
 
   if (outcome === 'RICKROLL') {
     title = C.outcomes.RICKROLL.title;
@@ -266,6 +270,7 @@ function renderResult(outcome: Outcome, id: DestId): void {
     row.append(go, again());
     result.replaceChildren(
       badge,
+      pendingLine(),
       el('p', { className: 'result__title', textContent: title }),
       row,
       after,
@@ -297,6 +302,7 @@ function renderResult(outcome: Outcome, id: DestId): void {
     row.append(f, again());
     result.replaceChildren(
       badge,
+      pendingLine(),
       ...(tomb ? [tomb] : []),
       el('p', { className: 'result__title', textContent: title }),
       row,
@@ -311,7 +317,12 @@ function renderResult(outcome: Outcome, id: DestId): void {
     const b = again();
     b.className = 'btn btn--casino';
     row.append(b);
-    result.replaceChildren(badge, el('p', { className: 'result__title', textContent: title }), row);
+    result.replaceChildren(
+      badge,
+      pendingLine(),
+      el('p', { className: 'result__title', textContent: title }),
+      row,
+    );
   }
   if (outcome !== 'RIP') result.onkeydown = null;
   result.hidden = false;

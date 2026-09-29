@@ -4,32 +4,58 @@ import PageHero from '../../components/PageHero.astro';
 import FlagCard from '../../components/FlagCard.astro';
 import Icon from '../../components/Icon.astro';
 import { ROUTES } from '../../content/site/meta';
-import { aboutCopy, appendix, flags } from '../../content/copy/greenFlags';
-import { completion } from '../../content/copy/captcha';
+import { aboutCopy, appendix, finding, flags } from '../../content/copy/greenFlags';
 
 // Form sub-numbers skip 07 (see the anti-seven initiative on /beliefs/).
 const nums = Array.from({ length: flags.length + appendix.length + 2 }, (_, i) => i + 1).filter(
   (n) => n % 10 !== 7,
 );
 const fid = (i: number) => `DDP-3/${String(nums[i]).padStart(2, '0')}`;
+// The finding is record 01; the grid leads with the qualities anyone can judge.
+const LEAD = ['server-room', 'docs', 'backups', 'git', 'prod'];
+const rank = (id: string) => (LEAD.includes(id) ? LEAD.indexOf(id) : LEAD.length);
+const ordered = [...flags].sort((a, b) => rank(a.id) - rank(b.id));
 ---
 
 <Base route={ROUTES.about}>
-  <div class="receipt skipped-receipt" data-skipped-receipt hidden role="status">
-    <p class="receipt__title">CEREMONY SKIPPED</p>
-    <ul>
-      <li>{completion.skippedReceipt}</li>
-    </ul>
-  </div>
-
   <PageHero kicker={aboutCopy.kicker} title={aboutCopy.h1} sub={aboutCopy.sub}>
     <p class="fine mono">{aboutCopy.reviewer}</p>
     <p class="fine">{aboutCopy.stampHint}</p>
   </PageHero>
 
+  <section class="finding" aria-labelledby="finding-claim" data-finding>
+    <p class="card__form-id">
+      {fid(0)} · {finding.label}
+    </p>
+    <h2 id="finding-claim" class="finding__claim">
+      {finding.claim}
+    </h2>
+    <p class="finding__stamp stamp" aria-hidden="true">
+      {finding.stamp}
+    </p>
+    <p>{finding.recommendation}</p>
+    <p class="js-only">
+      <button
+        type="button"
+        class="btn"
+        aria-expanded="true"
+        aria-controls="finding-evidence"
+        data-finding-toggle
+      >
+        {finding.evidenceButton}
+      </button>
+    </p>
+    <div id="finding-evidence" class="finding__evidence">
+      <h3>{finding.evidenceHeading}</h3>
+      <p>{finding.evidence}</p>
+      <p class="finding__result">{finding.result}</p>
+      <p class="fine">{finding.note}</p>
+    </div>
+  </section>
+
   <div class="grid flags">
-    {flags.map((f, i) => (
-      <FlagCard flag={f} formId={fid(i)} />
+    {ordered.map((f, i) => (
+      <FlagCard flag={f} formId={fid(i + 1)} />
     ))}
   </div>
 
@@ -41,7 +67,7 @@ const fid = (i: number) => `DDP-3/${String(nums[i]).padStart(2, '0')}`;
     <p class="appendix__intro">{aboutCopy.appendixIntro}</p>
     <div class="grid flags">
       {appendix.map((f, i) => (
-        <FlagCard flag={f} formId={fid(flags.length + i)} appendix />
+        <FlagCard flag={f} formId={fid(flags.length + 1 + i)} appendix />
       ))}
     </div>
   </details>
@@ -52,6 +78,36 @@ const fid = (i: number) => `DDP-3/${String(nums[i]).padStart(2, '0')}`;
 </script>
 
 <style>
+  .finding {
+    border-top: 3px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    padding-block: var(--s-4) var(--s-5);
+    margin-bottom: var(--s-6);
+    max-width: 44rem;
+  }
+  .finding__claim {
+    font: 600 clamp(1.5rem, 4vw, 2rem) / 1.2 var(--font-body);
+    margin: var(--s-1) 0 var(--s-3);
+  }
+  .finding__stamp {
+    display: inline-block;
+    font-size: 1.5rem;
+    transform: rotate(-4deg);
+    margin: 0 0 var(--s-3);
+  }
+  .finding__evidence {
+    border-left: 3px solid var(--stamp);
+    padding-left: var(--s-4);
+  }
+  .finding__evidence h3 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .finding__result {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
   .flags {
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
   }
@@ -72,8 +128,5 @@ const fid = (i: number) => `DDP-3/${String(nums[i]).padStart(2, '0')}`;
   .appendix__intro {
     margin-top: var(--s-4);
     max-width: var(--prose);
-  }
-  .skipped-receipt {
-    margin-bottom: var(--s-5);
   }
 </style>

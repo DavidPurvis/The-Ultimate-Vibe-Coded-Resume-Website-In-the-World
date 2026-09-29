@@ -1,93 +1,118 @@
-/** Identity Checkpoint as a pure state machine (plan §9.5). The claimed identity is stored ONLY on SUBMIT. */
-import type { IdentityId } from '../../content/copy/identity';
+/**
+ * Classification as a pure state machine. A declaration exists only once a result is reached:
+ * closing before that declares nothing. The transcription is a yes/no fact, never its text.
+ */
+import type { ModelId } from '../../content/copy/identity';
 import type { IdentitySnapshot } from '../../lib/storage';
 
-export type Phase = 'idle' | 'choose' | 'confirm' | 'final' | 'result' | 'complete' | 'dismissed';
+export type Phase =
+  'idle' | 'choose' | 'human' | 'model' | 'confirm' | 'result' | 'transcribe' | 'dismissed';
 export type Confirmation = 'keep' | 'double' | 'prompt';
+export type Declared = IdentitySnapshot['declared'];
 
 export interface IdentityState {
   phase: Phase;
-  claimed: IdentityId | null;
-  pending: IdentityId | null;
+  declared: Declared | null;
+  model: ModelId | null;
+  pending: ModelId | null;
   confirmation: Confirmation | null;
-  refused: boolean;
-  finalText: string;
-  finalSkipped: boolean;
+  transcription: 'done' | 'skipped' | null;
   error: 'empty' | null;
 }
 
 export type IdentityEvent =
   | { t: 'OPEN' }
-  | { t: 'REPLAY' }
-  | { t: 'SELECT'; id: IdentityId }
+  | { t: 'HUMAN' }
+  | { t: 'AUTOMATED' }
+  | { t: 'WITHHOLD' }
+  | { t: 'CONFIRM_HUMAN' }
+  | { t: 'SELECT'; id: ModelId }
   | { t: 'SUBMIT' }
-  | { t: 'REFUSE' }
   | { t: 'KEEP' }
   | { t: 'DOUBLE' }
   | { t: 'CHECK_PROMPT' }
-  | { t: 'CHANGE' }
-  | { t: 'VERIFY_TEXT'; text: string }
-  | { t: 'SKIP_FINAL' }
-  | { t: 'CONTINUE' }
+  | { t: 'BACK' }
+  | { t: 'TRANSCRIBE' }
+  | { t: 'TRANSCRIBED' }
+  | { t: 'SKIP_TRANSCRIPTION' }
   | { t: 'CLOSE' };
 
 export const initialIdentity: IdentityState = {
   phase: 'idle',
-  claimed: null,
+  declared: null,
+  model: null,
   pending: null,
   confirmation: null,
-  refused: false,
-  finalText: '',
-  finalSkipped: false,
+  transcription: null,
   error: null,
 };
 
-const OPEN_PHASES: readonly Phase[] = ['choose', 'confirm', 'final', 'result'];
+const OPEN_PHASES: readonly Phase[] = [
+  'choose',
+  'human',
+  'model',
+  'confirm',
+  'result',
+  'transcribe',
+];
+export const isOpen = (s: IdentityState): boolean => OPEN_PHASES.includes(s.phase);
 
 export function identityReducer(s: IdentityState, e: IdentityEvent): IdentityState {
   switch (e.t) {
     case 'OPEN':
-    case 'REPLAY':
-      if (OPEN_PHASES.includes(s.phase)) return s;
-      return { ...initialIdentity, claimed: s.claimed, pending: s.claimed, phase: 'choose' };
+      // Every opening starts over at the first question.
+      return isOpen(s) ? s : { ...initialIdentity, phase: 'choose' };
+    case 'HUMAN':
+      return s.phase === 'choose' ? { ...s, phase: 'human' } : s;
+    case 'AUTOMATED':
+      return s.phase === 'choose' ? { ...s, phase: 'model', error: null } : s;
+    case 'WITHHOLD':
+      return s.phase === 'choose'
+        ? { ...s, phase: 'result', declared: 'withheld', model: null, transcription: null }
+        : s;
+    case 'CONFIRM_HUMAN':
+      return s.phase === 'human' ? { ...s, phase: 'result', declared: 'human', model: null } : s;
     case 'SELECT':
-      return s.phase === 'choose' ? { ...s, pending: e.id, error: null } : s;
+      return s.phase === 'model' ? { ...s, pending: e.id, error: null } : s;
     case 'SUBMIT':
-      if (s.phase !== 'choose') return s;
+      if (s.phase !== 'model') return s;
       if (!s.pending) return { ...s, error: 'empty' };
-      return { ...s, claimed: s.pending, refused: false, phase: 'confirm', error: null };
-    case 'REFUSE':
-      return s.phase === 'choose' ? { ...s, refused: true, phase: 'result', error: null } : s;
+      return { ...s, phase: 'confirm', model: s.pending, error: null };
     case 'KEEP':
     case 'DOUBLE':
     case 'CHECK_PROMPT':
       if (s.phase !== 'confirm') return s;
       return {
         ...s,
-        phase: 'final',
+        phase: 'result',
+        declared: 'automated',
         confirmation: e.t === 'KEEP' ? 'keep' : e.t === 'DOUBLE' ? 'double' : 'prompt',
       };
-    case 'CHANGE':
-      return s.phase === 'confirm' ? { ...s, phase: 'choose', confirmation: null } : s;
-    case 'VERIFY_TEXT':
-      return s.phase === 'final'
-        ? { ...s, finalText: e.text, finalSkipped: false, phase: 'result' }
+    case 'BACK':
+      if (s.phase === 'confirm') return { ...s, phase: 'model' };
+      if (s.phase === 'human' || s.phase === 'model') return { ...s, phase: 'choose' };
+      return s;
+    case 'TRANSCRIBE':
+      return s.phase === 'result' && (s.declared === 'human' || s.declared === 'automated')
+        ? { ...s, phase: 'transcribe' }
         : s;
-    case 'SKIP_FINAL':
-      return s.phase === 'final' ? { ...s, finalSkipped: true, phase: 'result' } : s;
-    case 'CONTINUE':
-      return s.phase === 'result' ? { ...s, phase: 'complete' } : s;
+    case 'TRANSCRIBED':
+      return s.phase === 'transcribe' ? { ...s, phase: 'result', transcription: 'done' } : s;
+    case 'SKIP_TRANSCRIPTION':
+      return s.phase === 'transcribe' ? { ...s, phase: 'result', transcription: 'skipped' } : s;
     case 'CLOSE':
-      return OPEN_PHASES.includes(s.phase) ? { ...s, phase: 'dismissed' } : s;
+      return isOpen(s) ? { ...s, phase: 'dismissed' } : s;
     default:
       return s;
   }
 }
 
-/** What gets persisted to the session: the declaration, never the transcription text. */
-export function snapshot(s: IdentityState): IdentitySnapshot {
-  const transcription = s.finalSkipped ? 'skipped' : s.finalText ? 'done' : null;
-  if (s.refused) return { declared: 'withheld', model: null, transcription: null };
-  if (s.claimed === 'human') return { declared: 'human', model: null, transcription };
-  return { declared: 'automated', model: s.claimed, transcription };
+/** What is stored: the declaration (null until one was made), never any text. */
+export function snapshot(s: IdentityState): IdentitySnapshot | null {
+  if (!s.declared) return null;
+  return {
+    declared: s.declared,
+    model: s.declared === 'automated' ? s.model : null,
+    transcription: s.declared === 'withheld' ? null : s.transcription,
+  };
 }

@@ -19,101 +19,107 @@ import { biscotti, namedPartners, vendorWords } from '../../../src/content/copy/
 
 const run = (events: IdentityEvent[], s: IdentityState = initialIdentity) =>
   events.reduce(identityReducer, s);
+const open = () => run([{ t: 'OPEN' }]);
 
-describe('identity state machine', () => {
-  it('Clippy → submit → keep → verify → continue keeps claimed = clippy (source bug fixed)', () => {
-    const s = run([
+describe('classification', () => {
+  it('opens at three first choices, with nothing declared', () => {
+    const s = open();
+    expect(s.phase).toBe('choose');
+    expect(snapshot(s)).toBeNull();
+  });
+
+  it('Human relies on self-report, then is noted', () => {
+    const s = run([{ t: 'OPEN' }, { t: 'HUMAN' }, { t: 'CONFIRM_HUMAN' }]);
+    expect(s).toMatchObject({ phase: 'result', declared: 'human' });
+    expect(snapshot(s)).toEqual({ declared: 'human', model: null, transcription: null });
+  });
+
+  it('Automated system reveals the models; the choice is confirmed before it counts', () => {
+    const mid = run([
       { t: 'OPEN' },
+      { t: 'AUTOMATED' },
       { t: 'SELECT', id: 'clippy' },
       { t: 'SUBMIT' },
-      { t: 'KEEP' },
-      { t: 'VERIFY_TEXT', text: 'casserole' },
-      { t: 'CONTINUE' },
     ]);
-    expect(s.phase).toBe('complete');
-    expect(s.claimed).toBe('clippy');
-    expect(s.confirmation).toBe('keep');
-    expect(snapshot(s)).toEqual({ declared: 'automated', model: 'clippy', transcription: 'done' });
-    expect(JSON.stringify(snapshot(s))).not.toContain('casserole');
+    expect(mid.phase).toBe('confirm');
+    expect(snapshot(mid)).toBeNull();
+    for (const [e, confirmation] of [
+      ['KEEP', 'keep'],
+      ['DOUBLE', 'double'],
+      ['CHECK_PROMPT', 'prompt'],
+    ] as const) {
+      const s = identityReducer(mid, { t: e });
+      expect(s).toMatchObject({ phase: 'result', declared: 'automated', confirmation });
+      expect(snapshot(s)).toEqual({ declared: 'automated', model: 'clippy', transcription: null });
+    }
   });
-  it('DOUBLE and CHECK_PROMPT set only the confirmation', () => {
-    const base = run([{ t: 'OPEN' }, { t: 'SELECT', id: 'human' }, { t: 'SUBMIT' }]);
-    expect(identityReducer(base, { t: 'DOUBLE' })).toMatchObject({
-      claimed: 'human',
-      confirmation: 'double',
-      phase: 'final',
-    });
-    expect(identityReducer(base, { t: 'CHECK_PROMPT' })).toMatchObject({
-      claimed: 'human',
-      confirmation: 'prompt',
-      phase: 'final',
-    });
+
+  it('Prefer not to disclose is a declaration of nondeclaration', () => {
+    const s = run([{ t: 'OPEN' }, { t: 'WITHHOLD' }]);
+    expect(snapshot(s)).toEqual({ declared: 'withheld', model: null, transcription: null });
+    // No supplemental transcription after a withheld declaration.
+    expect(identityReducer(s, { t: 'TRANSCRIBE' })).toBe(s);
   });
-  it('SUBMIT without a selection shows the empty error', () => {
-    const s = run([{ t: 'OPEN' }, { t: 'SUBMIT' }]);
-    expect(s).toMatchObject({ phase: 'choose', error: 'empty' });
-  });
-  it('REFUSE jumps to the result', () => {
-    expect(run([{ t: 'OPEN' }, { t: 'REFUSE' }])).toMatchObject({ phase: 'result', refused: true });
-  });
-  it('CHANGE returns to choose, keeping the pending choice', () => {
-    const s = run([{ t: 'OPEN' }, { t: 'SELECT', id: 'gemini' }, { t: 'SUBMIT' }, { t: 'CHANGE' }]);
-    expect(s).toMatchObject({ phase: 'choose', pending: 'gemini', confirmation: null });
-  });
-  it('SKIP_FINAL records the skip', () => {
-    const s = run([
-      { t: 'OPEN' },
-      { t: 'SELECT', id: 'claude' },
-      { t: 'SUBMIT' },
-      { t: 'KEEP' },
-      { t: 'SKIP_FINAL' },
-    ]);
-    expect(s).toMatchObject({ phase: 'result', finalSkipped: true });
-  });
-  it('CLOSE dismisses from every open phase and is ignored otherwise', () => {
-    const phases: IdentityEvent[][] = [
+
+  it('closing before a result declares nothing (refusal is not the same as closing)', () => {
+    for (const path of [
       [{ t: 'OPEN' }],
-      [{ t: 'OPEN' }, { t: 'SELECT', id: 'other' }, { t: 'SUBMIT' }],
-      [{ t: 'OPEN' }, { t: 'SELECT', id: 'other' }, { t: 'SUBMIT' }, { t: 'KEEP' }],
-      [{ t: 'OPEN' }, { t: 'REFUSE' }],
-    ];
-    for (const evs of phases)
-      expect(identityReducer(run(evs), { t: 'CLOSE' }).phase).toBe('dismissed');
-    expect(identityReducer(initialIdentity, { t: 'CLOSE' }).phase).toBe('idle');
+      [{ t: 'OPEN' }, { t: 'HUMAN' }],
+      [{ t: 'OPEN' }, { t: 'AUTOMATED' }, { t: 'SELECT', id: 'claude' }, { t: 'SUBMIT' }],
+    ] as IdentityEvent[][]) {
+      const s = run([...path, { t: 'CLOSE' }]);
+      expect(s.phase).toBe('dismissed');
+      expect(snapshot(s)).toBeNull();
+    }
   });
-  it('REPLAY after completion starts a fresh choose, pre-selecting the old claim', () => {
-    const done = run([
-      { t: 'OPEN' },
-      { t: 'SELECT', id: 'chatgpt' },
-      { t: 'SUBMIT' },
-      { t: 'KEEP' },
-      { t: 'SKIP_FINAL' },
-      { t: 'CONTINUE' },
-    ]);
-    const again = identityReducer(done, { t: 'REPLAY' });
-    expect(again).toMatchObject({
-      phase: 'choose',
-      pending: 'chatgpt',
-      claimed: 'chatgpt',
-      confirmation: null,
+
+  it('SUBMIT without a model shows the empty error; BACK retraces one step', () => {
+    const model = run([{ t: 'OPEN' }, { t: 'AUTOMATED' }]);
+    expect(identityReducer(model, { t: 'SUBMIT' }).error).toBe('empty');
+    const confirm = run([{ t: 'SELECT', id: 'gemini' }, { t: 'SUBMIT' }], model);
+    expect(identityReducer(confirm, { t: 'BACK' })).toMatchObject({
+      phase: 'model',
+      pending: 'gemini',
     });
+    expect(identityReducer(model, { t: 'BACK' }).phase).toBe('choose');
+    expect(identityReducer(run([{ t: 'OPEN' }, { t: 'HUMAN' }]), { t: 'BACK' }).phase).toBe(
+      'choose',
+    );
   });
-  it('events in the wrong phase are no-ops', () => {
-    const idleNoops: IdentityEvent[] = [
-      { t: 'SELECT', id: 'claude' },
-      { t: 'SUBMIT' },
-      { t: 'REFUSE' },
-      { t: 'KEEP' },
-      { t: 'CHANGE' },
-      { t: 'VERIFY_TEXT', text: 'casserole' },
-      { t: 'SKIP_FINAL' },
-      { t: 'CONTINUE' },
-      { t: 'CLOSE' },
-    ];
-    for (const e of idleNoops) expect(identityReducer(initialIdentity, e)).toBe(initialIdentity);
-    const choosing = run([{ t: 'OPEN' }]);
+
+  it('transcription is optional, supplemental, and recorded only as done or skipped', () => {
+    const human = run([{ t: 'OPEN' }, { t: 'HUMAN' }, { t: 'CONFIRM_HUMAN' }]);
+    const done = run([{ t: 'TRANSCRIBE' }, { t: 'TRANSCRIBED' }], human);
+    expect(done.phase).toBe('result');
+    expect(snapshot(done)).toEqual({ declared: 'human', model: null, transcription: 'done' });
+    const skipped = run([{ t: 'TRANSCRIBE' }, { t: 'SKIP_TRANSCRIPTION' }], human);
+    expect(snapshot(skipped)?.transcription).toBe('skipped');
+    // Closing mid-transcription keeps the declaration already made.
+    expect(snapshot(run([{ t: 'TRANSCRIBE' }, { t: 'CLOSE' }], human))).toEqual(snapshot(human));
+    // The state has nowhere to put transcribed text.
+    expect(Object.keys(done)).not.toContain('finalText');
+  });
+
+  it('reopening starts over at the first question; events out of phase are no-ops', () => {
+    const declared = run([{ t: 'OPEN' }, { t: 'WITHHOLD' }, { t: 'CLOSE' }]);
+    expect(identityReducer(declared, { t: 'OPEN' })).toEqual({
+      ...initialIdentity,
+      phase: 'choose',
+    });
+    const choosing = open();
     expect(identityReducer(choosing, { t: 'OPEN' })).toBe(choosing);
-    expect(identityReducer(choosing, { t: 'REPLAY' })).toBe(choosing);
+    for (const e of [
+      { t: 'CONFIRM_HUMAN' },
+      { t: 'SUBMIT' },
+      { t: 'KEEP' },
+      { t: 'TRANSCRIBED' },
+      { t: 'SKIP_TRANSCRIPTION' },
+      { t: 'TRANSCRIBE' },
+      { t: 'SELECT', id: 'claude' },
+      { t: 'BACK' },
+    ] as IdentityEvent[])
+      expect(identityReducer(choosing, e), e.t).toBe(choosing);
+    expect(identityReducer(initialIdentity, { t: 'CLOSE' })).toBe(initialIdentity);
   });
 });
 

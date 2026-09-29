@@ -61,6 +61,20 @@ describe('dialog', () => {
     expect(() => closeDialog(d)).not.toThrow();
   });
 
+  it('a replaced dialog never pulls focus back from its replacement', async () => {
+    const { d, opener } = dialog();
+    const next = document.createElement('dialog');
+    next.innerHTML = '<button>Inside the replacement</button>';
+    document.body.append(next);
+    openDialog(d, { opener });
+    closeDialog(d);
+    next.showModal();
+    next.querySelector('button')?.focus();
+    await new Promise((r) => setTimeout(r, 0)); // the close event may arrive a task later
+    expect(document.activeElement).toBe(next.querySelector('button'));
+    next.close();
+  });
+
   it('does not restore focus to an opener that has left the page', () => {
     const { d, opener } = dialog();
     openDialog(d, { opener });

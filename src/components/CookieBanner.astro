@@ -1,35 +1,47 @@
 ---
+/**
+ * Cookie administration: one modal dialog, opened only when the visitor asks (Facilities, or the
+ * invitation notice). Its three views (consent, partners, certificate) share the one surface, so
+ * the partner directory and the certificate never stack a second dialog.
+ */
 import Icon from './Icon.astro';
 import Memo from './Memo.astro';
-import { banner, loadBearing } from '../content/copy/cookies';
+import { banner, categories, loadBearing, vendorsDialog } from '../content/copy/cookies';
 import { memos } from '../content/copy/memos';
 import { url } from '../lib/paths';
+
+const [before, after] = banner.footnote.split('Privacy page');
 ---
 
 <Memo text={memos.banner} />
-<section
+<dialog
   id="cookie-consent-overlay"
-  class="cookie-banner chaos-only"
+  class="scene-dialog scene-dialog--wide cookie-admin chaos-only"
   aria-labelledby="cb-title"
-  hidden
   data-cookie-banner
 >
-  <div class="cookie-banner__inner container">
+  <div class="scene-dialog__head">
     <p class="kicker">{banner.kicker}</p>
+    <button type="button" class="icon-btn" data-close aria-label={banner.closeLabel}>
+      <Icon name="x" />
+    </button>
+  </div>
+
+  <section class="scene-dialog__body" data-cb-view="consent">
     <h2 id="cb-title" tabindex="-1">
       <Icon set="fluent" name="cookie" size={36} />
       <span>{banner.title.replace('🍪 ', '')}</span>
     </h2>
     {banner.body.map((p) => (
-      <p class="cookie-banner__body">{p}</p>
+      <p class="cookie-admin__body">{p}</p>
     ))}
     <p class="fine">
-      {banner.footnote.split('Privacy page')[0]}
+      {before}
       <a href={url('/privacy/')}>Privacy page</a>
-      {banner.footnote.split('Privacy page')[1]}
+      {after}
     </p>
-    <div class="cookie-banner__actions" data-cb-actions>
-      <button type="button" class="btn btn--primary cookie-banner__primary" data-cb="accept">
+    <div class="cookie-admin__actions" data-cb-actions>
+      <button type="button" class="btn btn--primary" data-cb="accept">
         {banner.acceptAll}
       </button>
       <button type="button" class="btn" data-cb="accept-cookies">
@@ -38,15 +50,90 @@ import { url } from '../lib/paths';
       <button type="button" class="btn" data-cb="manage">
         {banner.manage}
       </button>
-      <div class="cookie-banner__reject-arena" data-cb-reject-arena>
+      <div class="cookie-admin__reject-arena" data-cb-reject-arena>
         <button type="button" class="btn btn--ghost" data-cb="reject">
           <span data-label>{banner.reject}</span>
         </button>
       </div>
     </div>
-    <div data-cb-receipt></div>
-  </div>
-</section>
+  </section>
+
+  <section class="scene-dialog__body" data-cb-view="partners" hidden>
+    <h2 id="cb-partners-title" tabindex="-1">
+      {vendorsDialog.title}
+    </h2>
+    <h3>{vendorsDialog.categoriesHeading}</h3>
+    <ul class="vd-cats" role="list">
+      {categories.map((c) => (
+        <li class="vd-cat">
+          <Icon set="fluent" name={c.icon} size={32} />
+          <div class="vd-cat__text">
+            <strong id={`cat-${c.id}`}>{c.name}</strong>
+            <span class="fine">{c.description}</span>
+            <span class="vd-cat__result" data-cat-result={c.id} aria-live="polite" />
+          </div>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            aria-checked="true"
+            aria-labelledby={`cat-${c.id}`}
+            aria-disabled={c.locked ? 'true' : undefined}
+            data-cat={c.id}
+          >
+            <span class="switch__track" aria-hidden="true" />
+          </button>
+        </li>
+      ))}
+    </ul>
+    <div class="btn-row vd-biscotti">
+      <button type="button" class="btn" data-biscotti-accept>
+        <Icon set="fluent" name="cookie" />
+        <span>{vendorsDialog.biscottiButton}</span>
+      </button>
+      <div data-biscotti-receipt></div>
+    </div>
+
+    <h3>{vendorsDialog.partnersHeading}</h3>
+    <div class="vd-pager">
+      <button type="button" class="btn btn--small" data-vd-prev>
+        {vendorsDialog.prev}
+      </button>
+      <span class="mono" data-vd-page aria-live="polite"></span>
+      <button type="button" class="btn btn--small" data-vd-next>
+        {vendorsDialog.next}
+      </button>
+      <label class="vd-jump">
+        <span>{vendorsDialog.jump}</span>
+        <input type="number" min="1" max="60" inputmode="numeric" data-vd-jump />
+      </label>
+      <button type="button" class="btn btn--small btn--ghost" data-vd-reset>
+        <Icon name="rotate-ccw" />
+        {vendorsDialog.reset}
+      </button>
+    </div>
+    <ol class="vd-list" data-vd-list></ol>
+    <p class="fine">{vendorsDialog.footer}</p>
+    <div class="btn-row">
+      <button type="button" class="btn btn--primary" data-vd-save>
+        {vendorsDialog.save}
+      </button>
+      <button type="button" class="btn" data-vd-back>
+        {vendorsDialog.back}
+      </button>
+    </div>
+  </section>
+
+  <section class="scene-dialog__body" data-cb-view="certificate" hidden>
+    <h2 id="cb-certificate-title" tabindex="-1" data-cb-certificate-title></h2>
+    <ul class="cookie-admin__receipt" data-cb-certificate-lines></ul>
+    <p>
+      <button type="button" class="btn btn--primary" data-close>
+        {banner.close}
+      </button>
+    </p>
+  </section>
+</dialog>
 
 <div
   class="load-bearing chaos-only"
@@ -73,65 +160,100 @@ import { url } from '../lib/paths';
 </div>
 
 <style>
-  .cookie-banner {
-    position: fixed;
-    inset: auto 0 0 0;
-    height: 92vh;
-    z-index: var(--z-banner);
-    overflow: auto;
-    background: var(--card);
-    border-top: 4px solid var(--stamp);
-    box-shadow: 0 -20px 60px rgb(var(--shadow-color) / 0.35);
-    padding-block: var(--s-6) var(--s-7);
-    animation: cb-up var(--dur-3) var(--ease-out);
+  .cookie-admin .scene-dialog__head {
+    align-items: center;
   }
-  @media (max-width: 48rem) {
-    .cookie-banner {
-      height: calc(100dvh - 4.5rem);
-    }
-  }
-  .cookie-banner h2 {
+  .cookie-admin h2 {
     display: flex;
     align-items: center;
     gap: var(--s-3);
-    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
   }
-  .cookie-banner__body {
-    font-size: 1.15rem;
+  .cookie-admin__body {
+    font-size: 1.125rem;
     max-width: var(--prose);
   }
-  .cookie-banner__actions {
+  .cookie-admin__actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--s-3);
     align-items: center;
     margin-top: var(--s-5);
   }
-  .cookie-banner__primary {
-    font-size: 1.1rem;
-    padding: var(--s-3) var(--s-5);
-    animation: cb-pulse 2.4s ease-in-out infinite;
-  }
-  .cookie-banner__reject-arena {
+  .cookie-admin__reject-arena {
     position: relative;
-    min-width: 18rem;
+    min-width: min(100%, 18rem);
     min-height: 3.5rem;
     flex: 1 1 18rem;
   }
-  @keyframes cb-up {
-    from {
-      transform: translateY(24px);
-      opacity: 0;
-    }
+  .cookie-admin__receipt {
+    font-family: var(--font-mono);
+    padding-left: var(--s-4);
   }
-  @keyframes cb-pulse {
-    0%,
-    100% {
-      box-shadow: 0 0 0 0 color-mix(in srgb, var(--action) 45%, transparent);
-    }
-    50% {
-      box-shadow: 0 0 0 10px color-mix(in srgb, var(--action) 0%, transparent);
-    }
+  .vd-cats,
+  .vd-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--s-4);
+  }
+  .vd-cat,
+  .vd-list :global(li) {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: var(--s-2) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .vd-cat__text,
+  .vd-list :global(.vd-row__text) {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+  .vd-cat__result {
+    font-size: 0.875rem;
+    color: var(--action);
+  }
+  .vd-cat__result:empty {
+    display: none;
+  }
+  .vd-pager {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2) var(--s-3);
+    margin-bottom: var(--s-3);
+  }
+  .vd-jump {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: 0.875rem;
+  }
+  .vd-jump input {
+    width: 5rem;
+    min-height: var(--target);
+    border: 1.5px solid var(--ink-2);
+    border-radius: var(--r-1);
+    background: var(--card);
+    color: var(--ink);
+    padding: 0 var(--s-2);
+    font: inherit;
+  }
+  .vd-list {
+    max-height: 22rem;
+    overflow: auto;
+    border-top: 1px solid var(--rule);
+  }
+  .vd-list :global(.vd-row__n) {
+    font: 400 0.875rem var(--font-mono);
+    color: var(--ink-2);
+    width: 3.5rem;
+    flex: none;
+  }
+  .vd-biscotti {
+    margin-bottom: var(--s-5);
   }
   .load-bearing {
     position: fixed;

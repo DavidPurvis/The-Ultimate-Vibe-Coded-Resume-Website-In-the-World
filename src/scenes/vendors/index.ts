@@ -1,4 +1,7 @@
-/** "Manage 3,000 Fictional Partners" — paginated, neighbour-flipping, connected to nothing. */
+/**
+ * "Manage 3,000 Fictional Partners": paginated, neighbour-flipping, connected to nothing. It renders
+ * into the partners view of cookie administration (one root), loaded only when asked for.
+ */
 import {
   categories,
   fortunes,
@@ -18,7 +21,6 @@ import {
 } from './logic';
 import { makeBiscotti } from '../cookie-banner/logic';
 import { readRaw, removeRaw, writeRaw, listKeys } from '../../lib/storage';
-import { openDialog } from '../../lib/dialog';
 import { toast } from '../../lib/toast';
 import { bump } from '../../lib/threat';
 
@@ -34,10 +36,10 @@ function ensure(): void {
   }
 }
 
-function render(dialog: HTMLDialogElement): void {
+function render(root: HTMLElement): void {
   ensure();
-  const list = dialog.querySelector<HTMLOListElement>('[data-vd-list]');
-  const label = dialog.querySelector<HTMLElement>('[data-vd-page]');
+  const list = root.querySelector<HTMLOListElement>('[data-vd-list]');
+  const label = root.querySelector<HTMLElement>('[data-vd-page]');
   if (!list || !vendors) return;
   const start = (page - 1) * PER_PAGE;
   list.start = start + 1;
@@ -74,33 +76,39 @@ function render(dialog: HTMLDialogElement): void {
     }),
   );
   if (label) label.textContent = vendorsDialog.page(page, PAGES);
-  const jump = dialog.querySelector<HTMLInputElement>('[data-vd-jump]');
+  const jump = root.querySelector<HTMLInputElement>('[data-vd-jump]');
   if (jump) jump.value = '';
 }
 
-function syncSwitches(dialog: HTMLDialogElement): void {
-  dialog.querySelectorAll<HTMLElement>('[data-vd]').forEach((sw) => {
+function syncSwitches(root: HTMLElement): void {
+  root.querySelectorAll<HTMLElement>('[data-vd]').forEach((sw) => {
     sw.setAttribute('aria-checked', String(states[Number(sw.dataset.vd)]));
   });
 }
 
-function wireOnce(dialog: HTMLDialogElement, onSave: () => void): void {
-  if (dialog.dataset.vdWired) return;
-  dialog.dataset.vdWired = '1';
-  dialog.addEventListener('click', (e) => {
+interface Handlers {
+  save(): void;
+  back(): void;
+}
+let handlers: Handlers | null = null;
+
+function wireOnce(root: HTMLElement): void {
+  if (root.dataset.vdWired) return;
+  root.dataset.vdWired = '1';
+  root.addEventListener('click', (e) => {
     const t = e.target as HTMLElement;
     const sw = t.closest<HTMLElement>('[data-vd]');
     if (sw && vendors) {
       if (sw.getAttribute('aria-disabled') === 'true') return;
       states = toggle(states, vendors, Number(sw.dataset.vd));
-      syncSwitches(dialog);
+      syncSwitches(root);
       return;
     }
     const cat = t.closest<HTMLElement>('[data-cat]');
     if (cat) {
       const id = cat.dataset.cat;
       const c = categories.find((x) => x.id === id);
-      const out = dialog.querySelector<HTMLElement>(`[data-cat-result="${id}"]`);
+      const out = root.querySelector<HTMLElement>(`[data-cat-result="${id}"]`);
       if (!c || !out) return;
       if (c.locked) {
         out.textContent = c.on;
@@ -118,32 +126,33 @@ function wireOnce(dialog: HTMLDialogElement, onSave: () => void): void {
     }
     if (t.closest('[data-vd-prev]')) {
       page = Math.max(1, page - 1);
-      render(dialog);
+      render(root);
     } else if (t.closest('[data-vd-next]')) {
       page = Math.min(PAGES, page + 1);
-      render(dialog);
+      render(root);
     } else if (t.closest('[data-vd-reset]')) {
       if (vendors) states = initialStates(vendors);
-      syncSwitches(dialog);
+      syncSwitches(root);
       toast(vendorsDialog.resetToast);
     } else if (t.closest('[data-vd-save]')) {
-      dialog.close('save');
-      onSave();
+      handlers?.save();
+    } else if (t.closest('[data-vd-back]')) {
+      handlers?.back();
     } else if (t.closest('[data-biscotti-accept]')) {
-      acceptBiscotti(dialog);
+      acceptBiscotti(root);
     }
   });
-  dialog.querySelector<HTMLInputElement>('[data-vd-jump]')?.addEventListener('change', (e) => {
+  root.querySelector<HTMLInputElement>('[data-vd-jump]')?.addEventListener('change', (e) => {
     const v = Number((e.target as HTMLInputElement).value);
     if (Number.isFinite(v)) {
       page = Math.min(PAGES, Math.max(1, Math.round(v)));
-      render(dialog);
+      render(root);
     }
   });
 }
 
-function acceptBiscotti(dialog: HTMLDialogElement): void {
-  const out = dialog.querySelector<HTMLElement>('[data-biscotti-receipt]');
+function acceptBiscotti(root: HTMLElement): void {
+  const out = root.querySelector<HTMLElement>('[data-biscotti-receipt]');
   const all = makeBiscotti(biscottiCopy.names, biscottiCopy.kinds);
   for (const b of all)
     writeRaw('local', b.key, JSON.stringify({ name: b.name, kind: b.kind, art: b.art }));
@@ -185,10 +194,9 @@ function acceptBiscotti(dialog: HTMLDialogElement): void {
   out.append(p, row, pre);
 }
 
-export function openVendors(opener: HTMLElement | null, onSave: () => void): void {
-  const dialog = document.getElementById('vendors') as HTMLDialogElement | null;
-  if (!dialog) return;
-  wireOnce(dialog, onSave);
-  render(dialog);
-  openDialog(dialog, { opener });
+/** Fill the partners view (`root`) and route its Save and Back buttons to the procedure. */
+export function showPartners(root: HTMLElement, h: Handlers): void {
+  handlers = h;
+  wireOnce(root);
+  render(root);
 }

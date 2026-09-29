@@ -1,11 +1,15 @@
-/** Classification (Visitor Services): the declaration dialog, opened only on request. */
+/**
+ * Classification (Visitor Services): a major scene in one dialog, opened only from its control.
+ * The declaration is stored the moment a result is shown; closing earlier stores nothing. The
+ * optional transcription is recorded as done or skipped, and the textarea is emptied whenever the
+ * procedure ends, so the text never outlives it.
+ */
 import { register, start, stop, type SceneCtx } from '../../lib/scene';
 import { focusIn, openDialog } from '../../lib/dialog';
-import { readSession, writeSession } from '../../lib/storage';
+import { writeSession } from '../../lib/storage';
 import { announce } from '../../runtime/announce';
-import { toast } from '../../lib/toast';
 import { bump } from '../../lib/threat';
-import { identities, identityDialog as D, type IdentityId } from '../../content/copy/identity';
+import { classification as C, isModelId, models } from '../../content/copy/identity';
 import {
   identityReducer,
   initialIdentity,
@@ -14,144 +18,148 @@ import {
   type IdentityState,
 } from './logic';
 
-const dialog = document.getElementById('identity') as HTMLDialogElement | null;
-let state: IdentityState = initialIdentity;
+const ACTIONS: Readonly<Record<string, IdentityEvent>> = {
+  human: { t: 'HUMAN' },
+  automated: { t: 'AUTOMATED' },
+  withhold: { t: 'WITHHOLD' },
+  'confirm-human': { t: 'CONFIRM_HUMAN' },
+  submit: { t: 'SUBMIT' },
+  keep: { t: 'KEEP' },
+  double: { t: 'DOUBLE' },
+  prompt: { t: 'CHECK_PROMPT' },
+  back: { t: 'BACK' },
+  transcribe: { t: 'TRANSCRIBE' },
+  transcribed: { t: 'TRANSCRIBED' },
+  'skip-transcription': { t: 'SKIP_TRANSCRIPTION' },
+};
 
-function render(): void {
-  if (!dialog) return;
-  const title = dialog.querySelector<HTMLElement>('h2');
-  for (const sec of dialog.querySelectorAll<HTMLElement>('[data-phase]')) {
-    sec.hidden = sec.dataset.phase !== state.phase;
-  }
-  const step = dialog.querySelector<HTMLElement>('[data-id-step]');
-  if (step) step.textContent = state.phase === 'final' ? D.bonusRound : '';
-  const claimed = state.claimed ? identities[state.claimed] : null;
+const TITLES: Readonly<Record<string, string>> = {
+  choose: C.choose.title,
+  human: C.human.title,
+  model: C.model.title,
+  confirm: C.confirm.title,
+  result: C.result.title,
+  transcribe: C.transcribe.title,
+};
 
-  if (state.phase === 'choose') {
-    if (title) title.textContent = D.choose.title;
-    const err = dialog.querySelector<HTMLElement>('[data-id-error]');
-    if (err) err.hidden = state.error !== 'empty';
-    dialog.querySelectorAll<HTMLInputElement>('input[name="identity"]').forEach((r) => {
-      r.checked = r.value === state.pending;
-    });
-  } else if (state.phase === 'confirm' && claimed) {
-    if (title) title.textContent = D.confirm.title;
-    const line = dialog.querySelector<HTMLElement>('[data-id-confirm-line]');
-    if (line) line.textContent = claimed.confirm;
-    const keep = dialog.querySelector<HTMLElement>('[data-id-keep-label]');
-    if (keep) keep.textContent = D.confirm.keep(claimed.label);
-  } else if (state.phase === 'final') {
-    if (title) title.textContent = D.final.title;
-  } else if (state.phase === 'result') {
-    const refused = state.refused;
-    if (title) title.textContent = refused ? D.refused.title : D.result.title;
-    const stampText = refused ? D.refused.stamp : (claimed?.stamp ?? '');
-    const tpl = dialog.querySelector<HTMLTemplateElement>('[data-stamp-template]');
-    const holder = dialog.querySelector<HTMLElement>('[data-id-stamp]');
-    if (tpl && holder) {
-      const frag = tpl.content.cloneNode(true) as DocumentFragment;
-      const stamp = frag.querySelector<HTMLElement>('.stamp');
-      if (stamp) {
-        stamp.textContent = stampText;
-        stamp.setAttribute('aria-label', `Stamp: ${stampText}`);
-      }
-      holder.replaceChildren(frag);
-    }
-    const res = dialog.querySelector<HTMLElement>('[data-id-result]');
-    if (res) res.textContent = refused ? D.refused.body : (claimed?.result ?? '');
-    const analysis = dialog.querySelector<HTMLElement>('[data-id-analysis]');
-    if (analysis) {
-      analysis.textContent = refused
-        ? ''
-        : state.confirmation === 'prompt'
-          ? D.result.analysisPrompt
-          : state.finalSkipped
-            ? D.result.analysisSkipped
-            : D.result.analysisText;
-    }
-  }
-  focusIn(dialog, title);
-  if (title?.textContent) announce(title.textContent);
-}
-
-function dispatch(e: IdentityEvent): void {
-  const prev = state;
-  state = identityReducer(state, e);
-  if (state === prev) return;
-  if (e.t === 'CHANGE') toast(D.confirm.changeToast);
-  if (state.phase === 'complete') {
-    writeSession({ identity: snapshot(state) });
-    bump(state.refused ? 'refused' : 'identityComplete');
-    stop('identity', 'complete');
-    if (!state.refused && state.claimed) toast(D.result.toast(identities[state.claimed].label));
-    return;
-  }
-  if (state.phase === 'dismissed') {
-    stop('identity', 'complete');
-    return;
-  }
-  render();
-}
+let opener: HTMLElement | null = null;
 
 register({
   id: 'identity',
   major: true,
   start(ctx: SceneCtx) {
+    const dialog = document.getElementById('identity') as HTMLDialogElement | null;
     if (!dialog) return;
     const { d } = ctx;
-    const opener = document.querySelector<HTMLElement>('[data-open-identity]');
-    state = identityReducer(
-      {
-        ...initialIdentity,
-        claimed: ((): IdentityId | null => {
-          const id = readSession().identity;
-          if (!id || id.declared === 'withheld') return null;
-          return id.declared === 'human' ? 'human' : ((id.model as IdentityId | null) ?? 'other');
-        })(),
-        phase: 'idle',
-      },
-      { t: 'OPEN' },
-    );
-    const onClick = (ev: Event) => {
-      const b = (ev.target as HTMLElement).closest<HTMLElement>('[data-id]');
-      if (!b) return;
-      const map: Record<string, IdentityEvent> = {
-        submit: { t: 'SUBMIT' },
-        refuse: { t: 'REFUSE' },
-        keep: { t: 'KEEP' },
-        double: { t: 'DOUBLE' },
-        prompt: { t: 'CHECK_PROMPT' },
-        change: { t: 'CHANGE' },
-        skip: { t: 'SKIP_FINAL' },
-        continue: { t: 'CONTINUE' },
-      };
-      const act = b.dataset.id ?? '';
-      if (act === 'verify') {
-        const text = dialog.querySelector<HTMLTextAreaElement>('[data-id-text]')?.value ?? '';
-        dispatch({ t: 'VERIFY_TEXT', text });
-      } else if (map[act]) dispatch(map[act]);
+    let state: IdentityState = identityReducer(initialIdentity, { t: 'OPEN' });
+    const $ = <T extends HTMLElement>(sel: string) => dialog.querySelector<T>(sel);
+    const textarea = $<HTMLTextAreaElement>('[data-id-text]');
+
+    const render = (): void => {
+      const title = $<HTMLElement>('h2');
+      dialog.querySelectorAll<HTMLElement>('[data-phase]').forEach((sec) => {
+        sec.hidden = sec.dataset.phase !== state.phase;
+      });
+      if (title) title.textContent = TITLES[state.phase] ?? C.choose.title;
+      const model = state.model ? models[state.model] : null;
+
+      if (state.phase === 'model') {
+        const err = $<HTMLElement>('[data-id-error]');
+        if (err) err.hidden = state.error !== 'empty';
+        dialog.querySelectorAll<HTMLInputElement>('input[name="model"]').forEach((r) => {
+          r.checked = r.value === state.pending;
+        });
+      } else if (state.phase === 'confirm' && model) {
+        const line = $<HTMLElement>('[data-id-confirm-line]');
+        if (line) line.textContent = model.confirm;
+        const keep = $<HTMLElement>('[data-id-keep-label]');
+        if (keep) keep.textContent = C.confirm.keep(model.label);
+      } else if (state.phase === 'result') {
+        const [stampText, line] =
+          state.declared === 'withheld'
+            ? [C.withheld.stamp, C.withheld.result]
+            : state.declared === 'human'
+              ? [C.human.stamp, C.human.result]
+              : [model?.stamp ?? '', model?.result ?? ''];
+        const tpl = $<HTMLTemplateElement>('[data-stamp-template]');
+        const holder = $<HTMLElement>('[data-id-stamp]');
+        if (tpl && holder) {
+          const frag = tpl.content.cloneNode(true) as DocumentFragment;
+          const stamp = frag.querySelector<HTMLElement>('.stamp');
+          if (stamp) {
+            stamp.textContent = stampText;
+            stamp.setAttribute('aria-label', `Stamp: ${stampText}`);
+          }
+          holder.replaceChildren(frag);
+        }
+        const res = $<HTMLElement>('[data-id-result]');
+        if (res) res.textContent = line;
+        const analysis = $<HTMLElement>('[data-id-analysis]');
+        if (analysis)
+          analysis.textContent =
+            state.transcription === 'done'
+              ? C.result.transcribed
+              : state.transcription === 'skipped'
+                ? C.result.skipped
+                : state.confirmation === 'prompt'
+                  ? C.confirm.promptNote
+                  : '';
+        const transcribe = $<HTMLElement>('[data-id="transcribe"]');
+        if (transcribe)
+          transcribe.hidden = state.declared === 'withheld' || state.transcription !== null;
+      }
+      focusIn(dialog, title);
+      if (title?.textContent) announce(title.textContent);
     };
-    const onChange = (ev: Event) => {
+
+    const dispatch = (e: IdentityEvent): void => {
+      const prev = state;
+      state = identityReducer(state, e);
+      if (state === prev) {
+        if (e.t === 'SUBMIT') render();
+        return;
+      }
+      if (e.t === 'TRANSCRIBED' || e.t === 'SKIP_TRANSCRIPTION') {
+        if (textarea) textarea.value = '';
+      }
+      if (state.phase === 'dismissed') {
+        stop('identity', 'complete');
+        return;
+      }
+      if (state.phase === 'result') {
+        const snap = snapshot(state);
+        if (snap) writeSession({ identity: snap });
+        if (prev.phase !== 'transcribe')
+          bump(state.declared === 'withheld' ? 'refused' : 'identityComplete');
+      }
+      render();
+    };
+
+    d.on(dialog, 'click', (ev) => {
+      const act = (ev.target as HTMLElement).closest<HTMLElement>('[data-id]')?.dataset.id ?? '';
+      const e = ACTIONS[act];
+      if (e) dispatch(e);
+    });
+    d.on(dialog, 'change', (ev) => {
       const r = ev.target as HTMLInputElement;
-      if (r.name === 'identity') dispatch({ t: 'SELECT', id: r.value as IdentityId });
-    };
-    d.on(dialog, 'click', onClick);
-    d.on(dialog, 'change', onChange);
+      if (r.name === 'model' && isModelId(r.value)) dispatch({ t: 'SELECT', id: r.value });
+    });
     d.add(() => {
-      const ta = dialog.querySelector<HTMLTextAreaElement>('[data-id-text]');
-      if (ta) ta.value = ''; // the transcription never outlives the dialog
+      if (textarea) textarea.value = ''; // the transcription never outlives the procedure
       if (dialog.open) dialog.close('dispose');
     });
     openDialog(dialog, {
       opener,
-      onClose: () => {
-        if (state.phase !== 'complete' && state.phase !== 'dismissed') dispatch({ t: 'CLOSE' });
-      },
+      onClose: () => dispatch({ t: 'CLOSE' }),
     });
     render();
   },
 });
 
-document
-  .querySelector('[data-open-identity]')
-  ?.addEventListener('click', () => void start('identity'));
+/** Opened only from its control in Visitor Services. */
+document.addEventListener('click', (e) => {
+  const b = (e.target as HTMLElement | null)?.closest<HTMLElement>('[data-open-identity]');
+  if (!b) return;
+  opener = b;
+  void start('identity');
+});

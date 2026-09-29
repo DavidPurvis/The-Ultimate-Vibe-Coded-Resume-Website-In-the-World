@@ -26,6 +26,26 @@ export const aboutCopy = {
   appendixLabel: 'FICTIONAL AUDIT · SELF-REPORTED',
 };
 
+/**
+ * The one finding on record, shown first: an ordinary quality anyone can judge. A personal claim
+ * (David's to veto if untrue), presented with the full apparatus of a committee finding.
+ */
+export const finding = {
+  id: 'carts',
+  label: 'Committee finding',
+  claim: 'Returns shopping carts.',
+  recommendation:
+    'Committee recommendation: enter into the permanent record without further review.',
+  stamp: 'On record',
+  evidenceButton: 'Review the evidence',
+  evidenceHeading: 'Evidence item 1 of 1',
+  evidence: 'One (1) shopping cart, left in a parking lot, observed from a distance.',
+  result: 'Cart returned.',
+  note: 'Even when no one is watching. Especially when no one is watching.',
+  status: 'fictional',
+  personalClaim: true,
+} as const;
+
 export const flags: Flag[] = [
   {
     id: 'prod',
@@ -44,16 +64,6 @@ export const flags: Flag[] = [
     stamp: 'Provisionally green',
     tone: 'green',
     status: 'fictional',
-  },
-  {
-    id: 'carts',
-    text: 'Returns shopping carts.',
-    evidence: 'Even when no one is watching. Especially when no one is watching.',
-    reviewer: 'Someone is always watching.',
-    stamp: 'Reviewed by the candidate',
-    tone: 'ink',
-    status: 'fictional',
-    personalClaim: true,
   },
   {
     id: 'dns',
