@@ -31,7 +31,7 @@ test.describe('résumé release', () => {
     await page.goto('cube/');
     await expect(
       page
-        .locator('[data-cube-stage] canvas')
+        .locator('[data-cube-stage] canvas:visible')
         .or(page.locator('[data-cube-status]', { hasText: 'declined to render tungsten' })),
     ).toBeVisible({ timeout: 20_000 });
     await page.goto('doom/');
