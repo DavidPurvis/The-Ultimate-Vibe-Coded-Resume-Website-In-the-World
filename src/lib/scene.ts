@@ -45,7 +45,14 @@ const registry = new Map<string, Scene>();
 const running = new Map<string, Running>();
 const pending = new Map<string, number>();
 let generation = 0;
-let enabledCheck: () => boolean = () => true;
+/**
+ * Until mode.ts installs its check, trust the attribute the boot script set before first paint:
+ * page scripts run before the shell's, and Direct access must hold from the very first one.
+ */
+const bootMode = (): boolean =>
+  typeof document === 'undefined' ||
+  document.documentElement.getAttribute('data-mode') !== 'recruiter';
+let enabledCheck: () => boolean = bootMode;
 
 /** mode.ts installs this so scenes refuse to start under Direct access. */
 export function setEnabledCheck(fn: () => boolean): void {
@@ -128,5 +135,5 @@ export function disposeAll(reason: DisposeReason): void {
 export function _reset(): void {
   disposeAll('navigate');
   registry.clear();
-  enabledCheck = () => true;
+  enabledCheck = bootMode;
 }

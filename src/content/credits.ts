@@ -1,14 +1,120 @@
 /**
  * Asset & license ledger. Every non-code asset shipped by this site is listed here.
- * credits.test.ts fails if a favicon or other public asset lacks an entry, and Icon.astro refuses
- * icons that aren't in ICON_MANIFEST.
+ * credits.test.ts fails if a file under public/captcha, public/illustrations or a
+ * favicon lacks an entry, and Icon.astro refuses icons that aren't in ICON_MANIFEST.
  */
 
-export type IconSet = 'lucide';
+export type IconSet = 'lucide' | 'fluent' | 'game';
 
 /** The only icons the site may render. Icon.astro throws at build for anything else. */
 export const ICON_MANIFEST: Record<IconSet, readonly string[]> = {
-  lucide: ['download', 'printer', 'triangle-alert'],
+  lucide: [
+    'x',
+    'volume-2',
+    'volume-x',
+    'printer',
+    'download',
+    'external-link',
+    'rotate-ccw',
+    'refresh-cw',
+    'skip-forward',
+    'sun',
+    'moon',
+    'moon-star',
+    'flashlight',
+    'shield-alert',
+    'circle-help',
+    'check',
+    'arrow-right',
+    'arrow-left',
+    'mail',
+    'file-text',
+    'play',
+    'pause',
+    'keyboard',
+    'siren',
+    'stamp',
+    'scale',
+    'dices',
+    'gauge',
+    'bug',
+    'terminal',
+    'lock',
+    'lock-open',
+    'eye',
+    'eye-off',
+    'info',
+    'triangle-alert',
+    'chevron-down',
+    'chevron-right',
+    'menu',
+  ],
+  fluent: [
+    'cookie',
+    'fortune-cookie',
+    'flexed-biceps',
+    'leafy-green',
+    'receipt',
+    'robot',
+    'detective',
+    'paperclip',
+    'slot-machine',
+    'game-die',
+    'headstone',
+    'flashlight',
+    'raccoon',
+    'goose',
+    'penguin',
+    'window',
+    'sauropod',
+    't-rex',
+    'full-moon-face',
+    'crescent-moon',
+    'ringed-planet',
+    'round-pushpin',
+    'camera',
+    'bell',
+    'warning',
+    'police-car-light',
+    'stop-sign',
+    'balance-scale',
+    'scroll',
+    'file-cabinet',
+    'clipboard',
+    'hourglass-not-done',
+    'brain',
+    'floppy-disk',
+    'desktop-computer',
+    'bomb',
+    'canoe',
+    'water-wave',
+    'droplet',
+    'magnifying-glass-tilted-left',
+    'money-bag',
+    'coin',
+    'party-popper',
+    'crossed-fingers',
+    'thinking-face',
+    'zany-face',
+    'pleading-face',
+    'face-holding-back-tears',
+    'spiral-calendar',
+    'cheese-wedge',
+    'wastebasket',
+    'ninja',
+  ],
+  game: [
+    'tombstone',
+    'crosshair',
+    'paddles',
+    'cabbage',
+    'gavel',
+    'stamper',
+    'handcuffs',
+    'cctv-camera',
+    'id-card',
+    'poker-hand',
+  ],
 };
 
 export interface LedgerEntry {
@@ -22,6 +128,29 @@ export interface LedgerEntry {
   files?: readonly string[];
   note?: string;
 }
+
+const windows = [
+  'house',
+  'stained-glass',
+  'car',
+  'airplane',
+  'bay',
+  'drive-thru',
+  'browser',
+  'terminal',
+  'opportunity',
+];
+const cabbages = [
+  'sunglasses',
+  'bowtie',
+  'guard-badge',
+  'cape',
+  'helmet',
+  'fedora-map',
+  'goggles',
+  'crown',
+  'eyebrows',
+];
 
 export const LEDGER: LedgerEntry[] = [
   {
@@ -49,6 +178,15 @@ export const LEDGER: LedgerEntry[] = [
     url: 'https://github.com/undercasetype/Fraunces',
   },
   {
+    id: 'font-comic-neue',
+    name: 'Comic Neue',
+    kind: 'font',
+    license: 'SIL Open Font License 1.1',
+    author: 'Craig Rozynski & Hrant Papazian',
+    url: 'https://comicneue.com/',
+    note: 'The “Light (Comic Sans)” theme uses your own Comic Sans if you have it; it is not shipped here.',
+  },
+  {
     id: 'icons-lucide',
     name: 'Lucide',
     kind: 'icons',
@@ -57,16 +195,76 @@ export const LEDGER: LedgerEntry[] = [
     url: 'https://lucide.dev/',
   },
   {
-    id: 'art-og-card',
-    name: 'Open Graph card: stamp ring and paper texture',
+    id: 'icons-fluent',
+    name: 'Fluent Emoji (Flat)',
+    kind: 'icons',
+    license: 'MIT',
+    author: 'Microsoft Corporation',
+    url: 'https://github.com/microsoft/fluentui-emoji',
+  },
+  {
+    id: 'icons-game',
+    name: 'game-icons.net',
+    kind: 'icons',
+    license: 'CC BY 3.0',
+    author: 'game-icons.net contributors (Lorc, Delapouite and others)',
+    url: 'https://game-icons.net/',
+    note: 'Icons by the game-icons.net contributors, licensed under CC BY 3.0.',
+  },
+  {
+    id: 'art-windows',
+    name: 'CAPTCHAN’T™ window illustrations',
     kind: 'original-art',
     license: 'Public domain (Unlicense), like the code',
     author: 'Made for this site',
-    files: ['illustrations/stamp-ring.svg', 'illustrations/paper-noise.svg'],
+    files: windows.map((w) => `captcha/windows/${w}.svg`),
+  },
+  {
+    id: 'art-cabbage',
+    name: 'Nicolas Cabbage and the legally nervous rectangle',
+    kind: 'original-art',
+    license: 'Public domain (Unlicense), like the code',
+    author: 'Made for this site',
+    files: [
+      ...cabbages.map((c) => `captcha/cabbage/${c}.svg`),
+      'captcha/cabbage/legal-rectangle.svg',
+    ],
+    note: 'No celebrity likeness is used. No endorsement implied by anyone, including the cabbage.',
+  },
+  {
+    id: 'art-illustrations',
+    name: 'Institutional illustrations',
+    kind: 'original-art',
+    license: 'Public domain (Unlicense), like the code',
+    author: 'Made for this site',
+    files: [
+      'illustrations/tombstone.svg',
+      'illustrations/dancer-fallback.svg',
+      'illustrations/empty-grid.svg',
+      'illustrations/felt-noise.svg',
+      'illustrations/paper-noise.svg',
+      'illustrations/stamp-ring.svg',
+      'illustrations/tungsten-cube.svg',
+    ],
+  },
+  {
+    id: 'art-clipart',
+    name: 'Résumé.ppt clip art (lightbulb, trophy, globe, rocket, fireworks)',
+    kind: 'original-art',
+    license: 'Public domain (Unlicense), like the code',
+    author: 'Made for this site',
+    files: [
+      'illustrations/clipart/lightbulb.svg',
+      'illustrations/clipart/trophy.svg',
+      'illustrations/clipart/globe.svg',
+      'illustrations/clipart/rocket.svg',
+      'illustrations/clipart/fireworks.svg',
+    ],
+    note: 'Drawn in the spirit of 1990s office clip art. No clip-art collections were harmed.',
   },
   {
     id: 'art-favicon',
-    name: 'DRV rubber-stamp favicon',
+    name: 'DDP rubber-stamp favicon',
     kind: 'original-art',
     license: 'Public domain (Unlicense), like the code',
     author: 'Made for this site',
@@ -79,6 +277,24 @@ export const LEDGER: LedgerEntry[] = [
     license: 'MIT',
     author: 'The Astro Technology Company',
     url: 'https://astro.build/',
+  },
+  {
+    id: 'lib-matter',
+    name: 'matter-js',
+    kind: 'library',
+    license: 'MIT',
+    author: 'Liam Brummitt',
+    url: 'https://brm.io/matter-js/',
+    note: 'Loaded only when you press the button you were told not to press.',
+  },
+  {
+    id: 'lib-three',
+    name: 'three.js',
+    kind: 'library',
+    license: 'MIT',
+    author: 'three.js authors',
+    url: 'https://threejs.org/',
+    note: 'Loaded only on the tungsten cube pages, and only once they need to draw.',
   },
   {
     id: 'lib-chocolate-doom',
@@ -107,6 +323,14 @@ export const LEDGER: LedgerEntry[] = [
     url: 'https://github.com/cloudflare/doom-wasm',
     note: 'Unmodified. Downloaded from this site only when you press Play. Please don’t sue me.',
   },
+  {
+    id: 'media-rick',
+    name: 'Rick Astley — official music video',
+    kind: 'media',
+    license: 'Embedded via YouTube’s privacy-enhanced player; not hosted here',
+    author: 'Rick Astley / the rights holders',
+    note: 'Loaded only after you click. No lyrics are reproduced on this site.',
+  },
 ];
 
 export const INSPIRATION = [
@@ -118,7 +342,7 @@ export const INSPIRATION = [
 ];
 
 export const creditsCopy = {
-  kicker: 'Credits',
+  kicker: 'Form DDP-13 · CREDITS',
   h1: 'Credits',
   sub: 'Everything here that someone else made, and the licenses they made it under.',
   sections: {
@@ -130,5 +354,5 @@ export const creditsCopy = {
     inspiration: 'Inspiration',
   },
   iconsUsed: 'Icons used from this set:',
-  footer: 'No endorsement is implied by anyone listed here.',
+  footer: 'No endorsement implied by anyone, including the cabbage.',
 };

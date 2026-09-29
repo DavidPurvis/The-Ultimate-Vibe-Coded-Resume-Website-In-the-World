@@ -80,3 +80,15 @@ describe('mode', () => {
     expect(seen).toEqual([]);
   });
 });
+
+describe('before the shell initializes', () => {
+  it('page scripts see the mode the boot script painted, and scenes refuse under Direct access', async () => {
+    document.documentElement.setAttribute('data-mode', 'recruiter');
+    expect(isDirectAccess()).toBe(true);
+    register({ id: 'early', major: false, start: () => {} });
+    expect(await start('early')).toBe(false);
+    document.documentElement.setAttribute('data-mode', 'chaos');
+    expect(getMode()).toBe('chaos');
+    expect(await start('early')).toBe(true);
+  });
+});

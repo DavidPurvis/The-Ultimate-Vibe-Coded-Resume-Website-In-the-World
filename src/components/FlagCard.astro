@@ -1,0 +1,74 @@
+---
+import type { Flag } from '../content/copy/greenFlags';
+import { aboutCopy } from '../content/copy/greenFlags';
+
+interface Props {
+  flag: Flag;
+  formId: string;
+  appendix?: boolean;
+}
+const { flag, formId, appendix = false } = Astro.props;
+const evidenceId = `ev-${flag.id}`;
+const rot = [-3, 2, -2, 3, -6, 5][flag.id.length % 6];
+---
+
+<article class:list={['card', 'flag', { 'flag--appendix': appendix }]}>
+  <p class="card__form-id">
+    {formId}
+    {appendix && <span class="flag__label"> · {aboutCopy.appendixLabel}</span>}
+  </p>
+  <h3 class="flag__claim">✓ {flag.text}</h3>
+  <button
+    type="button"
+    class:list={['stamp', 'flag__stamp', flag.tone === 'red' ? '' : `stamp--${flag.tone}`]}
+    data-rotate={rot}
+    aria-expanded="true"
+    aria-controls={evidenceId}
+    data-flag-toggle
+  >
+    {flag.stamp}
+  </button>
+  <div class="flag__evidence" id={evidenceId}>
+    <p>
+      <strong>{aboutCopy.evidenceLabel}:</strong> {flag.evidence}
+    </p>
+    <p class="fine">
+      <strong>{aboutCopy.reviewerLabel}:</strong> {flag.reviewer}
+    </p>
+    {flag.blockRefs?.length ? (
+      <p class="fine flag__grounded">
+        {aboutCopy.groundedLabel}: {flag.blockRefs.join(', ')}
+      </p>
+    ) : null}
+  </div>
+</article>
+
+<style>
+  .flag {
+    display: grid;
+    gap: var(--s-3);
+    align-content: start;
+  }
+  .flag__claim {
+    font: 600 1.15rem/1.35 var(--font-body);
+    margin: 0;
+  }
+  .flag__stamp {
+    justify-self: start;
+    background: var(--card);
+  }
+  .flag__evidence p {
+    margin-bottom: var(--s-2);
+  }
+  .flag__grounded {
+    font-family: var(--font-mono);
+  }
+  .flag__label {
+    color: var(--stamp);
+    font-weight: 600;
+  }
+  .flag--appendix {
+    border-color: var(--stamp);
+    border-style: dashed;
+  }
+</style>

@@ -34,9 +34,15 @@ export function initMode(): Mode {
   return current;
 }
 
-export const getMode = (): Mode => current;
-export const isChaos = (): boolean => current === 'chaos';
-export const isDirectAccess = (): boolean => current === 'recruiter';
+/** Before initMode() runs (page scripts run before the shell's), the boot script's attribute rules. */
+export const getMode = (): Mode =>
+  initialized || typeof document === 'undefined'
+    ? current
+    : document.documentElement.getAttribute('data-mode') === 'recruiter'
+      ? 'recruiter'
+      : 'chaos';
+export const isChaos = (): boolean => getMode() === 'chaos';
+export const isDirectAccess = (): boolean => getMode() === 'recruiter';
 
 export function onModeChange(cb: Listener): () => void {
   listeners.add(cb);

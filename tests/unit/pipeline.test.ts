@@ -31,17 +31,24 @@ describe('pipeline.yml', () => {
     expect(readdirSync('.github/workflows')).toEqual(['pipeline.yml']);
   });
 
-  it('runs check → build → { e2e, lighthouse } → deploy', () => {
-    expect(Object.keys(JOBS)).toEqual(['check', 'build', 'e2e', 'lighthouse', 'deploy']);
+  it('runs check → build → { e2e, e2e-hooks, lighthouse } → deploy', () => {
+    expect(Object.keys(JOBS)).toEqual([
+      'check',
+      'build',
+      'e2e',
+      'e2e-hooks',
+      'lighthouse',
+      'deploy',
+    ]);
     expect(job('build')).toMatch(/^\s+needs: check$/m);
-    expect(job('e2e')).toMatch(/^\s+needs: build$/m);
-    expect(job('lighthouse')).toMatch(/^\s+needs: build$/m);
-    expect(job('deploy')).toMatch(/^\s+needs: \[e2e, lighthouse\]$/m);
+    for (const id of ['e2e', 'e2e-hooks', 'lighthouse'])
+      expect(job(id), id).toMatch(/^\s+needs: build$/m);
+    expect(job('deploy')).toMatch(/^\s+needs: \[e2e, e2e-hooks, lighthouse\]$/m);
   });
 
   it('builds exactly once, in the build job, and writes the manifest there (D1)', () => {
     for (const [id, text] of Object.entries(JOBS)) {
-      expect(text.includes('npm run build'), id).toBe(id === 'build');
+      expect(/npm run build(?!:hooks)/.test(text), id).toBe(id === 'build');
       expect(/sha256sum\) > site\.sha256/.test(text), id).toBe(id === 'build');
     }
     // The PDFs and the scan are verified before anything is uploaded.
@@ -60,7 +67,7 @@ describe('pipeline.yml', () => {
 
   it('runs every Playwright project against the artifact', () => {
     const config = readFileSync('playwright.config.ts', 'utf8');
-    const projects = [...config.matchAll(/\{ name: '(\w+)'/g)].map((m) => m[1]);
+    const projects = [...config.matchAll(/\bname: '(\w+)'/g)].map((m) => m[1]);
     const matrix = [...job('e2e').matchAll(/project: (\w+),/g)].map((m) => m[1]);
     expect(projects).toHaveLength(4);
     expect(matrix).toEqual(projects);

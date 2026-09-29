@@ -1,5 +1,5 @@
 ---
-/** The ordinary footer. The form number appears only where the Department operates. */
+/** The Department's footer: Facilities, the source, and the page's reference number. */
 import { url } from '../lib/paths';
 
 interface Props {
@@ -7,26 +7,29 @@ interface Props {
 }
 const { formNumber } = Astro.props;
 const repo = 'https://github.com/DavidPurvis/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World';
+const links = [
+  { path: '/privacy/', label: 'Privacy' },
+  { path: '/legal/', label: 'Terms of reading' },
+  { path: '/#facilities', label: 'Facilities' },
+  { path: '/how-it-was-built/', label: 'How it was built' },
+  { path: '/credits/', label: 'Credits' },
+];
 ---
 
 <footer class="site-foot">
   <div class="container site-foot__inner">
     <ul class="site-foot__links">
-      <li>
-        <a href={url('/privacy/')}>Privacy</a>
-      </li>
-      <li>
-        <a href={url('/how-it-was-built/')}>How it was built</a>
-      </li>
-      <li>
-        <a href={url('/credits/')}>Credits</a>
-      </li>
+      {links.map((l) => (
+        <li>
+          <a href={url(l.path)}>{l.label}</a>
+        </li>
+      ))}
       <li>
         <a href={repo} rel="noopener noreferrer">
           Source
         </a>
       </li>
     </ul>
-    {formNumber && <p class="fine site-foot__form">{formNumber}</p>}
+    {formNumber && <p class="fine site-foot__form">Form {formNumber}</p>}
   </div>
 </footer>

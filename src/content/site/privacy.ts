@@ -1,34 +1,36 @@
 /**
  * The privacy page. Every sentence here must be true of the code (privacy-page.spec and the
- * scanner check the parts a test can check). Plain words; the Department does not operate here.
+ * scanner check the parts a test can check). Plain words: the Department describes storage, media
+ * and exits without performing.
  */
 export const privacyCopy = {
-  kicker: 'Privacy',
+  kicker: 'Form DDP-15 · Facilities · Privacy',
   h1: 'What this site stores',
-  lede: 'One entry, in this tab, until you close it. Nothing is sent anywhere.',
-  storedHeading: 'Stored in this tab',
+  lede: 'Two small records in your own browser, and nothing sent anywhere. Both can be cleared below.',
+  storedHeading: 'Stored in your browser',
   storedBody: [
-    'The home page keeps one entry in this tab’s session storage, under the key uvcr:case: a random number (the case’s seed), a short list of named events such as “scope stated” or “release attempted”, and a one-word status. It is written the first time something is recorded, usually when you ask for the résumé.',
-    'The events never include what you typed or copied, where your pointer was, when anything happened, or anything about your device. Closing the tab deletes the entry. A new tab starts a new case.',
+    'Preferences are kept in local storage under the key uvcr:prefs, so they survive closing the tab: whether Direct access is on, your display setting, your answer to the cookie notice, whether sound is on, and whether the gaming interface overlay is on.',
+    'This tab’s record is kept in session storage under the key uvcr:session, and is deleted when you close the tab. It holds: what you declared at classification (human, automated system with the model you chose, or withheld) and whether you completed or skipped the optional transcription; how verification ended (completed, and by which method, or skipped) and how many objections it raised; how many times you requested each link at hyperlink allocation, and how many completed spins ended unsuccessfully; the departments you have visited, as a list of names such as “projects”; which notices have been shown; whether your résumé request has been approved; and a few counters used by the attractions (the interface’s threat level, how often a button moved away, whether the appendix was opened, and whether gameplay footage is on).',
+    'If you ask for biscotti during cookie administration, each drawing is kept in local storage under a key beginning uvcr:biscotti: until you remove it.',
+    'None of these records contain anything you typed, what you transcribed, when anything happened, how long you stayed, where your pointer went, or anything about your device.',
   ],
-  noticedHeading: 'What the Department notices',
-  noticed: [
-    'Switching away from the tab and back (recorded as brief or extended, never how long).',
-    'Copying text (recorded as where it was copied from: the contact section, the résumé extract or the case; never the text).',
-    'Refreshing the page during a case.',
+  mediaHeading: 'Media, downloads and outside links',
+  media: [
+    'Musical material is played by YouTube’s privacy-enhanced player (youtube-nocookie.com). The player is loaded only after you press a play control on the musical material page, a share page or a hyperlink allocation result, and it is removed when you close it. Once it loads, YouTube’s policies apply.',
+    'The gameplay footage overlay currently shows placeholder tiles and loads nothing from YouTube. If footage is added, it will use the same player, loaded only after you switch the overlay on or press Summon, and it will return on later pages until you dismiss it or switch the overlay off.',
+    'DOOM downloads about 7 MB from this site, and only after you press Play.',
+    'Résumé selection builds a link to claude.ai containing your questionnaire answers and a cut of the résumé. Nothing is sent unless you follow that link; if you do, it opens in your own account and Anthropic’s terms apply.',
+    'External links (GitHub, LinkedIn, Wikipedia, the credits) are ordinary links, followed only if you click them.',
   ],
-  gpc: 'If your browser sends Global Privacy Control or Do Not Track, the Department notices none of these, and says so in its findings. Printing the home page is different: it is a request, not an observation, and it approves the case.',
   neverHeading: 'What this site never does',
   never: [
-    'Set cookies, or use analytics, tracking pixels or advertising.',
-    'Send anything to a server. The security policy forbids connecting anywhere else, and the site has no server of its own.',
+    'Set cookies, or use analytics, tracking pixels or advertising networks.',
+    'Send anything to a server. The site has no server of its own, and its security policy allows no connection to any other.',
     'Ask for permissions (notifications, location, camera, clipboard).',
     'Read your clipboard, fingerprint your browser, or record your input device or motion preference.',
-    'Load anything from another site. External links (GitHub, LinkedIn, Wikipedia, the credits) are ordinary links, followed only if you click them.',
   ],
-  doom: 'DOOM, on its own page, downloads about 7 MB from this site, and only after you press Play.',
   legacy:
-    'Keys left in your browser by the previous version of this site (uvcr:prefs, uvcr:session and uvcr:biscotti:…) are removed when you open the home page or this page.',
+    'A key left in your browser by the previous version of this site (uvcr:case) is removed when any page of the Department opens.',
   tableCaption: 'Keys this site has stored in your browser right now',
   columns: { key: 'Key', area: 'Where', size: 'Size' },
   areas: { session: 'Session storage (this tab)', local: 'Local storage' },

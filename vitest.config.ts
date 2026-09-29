@@ -14,9 +14,9 @@ export default defineConfig({
         'src/case/**/*.ts',
         'src/runtime/activation.ts',
       ],
-      // Build-time helpers (icon inlining, the inline boot strings) are exercised by the build and
-      // the scanner, not by unit tests.
-      exclude: ['src/lib/icons.ts', 'src/lib/boot.ts'],
+      // Build-time helpers (icon inlining, the inline boot strings, the newsletter's content
+      // collection) are exercised by the build and the scanner, not by unit tests.
+      exclude: ['src/lib/icons.ts', 'src/lib/boot.ts', 'src/lib/blog.ts'],
       thresholds: {
         lines: 90,
         branches: 85,

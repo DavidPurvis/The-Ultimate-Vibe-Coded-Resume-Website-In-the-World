@@ -1,0 +1,367 @@
+---
+import Base from '../../layouts/Site.astro';
+import PageHero from '../../components/PageHero.astro';
+import Memo from '../../components/Memo.astro';
+import Icon from '../../components/Icon.astro';
+import Wheel from '../../components/Wheel.astro';
+import DirectLinks from '../../components/DirectLinks.astro';
+import { ROUTES } from '../../content/site/meta';
+import { casinoCopy as C, destCards } from '../../content/copy/casino';
+import { memos } from '../../content/copy/memos';
+import { DEST_IDS } from '../../lib/destinations';
+import { url } from '../../lib/paths';
+---
+
+<Base route={ROUTES.casino} bodyClass="casino-page">
+  <Memo text={memos.casino} />
+  <PageHero kicker={C.kicker} title={C.h1} lede={C.lede} />
+
+  <noscript>
+    <section class="casino-plain">
+      <p>
+        <strong>{C.noscript}</strong>
+      </p>
+      <DirectLinks />
+    </section>
+  </noscript>
+
+  <section class="casino-plain recruiter-only" aria-labelledby="casino-closed">
+    <p id="casino-closed">
+      <strong>{C.recruiterClosed}</strong>
+    </p>
+    <DirectLinks />
+  </section>
+
+  <section class="felt chaos-only js-only" data-casino aria-labelledby="casino-table-h">
+    <h2 id="casino-table-h" class="sr-only">
+      {C.h1}
+    </h2>
+    <div class="felt__grid">
+      <div class="felt__left">
+        <fieldset class="picker" data-picker>
+          <legend>{C.picker}</legend>
+          <div class="picker__cards">
+            {DEST_IDS.map((id) => (
+              <button type="button" class="dest-card" data-pick={id} aria-pressed="false">
+                <span class="dest-card__label">{destCards[id].label}</span>
+                <span class="dest-card__blurb">{destCards[id].blurb}</span>
+              </button>
+            ))}
+          </div>
+        </fieldset>
+        <p class="attempting" data-attempting aria-live="polite"></p>
+
+        <div class="odds-sign" aria-label="Odds">
+          <Icon set="fluent" name="money-bag" size={32} />
+          <div>
+            {C.oddsSign.map((l) => (
+              <p>{l}</p>
+            ))}
+          </div>
+        </div>
+
+        <div class="controls">
+          <button type="button" class="btn btn--casino" data-spin aria-disabled="true">
+            <Icon set="fluent" name="slot-machine" />
+            <span data-spin-label>{C.spin}</span>
+          </button>
+          <button type="button" class="btn btn--ghost btn--small" data-sound aria-pressed="false">
+            <span data-sound-icon="off">
+              <Icon name="volume-x" />
+            </span>
+            <span data-sound-icon="on" hidden>
+              <Icon name="volume-2" />
+            </span>
+            <span data-sound-label>{C.sound.off}</span>
+          </button>
+        </div>
+        <p class="casino-status mono" data-casino-status role="status"></p>
+      </div>
+
+      <div class="felt__right">
+        <Wheel />
+        <p class="mono fine debug-readout" data-debug-readout hidden></p>
+      </div>
+    </div>
+
+    <div class="result" data-casino-result tabindex="-1" hidden></div>
+
+    <div class="felt__footer">
+      <section aria-labelledby="house-rules">
+        <h3 id="house-rules">
+          <Icon set="game" name="poker-hand" size={28} />
+          {C.rulesHeading}
+        </h3>
+        <ol class="rules">
+          {C.rules.map((r) => (
+            <li>{r}</li>
+          ))}
+        </ol>
+      </section>
+      <ul class="chips" role="list" aria-label="Accepted currency">
+        {C.chips.map((c) => (
+          <li class={`chip chip--${c.color}`}>
+            <span class="chip__disc" aria-hidden="true">
+              {c.value}
+            </span>
+            <span class="chip__label">
+              {c.value} {c.label}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <template data-tomb-template>
+    <div class="tomb">
+      <img
+        src={url('/illustrations/tombstone.svg')}
+        alt=""
+        width="360"
+        height="420"
+        decoding="async"
+      />
+      <p class="tomb__text">
+        <span data-tomb-path></span>
+        <span class="tomb__epitaph">{C.outcomes.RIP.epitaph}</span>
+      </p>
+    </div>
+  </template>
+
+  <p class="responsible section">
+    {C.responsible}{' '}
+    <a href={`${url('/resume/')}?mode=recruiter`} data-escape>
+      {C.responsibleLink}
+    </a>
+    .
+  </p>
+</Base>
+
+<script>
+  import '../../scenes/casino';
+</script>
+
+<style>
+  .casino-plain {
+    border: 2px solid var(--ink-2);
+    border-radius: var(--r-2);
+    padding: var(--s-5);
+    background: var(--card);
+    margin-bottom: var(--s-6);
+  }
+  .felt {
+    --focus: #fdba74;
+    color: var(--felt-ink);
+    background:
+      url('/illustrations/felt-noise.svg'),
+      radial-gradient(circle at 50% 30%, var(--felt), var(--felt-2));
+    border: 10px solid #5b3a1e;
+    border-radius: 28px;
+    box-shadow:
+      inset 0 0 0 3px var(--gold),
+      var(--sh-2);
+    padding: clamp(var(--s-4), 3vw, var(--s-7));
+  }
+  .felt :where(a) {
+    color: var(--gold);
+  }
+  .felt :global(.btn--ghost) {
+    --btn-ink: var(--felt-ink);
+    --btn-border: rgb(244 235 208 / 0.45);
+  }
+  .felt__grid {
+    display: grid;
+    gap: var(--s-6);
+    align-items: start;
+  }
+  @media (min-width: 64rem) {
+    .felt__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .picker {
+    border: 0;
+    padding: 0;
+    margin: 0 0 var(--s-3);
+  }
+  .picker legend {
+    font: 600 1.05rem/1.4 var(--font-body);
+    margin-bottom: var(--s-3);
+  }
+  .picker__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+    gap: var(--s-3);
+  }
+  .dest-card {
+    display: grid;
+    gap: var(--s-1);
+    text-align: left;
+    min-height: 44px;
+    padding: var(--s-3);
+    border-radius: var(--r-2);
+    border: 2px solid rgb(244 235 208 / 0.45);
+    background: rgb(0 0 0 / 0.22);
+    color: var(--felt-ink);
+    cursor: pointer;
+    font: inherit;
+  }
+  .dest-card__label {
+    font-weight: 700;
+  }
+  .dest-card__blurb {
+    font-size: 0.875rem;
+    opacity: 0.9;
+  }
+  .dest-card[aria-pressed='true'] {
+    border-color: var(--gold);
+    background: rgb(232 193 90 / 0.18);
+    box-shadow: inset 0 0 0 2px var(--gold);
+  }
+  .dest-card[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.65;
+  }
+  .attempting {
+    min-height: 1.6em;
+    font-weight: 600;
+  }
+  .odds-sign {
+    display: flex;
+    gap: var(--s-3);
+    align-items: center;
+    border: 2px dashed var(--gold);
+    border-radius: var(--r-2);
+    padding: var(--s-3) var(--s-4);
+    margin-bottom: var(--s-4);
+  }
+  .odds-sign p {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    align-items: center;
+  }
+  .casino-status {
+    min-height: 1.4em;
+    margin-top: var(--s-3);
+  }
+  .debug-readout {
+    text-align: center;
+    color: var(--felt-ink);
+  }
+  .result {
+    margin-top: var(--s-6);
+    border: 3px solid var(--gold);
+    border-radius: var(--r-2);
+    background: rgb(0 0 0 / 0.3);
+    padding: var(--s-5);
+    text-align: center;
+  }
+  .result:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+  }
+  .result :global(.result__badge) {
+    font: 700 0.875rem/1 var(--font-mono);
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    margin-bottom: var(--s-2);
+  }
+  .result :global(.result__title) {
+    font: 600 1.5rem/1.25 var(--font-display);
+    margin-bottom: var(--s-4);
+  }
+  .result :global(.btn-row) {
+    justify-content: center;
+  }
+  .result :global(.tomb) {
+    position: relative;
+    width: min(100%, 16rem);
+    margin: 0 auto var(--s-4);
+  }
+  .result :global(.tomb img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .result :global(.tomb__text) {
+    position: absolute;
+    inset: 34% 18% auto;
+    margin: 0;
+    display: grid;
+    gap: var(--s-2);
+    color: #26262b;
+    font: 700 0.95rem/1.2 var(--font-mono);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+  .result :global(.tomb__epitaph) {
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+  }
+  .felt__footer {
+    display: grid;
+    gap: var(--s-5);
+    margin-top: var(--s-6);
+    border-top: 1px solid rgb(244 235 208 / 0.3);
+    padding-top: var(--s-5);
+  }
+  @media (min-width: 48rem) {
+    .felt__footer {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+  .felt h3 {
+    display: flex;
+    gap: var(--s-2);
+    align-items: center;
+    font-family: var(--font-display);
+  }
+  .rules {
+    margin: 0;
+    padding-left: 1.4rem;
+  }
+  .chips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-3);
+    align-content: start;
+  }
+  .chip {
+    display: flex;
+    gap: var(--s-3);
+    align-items: center;
+  }
+  .chip__disc {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font: 700 0.95rem/1 var(--font-mono);
+    border: 4px dashed currentColor;
+    box-shadow: 0 0 0 3px rgb(0 0 0 / 0.35);
+  }
+  .chip--cream .chip__disc {
+    background: #f1e3c0;
+    color: #1a1a1a;
+  }
+  .chip--red .chip__disc {
+    background: #b3261e;
+    color: #fff;
+  }
+  .chip--black .chip__disc {
+    background: #1a1a1a;
+    color: #f1e3c0;
+  }
+  .responsible {
+    font-size: 0.95rem;
+  }
+</style>

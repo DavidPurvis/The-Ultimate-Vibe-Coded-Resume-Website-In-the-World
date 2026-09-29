@@ -1,34 +1,64 @@
 ---
-/** The ordinary site header: name, three links, and (on `/` only) the case chip slot. */
+/**
+ * The Department's header: the institution, the directory (a <details> menu, so it works without
+ * JavaScript) and the résumé. Direct access sits here too, quietly, for anyone who wants the
+ * procedures to stop. Novelty controls live in their departments, not here.
+ */
+import ModeToggle from './ModeToggle.astro';
+import { DIRECTORY } from '../content/department/directory';
+import { DEPARTMENT, shell } from '../content/department/shell';
 import { url } from '../lib/paths';
 
 interface Props {
   currentPath: string;
+  plain?: boolean;
 }
-const { currentPath } = Astro.props;
-const links = [
-  { path: '/resume/', label: 'Résumé' },
-  { path: '/projects/', label: 'Projects' },
-  { path: '/#contact', label: 'Contact' },
-];
+const { currentPath, plain = false } = Astro.props;
 ---
 
-<header class="site-bar">
-  <div class="container site-bar__inner">
-    <a class="site-bar__name" href={url('/')}>
-      David Purvis
+<header class="dept-header">
+  <div class="container dept-header__inner">
+    <a class="dept-brand" href={url('/')}>
+      <span class="dept-brand__seal" aria-hidden="true">
+        DDP
+      </span>
+      <span class="dept-brand__name">{DEPARTMENT}</span>
     </a>
-    <nav aria-label="Site">
-      <ul class="site-bar__nav">
-        {links.map((l) => (
-          <li>
-            <a href={url(l.path)} aria-current={l.path === currentPath ? 'page' : undefined}>
-              {l.label}
-            </a>
-          </li>
-        ))}
-      </ul>
+    <nav class="dept-nav" aria-label="Department">
+      <details class="dept-menu" data-menu>
+        <summary class="dept-nav__item">{shell.directory}</summary>
+        <div class="dept-menu__panel">
+          {DIRECTORY.map((c) => (
+            <div class="dept-menu__group">
+              <p class="dept-menu__heading" id={`menu-${c.id}`}>
+                <a href={url(`/#${c.id}`)}>{c.title}</a>
+              </p>
+              <ul aria-labelledby={`menu-${c.id}`}>
+                {c.services
+                  .filter((s) => s.path)
+                  .map((s) => (
+                    <li>
+                      <a
+                        href={url(s.path ?? '/')}
+                        aria-current={s.path === currentPath ? 'page' : undefined}
+                      >
+                        {s.label}
+                      </a>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </details>
+      <a class="dept-nav__item" href={url('/resume/')}>
+        {shell.resume}
+      </a>
+      {!plain && (
+        <span class="js-only dept-nav__switch">
+          <ModeToggle hintId="direct-access-hint-header" />
+        </span>
+      )}
     </nav>
-    <slot name="chip" />
   </div>
 </header>

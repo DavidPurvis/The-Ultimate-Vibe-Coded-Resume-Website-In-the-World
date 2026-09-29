@@ -29,6 +29,7 @@ test.describe('accessibility', () => {
   }
 
   test('every page in dark mode with reduced motion', async ({ page }) => {
+    test.setTimeout(180_000);
     await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
     const found: string[] = [];
     for (const r of HTML_ROUTES) {

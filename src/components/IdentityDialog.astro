@@ -1,0 +1,158 @@
+---
+import SceneDialog from './SceneDialog.astro';
+import Stamp from './Stamp.astro';
+import { identities, identityDialog as D, type IdentityId } from '../content/copy/identity';
+
+const ids = Object.keys(identities) as IdentityId[];
+---
+
+<SceneDialog id="identity" title={D.choose.title} closeLabel={D.closeLabel}>
+  <p class="id-step mono fine" data-id-step aria-live="polite"></p>
+
+  <section data-phase="choose">
+    <p>{D.choose.lede}</p>
+    <fieldset class="id-choices">
+      <legend>{D.choose.legend}</legend>
+      {ids.map((id) => (
+        <label class="id-choice">
+          <input type="radio" name="identity" value={id} />
+          <span>{identities[id].label}</span>
+        </label>
+      ))}
+    </fieldset>
+    <p class="id-error" role="alert" data-id-error hidden>
+      {D.choose.emptyError}
+    </p>
+    <div class="btn-row">
+      <button type="button" class="btn btn--primary" data-id="submit">
+        {D.choose.submit}
+      </button>
+      <button type="button" class="btn" data-id="refuse">
+        {D.choose.refuse}
+      </button>
+    </div>
+  </section>
+
+  <section data-phase="confirm" hidden>
+    <p>{D.confirm.lede}</p>
+    <p class="id-confirm-line" data-id-confirm-line></p>
+    <div class="btn-row">
+      <button type="button" class="btn btn--primary" data-id="keep" data-id-keep-label></button>
+      <button type="button" class="btn" data-id="double">
+        {D.confirm.double}
+      </button>
+      <button type="button" class="btn" data-id="prompt">
+        {D.confirm.prompt}
+      </button>
+      <button type="button" class="btn btn--ghost" data-id="change">
+        {D.confirm.change}
+      </button>
+    </div>
+  </section>
+
+  <section data-phase="final" hidden>
+    <p>{D.final.lede}</p>
+    <blockquote class="id-quote" id="id-quote">
+      {D.final.quote}
+    </blockquote>
+    <p class="fine">{D.final.note}</p>
+    <label class="id-textarea">
+      <span>{D.final.label}</span>
+      <textarea rows="4" data-id-text aria-describedby="id-quote"></textarea>
+    </label>
+    <p class="fine">{D.final.privacy}</p>
+    <div class="btn-row">
+      <button type="button" class="btn btn--primary" data-id="verify">
+        {D.final.verify}
+      </button>
+      <button type="button" class="btn" data-id="skip">
+        {D.final.skip}
+      </button>
+    </div>
+  </section>
+
+  <section data-phase="result" hidden>
+    <div class="id-result-stamp" data-id-stamp></div>
+    <p class="id-result-line" data-id-result></p>
+    <p class="fine" data-id-analysis></p>
+    <div class="btn-row">
+      <button type="button" class="btn btn--primary" data-id="continue">
+        {D.result.continue}
+      </button>
+    </div>
+  </section>
+
+  <template data-stamp-template>
+    <Stamp text="STAMP" rotate={-6} />
+  </template>
+</SceneDialog>
+
+<style>
+  .id-choices {
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    padding: var(--s-3) var(--s-4);
+    margin: 0 0 var(--s-4);
+    display: grid;
+    gap: var(--s-1);
+  }
+  .id-choices legend {
+    font-weight: 600;
+    padding: 0 var(--s-2);
+  }
+  .id-choice {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    min-height: var(--target);
+    padding: 0 var(--s-2);
+    border-radius: var(--r-1);
+    cursor: pointer;
+  }
+  .id-choice:hover {
+    background: color-mix(in srgb, var(--action) 8%, transparent);
+  }
+  .id-choice input {
+    width: 1.25rem;
+    height: 1.25rem;
+    accent-color: var(--action);
+  }
+  .id-error {
+    color: var(--stamp);
+    font-weight: 600;
+  }
+  .id-confirm-line {
+    font: italic 500 1.15rem/1.4 var(--font-display);
+  }
+  .id-quote {
+    margin: 0 0 var(--s-2);
+    padding: var(--s-3) var(--s-4);
+    border-left: 4px solid var(--stamp);
+    background: var(--warn-bg);
+    color: var(--warn-ink);
+    font: 400 0.95rem/1.5 var(--font-mono);
+  }
+  .id-textarea {
+    display: grid;
+    gap: var(--s-1);
+    font-weight: 600;
+    margin-bottom: var(--s-3);
+  }
+  .id-textarea textarea {
+    font: 400 1rem/1.5 var(--font-mono);
+    border: 1.5px solid var(--ink-2);
+    border-radius: var(--r-1);
+    padding: var(--s-2) var(--s-3);
+    background: var(--card);
+    color: var(--ink);
+    resize: vertical;
+  }
+  .id-result-stamp {
+    margin: var(--s-3) 0 var(--s-4);
+    font-size: 1.1rem;
+  }
+  .id-result-line {
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+</style>

@@ -163,41 +163,7 @@ main {
   flex: 1;
   padding-block: var(--s-6) var(--s-8);
 }
-/* ---------- site bar and footer (Site layout) ---------- */
-.site-bar {
-  border-bottom: 1px solid var(--rule);
-}
-.site-bar__inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--s-3) var(--s-5);
-  padding-block: var(--s-3);
-}
-.site-bar__name {
-  font: 600 1.05rem/1.2 var(--font-display);
-  color: var(--ink);
-  text-decoration: none;
-  margin-right: auto;
-}
-.site-bar__nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-4);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.site-bar__nav a {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--target);
-  font-weight: 500;
-}
-.site-bar__nav a[aria-current='page'] {
-  color: var(--ink);
-  text-decoration: none;
-}
+/* ---------- footer (Site layout) ---------- */
 .site-foot {
   border-top: 1px solid var(--rule);
 }

@@ -1,53 +1,126 @@
 ---
 /**
- * Layout S: every page that isn't the résumé. No global scripts; each page brings its own.
- * `printResume` embeds the GEN résumé for print (the theatrical page prints the résumé; plain
- * pages print themselves).
+ * The Department's shell: every page that isn't the résumé. It carries the institution's header
+ * (directory and résumé access), the case status line and the one notice slot, the page's related
+ * offices and a return to the directory, the Facilities footer, and the Department's runtime.
+ *
+ * `plain` is for the sincere tribute: no status, notices, advertisements, title changes, novelty
+ * themes, optional overlays or runtime at all. `printResume` embeds the résumé for print (the
+ * front desk prints the résumé; other pages print themselves).
  */
 import '../styles/fonts';
+// The comic face is for the attractions (verification, the comic display setting); the résumé
+// layout never loads it.
+import '@fontsource/comic-neue/latin-400.css';
+import '@fontsource/comic-neue/latin-700.css';
 import '../styles/tokens.css';
 import '../styles/core.css';
+import '../styles/attractions.css';
+import '../styles/department.css';
 import '../styles/print.css';
 import Head from '../components/Head.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import ResumeDocument from '../components/ResumeDocument.astro';
+import DepartmentRuntime from '../components/DepartmentRuntime.astro';
 import type { RouteMeta } from '../content/site/meta';
+import { categoryOfPath } from '../content/department/directory';
+import { shell } from '../content/department/shell';
+import { statusLabel } from '../content/department/case';
 import { url } from '../lib/paths';
 
 interface Props {
   route: RouteMeta;
   printResume?: boolean;
-  formNumber?: string;
   noindex?: boolean;
+  ogTitle?: string;
+  bodyClass?: string;
+  /** The sincere tribute: outside the institution. */
+  plain?: boolean;
 }
-const { route, printResume = false, formNumber, noindex = false } = Astro.props;
+const {
+  route,
+  printResume = false,
+  noindex = false,
+  ogTitle,
+  bodyClass,
+  plain = false,
+} = Astro.props;
+const isHome = route.path === '/';
+const category = isHome || plain ? null : categoryOfPath(route.path);
+const related = category?.services.filter((s) => s.path && s.path !== route.path) ?? [];
 ---
 
 <!doctype html>
-<html lang="en" data-layout="site">
+<html lang="en" data-layout="site" data-plain={plain ? '' : undefined}>
   <head>
-    <Head title={route.title} description={route.description} path={route.path} noindex={noindex} />
+    <Head
+      title={route.title}
+      description={route.description}
+      path={route.path}
+      noindex={noindex}
+      {...(ogTitle ? { ogTitle } : {})}
+    />
+    <meta name="department-route" content={route.path} />
     <slot name="head" />
   </head>
-  <body class="layout-s" data-print-resume={printResume ? '' : undefined}>
+  <body class:list={['layout-s', bodyClass]} data-print-resume={printResume ? '' : undefined}>
     <a class="skip-link" href={url('/resume/')}>
-      Skip to the résumé
+      {shell.skipLink}
     </a>
-    <SiteHeader currentPath={route.path}>
-      <slot name="chip" slot="chip" />
-    </SiteHeader>
+    <SiteHeader currentPath={route.path} plain={plain} />
+    {!plain && (
+      <div class="case-bar">
+        <div class="container case-bar__inner">
+          <p class="case-status" data-status hidden>
+            <span class="case-status__label">{statusLabel}</span>
+            <span data-status-text />
+          </p>
+          <div class="notice-slot" data-notice-slot />
+        </div>
+      </div>
+    )}
     <main id="main" tabindex="-1">
       <div class="container">
         <slot />
+        {!isHome && !plain && route.path !== '/404.html' && (
+          <nav class="offices" aria-labelledby="offices-heading">
+            {related.length > 0 && (
+              <>
+                <h2 id="offices-heading" class="offices__heading">
+                  {shell.relatedOffices}
+                </h2>
+                <ul class="offices__list">
+                  {related.map((s) => (
+                    <li>
+                      <a href={url(s.path ?? '/')}>{s.label}</a>
+                      <span class="fine">{s.description}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {related.length === 0 && (
+              <h2 id="offices-heading" class="sr-only">
+                {shell.directory}
+              </h2>
+            )}
+            <p class="offices__return">
+              <a href={url(`/#${category?.id ?? 'directory'}`)}>{shell.returnToDirectory}</a>
+            </p>
+          </nav>
+        )}
       </div>
     </main>
-    <SiteFooter {...(formNumber ? { formNumber } : {})} />
+    <SiteFooter {...(route.formId && !plain ? { formNumber: route.formId } : {})} />
     {printResume && (
       <div class="print-only" aria-hidden="true">
         <ResumeDocument idPrefix="print" embedded />
       </div>
     )}
+    {!plain && <DepartmentRuntime />}
+    <slot name="after" />
+    <div class="toast-stack" data-toasts role="region" aria-label="Notifications"></div>
     <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
   </body>
 </html>

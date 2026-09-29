@@ -4,9 +4,11 @@
  * ("Résumé", "Close", "Confirm") are excluded by length.
  */
 import * as caseCopy from './case';
+import * as directoryCopy from './directory';
+import * as frontDeskCopy from './frontDesk';
 import * as shellCopy from './shell';
 
-const MODULES: readonly unknown[] = [caseCopy, shellCopy];
+const MODULES: readonly unknown[] = [caseCopy, directoryCopy, frontDeskCopy, shellCopy];
 const MIN_LENGTH = 20;
 
 function collect(value: unknown, out: Set<string>): void {

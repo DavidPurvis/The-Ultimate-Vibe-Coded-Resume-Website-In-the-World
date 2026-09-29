@@ -1,0 +1,24 @@
+---
+/** Direct access: suspends every procedure. Internally this is still the 'recruiter' mode. */
+import { shell } from '../content/department/shell';
+
+interface Props {
+  hintId: string;
+}
+const { hintId } = Astro.props;
+---
+
+<button
+  type="button"
+  class="switch"
+  role="switch"
+  aria-checked="false"
+  aria-describedby={hintId}
+  data-mode-toggle
+>
+  <span class="switch__track" aria-hidden="true"></span>
+  <span>{shell.directAccess}</span>
+</button>
+<span id={hintId} class="sr-only">
+  {shell.directAccessHint}
+</span>

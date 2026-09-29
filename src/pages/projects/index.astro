@@ -14,6 +14,7 @@ import { identity } from '../../content/resume/identity';
     {caseFiles.map((c) => (
       <article class="card project" id={c.id} aria-labelledby={`${c.id}-h`}>
         <h2 id={`${c.id}-h`}>{c.name}</h2>
+        {c.motive && <p class="project__motive">{c.motive}</p>}
         <p class="project__stack">
           <strong>{P.stackLabel}:</strong> {c.stack}
         </p>
@@ -50,6 +51,10 @@ import { identity } from '../../content/resume/identity';
     .projects {
       grid-template-columns: 1fr 1fr;
     }
+  }
+  .project__motive {
+    font-size: 1.125rem;
+    font-weight: 600;
   }
   .project {
     padding: var(--s-5);

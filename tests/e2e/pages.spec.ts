@@ -70,11 +70,13 @@ test.describe('404', () => {
 });
 
 test.describe('outside the Department', () => {
-  test('plain pages carry no departmental copy', async ({ request }) => {
-    const strings = departmentStrings();
-    for (const r of ['projects/', 'credits/', 'tribute/', 'doom/']) {
-      const html = await (await request.get(r)).text();
-      for (const s of strings) expect(html, `${r}: ${s}`).not.toContain(s);
-    }
+  test('the tribute carries no status, notices, procedures or scripts of its own', async ({
+    request,
+  }) => {
+    const html = await (await request.get('tribute/')).text();
+    expect(html).toMatch(/<html[^>]* data-plain/);
+    expect(html).not.toMatch(/data-status|data-notice-slot|data-mode-toggle|data-parody-ad/);
+    expect(html).not.toMatch(/<script type="module"/);
+    expect(html).not.toContain(departmentStrings().find((s) => s.startsWith('Suspends')) ?? '');
   });
 });

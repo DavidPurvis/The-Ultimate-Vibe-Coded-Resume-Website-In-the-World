@@ -1,5 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import { ROUTES } from '../../src/content/site/meta';
+import { expectedPages } from '../../scripts/scan-dist/policies';
 
 export const BASE = (
   process.env.BASE_PATH || '/The-Ultimate-Vibe-Coded-Resume-Website-In-the-World'
@@ -51,9 +52,56 @@ export async function watchErrors(page: Page): Promise<() => Promise<void>> {
   };
 }
 
-/** Every prerendered HTML route, relative to the base (no leading slash). */
-/** Every HTML page, relative to the base path (derived from the route table, 404 excluded). */
-export const HTML_ROUTES: readonly string[] = Object.values(ROUTES)
+/**
+ * Every HTML page, relative to the base path: the route table, the share decoys and the newsletter
+ * posts (the same list the scanner checks the build against), 404 and the OG card excluded.
+ */
+export const HTML_ROUTES: readonly string[] = [...expectedPages()].filter(
+  (r) => r !== '404.html' && r !== 'og-card/',
+);
+
+/** The route table only (one page per service): for sweeps that don't need every post. */
+export const SERVICE_ROUTES: readonly string[] = Object.values(ROUTES)
   .map((r) => r.path)
   .filter((p) => p !== '/404.html')
   .map((p) => p.slice(1));
+
+/**
+ * Pre-seed preferences (merged over the saved ones and the defaults, cookie notice answered) and,
+ * optionally, this tab's session, once per test. The attraction specs use this so the cookie
+ * invitation and other state don't interrupt what they are testing.
+ */
+export async function seedPrefs(
+  page: Page,
+  prefs: Record<string, unknown> = {},
+  session: Record<string, unknown> | null = null,
+): Promise<void> {
+  const flag = `__seeded:${JSON.stringify([prefs, session])}`;
+  await page.addInitScript(
+    ([p, s, f]) => {
+      try {
+        if (!sessionStorage.getItem(f)) {
+          const prev = JSON.parse(localStorage.getItem('uvcr:prefs') || '{}') as object;
+          localStorage.setItem(
+            'uvcr:prefs',
+            JSON.stringify({
+              v: 1,
+              mode: 'chaos',
+              theme: 'system',
+              cookieBanner: 'accepted',
+              sound: false,
+              hud: 'off',
+              ...prev,
+              ...p,
+            }),
+          );
+          if (s) sessionStorage.setItem('uvcr:session', JSON.stringify({ v: 1, ...s }));
+          sessionStorage.setItem(f, '1');
+        }
+      } catch {
+        /* ignore */
+      }
+    },
+    [prefs, session, flag] as const,
+  );
+}
