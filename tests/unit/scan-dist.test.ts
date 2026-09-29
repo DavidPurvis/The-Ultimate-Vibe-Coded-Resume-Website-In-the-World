@@ -14,7 +14,7 @@ import { renderLlmsTxt } from '../../src/lib/machineText';
 import { renderResumeMarkdown, renderResumeText } from '../../src/lib/resumeText';
 import { LANES, type LaneId } from '../../src/content/resume/resolve';
 import { ROUTES } from '../../src/content/site/meta';
-import { institutionStrings } from '../../src/content/institution/strings';
+import { departmentStrings } from '../../src/content/department/strings';
 
 type Files = Record<string, string>;
 type Graph = Record<string, Chunk>;
@@ -515,9 +515,9 @@ describe('boundary.resume', () => {
 
   it('allows the lifecycle module, and nothing else of the runtime, steps or domain', () => {
     for (const m of [
-      'src/steps/release.ts',
-      'src/domain/case.ts',
-      'src/content/institution/case.ts',
+      'src/scenes/casino/index.ts',
+      'src/case/policy.ts',
+      'src/content/department/case.ts',
     ])
       expect(
         problems(
@@ -529,8 +529,8 @@ describe('boundary.resume', () => {
       ).toContain(`resume/index.html: loads ${m} (via _assets/print.js)`);
   });
 
-  it('rejects the case record key and institutional copy on the résumé', () => {
-    const sentence = institutionStrings().find((s) => !/[&<>"]/.test(s)) ?? '';
+  it('rejects the case record key and departmental copy on the résumé', () => {
+    const sentence = departmentStrings().find((s) => !/[&<>"]/.test(s)) ?? '';
     expect(sentence.length).toBeGreaterThan(0);
     const fx = variant((f) => {
       append(f, '_assets/print.js', '"uvcr:case"');
@@ -540,9 +540,9 @@ describe('boundary.resume', () => {
     const found = problems('boundary.resume', fx);
     expect(found).toContain('resume/index.html: _assets/print.js mentions the case record');
     expect(found).toContain(
-      `resume/for/emb/index.html: institutional copy: "${sentence.slice(0, 50)}"`,
+      `resume/for/emb/index.html: departmental copy: "${sentence.slice(0, 50)}"`,
     );
-    expect(found).toContain(`resume.md: institutional copy: "${sentence.slice(0, 50)}"`);
+    expect(found).toContain(`resume.md: departmental copy: "${sentence.slice(0, 50)}"`);
   });
 });
 

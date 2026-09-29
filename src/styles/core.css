@@ -339,3 +339,45 @@ html:not([data-js]) .js-only {
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------- the Department's front desk ---------- */
+.opening {
+  max-width: 46rem;
+  padding-block: var(--s-6) var(--s-4);
+}
+.record {
+  display: grid;
+  gap: var(--s-1);
+  margin: var(--s-4) 0 var(--s-5);
+  border-top: 1px solid var(--rule);
+}
+.record > div {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: var(--s-3);
+  padding-block: var(--s-2);
+  border-bottom: 1px solid var(--rule);
+}
+.record dt {
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.record dd {
+  margin: 0;
+}
+.contact-block {
+  max-width: 46rem;
+  margin-top: var(--s-7);
+}
+.contact-block__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--s-2);
+}
+.contact-block__list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+}

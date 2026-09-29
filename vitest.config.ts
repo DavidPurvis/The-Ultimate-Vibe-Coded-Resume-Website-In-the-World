@@ -11,7 +11,7 @@ export default defineConfig({
         'src/domain/**/*.ts',
         'src/doom/logic.ts',
         'src/content/resume/**/*.ts',
-        'src/runtime/persistence.ts',
+        'src/case/**/*.ts',
         'src/runtime/activation.ts',
       ],
       // Build-time helpers (icon inlining, the inline boot strings) are exercised by the build and
@@ -20,8 +20,8 @@ export default defineConfig({
       thresholds: {
         lines: 90,
         branches: 85,
-        // The case's pure core carries the progress and fairness proofs: hold it higher.
-        'src/domain/**': { lines: 95, branches: 90 },
+        // The case core decides what the visitor is told: hold it higher.
+        'src/case/**': { lines: 95, branches: 90 },
       },
     },
   },

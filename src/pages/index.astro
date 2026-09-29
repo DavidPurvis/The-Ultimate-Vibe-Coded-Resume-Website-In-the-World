@@ -1,28 +1,42 @@
 ---
+/**
+ * The Department's front desk. Everything here is static and works without JavaScript: the
+ * résumé request is an ordinary link, and the direct link beside it never changes.
+ */
 import Site from '../layouts/Site.astro';
-import ArrivalHero from '../components/ArrivalHero.astro';
-import CasePanel from '../components/CasePanel.astro';
 import { ROUTES } from '../content/site/meta';
 import { home } from '../content/site/home';
+import { opening, shell } from '../content/department/shell';
 import { identity } from '../content/resume/identity';
-import { entityEncode } from '../lib/paths';
-import '../styles/institution.css';
+import { entityEncode, url } from '../lib/paths';
 
 const mail = `<a href="${entityEncode(`mailto:${identity.email}`)}">${entityEncode(identity.email)}</a>`;
 ---
 
-<Site route={ROUTES.home} printResume formNumber={home.formNumber}>
-  <p id="case-chip" class="case-chip" slot="chip" hidden></p>
-  <ArrivalHero>
-    <CasePanel />
-  </ArrivalHero>
-  <div id="notice-slot" class="notice-slot"></div>
-  <section
-    id="contact"
-    class="contact-block"
-    aria-labelledby="contact-heading"
-    data-evidence="contact"
-  >
+<Site route={ROUTES.home} printResume formNumber={shell.formNumber}>
+  <section class="opening" aria-labelledby="opening-heading">
+    <h1 id="opening-heading">{opening.title}</h1>
+    <p class="lede">{opening.lede}</p>
+    <dl class="record">
+      <div>
+        <dt>{opening.subjectLabel}</dt>
+        <dd>{opening.subject}</dd>
+      </div>
+      <div>
+        <dt>{opening.capabilityLabel}</dt>
+        <dd>{opening.capability}</dd>
+      </div>
+    </dl>
+    <div class="btn-row">
+      <a class="btn btn--primary" href={url('/resume/')} data-release>
+        {shell.requestResume}
+      </a>
+      <a class="btn" href={url('/resume/')}>
+        {shell.directResume}
+      </a>
+    </div>
+  </section>
+  <section id="contact" class="contact-block" aria-labelledby="contact-heading">
     <h2 id="contact-heading">{home.contactHeading}</h2>
     <p>{home.contactLead}</p>
     <ul class="contact-block__list">
@@ -40,7 +54,3 @@ const mail = `<a href="${entityEncode(`mailto:${identity.email}`)}">${entityEnco
     </ul>
   </section>
 </Site>
-
-<script>
-  import '../scripts/home';
-</script>

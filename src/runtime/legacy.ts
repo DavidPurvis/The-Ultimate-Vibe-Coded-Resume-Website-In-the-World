@@ -1,12 +1,11 @@
 /**
- * Keys the previous version of this site left in browsers (prefs, gag session, cookie-banner
- * biscotti). Removed by the home page and /privacy/; kept apart so /privacy/ needn't load the case.
+ * Keys an earlier version of this site left in browsers. The Recruiter Verification case record
+ * ("uvcr:case") is gone; preferences and the session record are in use again and are kept.
  */
 import { listKeys, removeRaw } from '../lib/storage';
 
+const RETIRED = new Set(['uvcr:case']);
+
 export function cleanupLegacy(): void {
-  for (const { area, key } of listKeys()) {
-    if (key === 'uvcr:prefs' || key === 'uvcr:session' || key.startsWith('uvcr:biscotti:'))
-      removeRaw(area, key);
-  }
+  for (const { area, key } of listKeys()) if (RETIRED.has(key)) removeRaw(area, key);
 }

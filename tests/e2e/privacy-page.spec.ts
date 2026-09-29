@@ -1,13 +1,15 @@
 /** /privacy/ tells the truth about storage: it lists what is there and clears it on request. */
 import { expect, test } from '@playwright/test';
-import { seedCase } from './helpers';
+import { seedStorage } from './helpers';
 
-test('lists exactly what this tab stores, and Reset clears it @smoke', async ({ page }) => {
-  await seedCase(page, { events: [{ t: 'RESUME_REQUESTED', via: 'cta' }] });
+test('lists exactly what is stored, and Reset clears it @smoke', async ({ page }) => {
+  await seedStorage(page, {
+    session: { caseFile: { departments: ['intake'], issuedNotices: [], released: false } },
+  });
   await page.goto('privacy/');
   const rows = page.locator('[data-storage-rows] tr');
   await expect(rows).toHaveCount(1);
-  await expect(rows.first()).toContainText('uvcr:case');
+  await expect(rows.first()).toContainText('uvcr:session');
   await expect(rows.first()).toContainText('Session storage (this tab)');
   await page.getByRole('button', { name: 'Clear everything this site stored' }).click();
   await expect(rows).toHaveCount(0);
@@ -21,26 +23,22 @@ test('lists exactly what this tab stores, and Reset clears it @smoke', async ({ 
   expect(left).toEqual([]);
 });
 
-test('removes the previous site’s keys, and only those', async ({ page }) => {
+test('removes only the retired case record; current records stay', async ({ page }) => {
   await page.addInitScript(() => {
     if (sessionStorage.getItem('__legacy')) return;
     sessionStorage.setItem('__legacy', '1');
-    localStorage.setItem('uvcr:prefs', '{"v":1,"theme":"comic"}');
-    localStorage.setItem('uvcr:biscotti:01', 'x');
+    sessionStorage.setItem('uvcr:case', '{"v":2,"seed":1,"events":[],"hint":"open"}');
+    localStorage.setItem('uvcr:prefs', '{"v":1,"theme":"dark"}');
     sessionStorage.setItem('uvcr:session', '{"v":1}');
     localStorage.setItem('someone-else', 'keep');
   });
-  for (const r of ['privacy/', './']) {
-    await page.goto(r);
-    await expect(page.locator('main')).toBeVisible();
-    const keys = await page.evaluate(() => ({
-      local: Object.keys(localStorage).sort(),
-      session: Object.keys(sessionStorage).filter((k) => k.startsWith('uvcr:')),
-    }));
-    expect(keys, r).toEqual({ local: ['someone-else'], session: [] });
-    await page.evaluate(() => sessionStorage.removeItem('__legacy'));
-  }
-  await expect(page.locator('html')).not.toHaveAttribute('data-theme', /./);
+  await page.goto('privacy/');
+  await expect(page.locator('main')).toBeVisible();
+  const keys = await page.evaluate(() => ({
+    local: Object.keys(localStorage).sort(),
+    session: Object.keys(sessionStorage).filter((k) => k.startsWith('uvcr:')),
+  }));
+  expect(keys).toEqual({ local: ['someone-else', 'uvcr:prefs'], session: ['uvcr:session'] });
 });
 
 test('without JavaScript, it says nothing is stored', async ({ request }) => {

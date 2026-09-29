@@ -1,33 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { HTML_ROUTES, seedCase } from './helpers';
+import { HTML_ROUTES } from './helpers';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
-
-const OPEN = { t: 'RESUME_REQUESTED', via: 'cta' };
-const TO_FINDINGS = [
-  OPEN,
-  { t: 'SCOPE_STATED', lane: 'plt' },
-  { t: 'RESUME_REQUESTED', via: 'full-document' },
-  { t: 'RELEASE_ATTEMPTED' },
-  { t: 'RELEASE_ATTEMPTED' },
-  { t: 'RELEASE_ATTEMPTED' },
-  { t: 'STEP_COMPLETED', step: 'ceremony' },
-];
-const TO_ACK = [...TO_FINDINGS, { t: 'STEP_COMPLETED', step: 'findings' }];
-/** Each state of the case on `/`, restored from a stored case, and what shows it is ready. */
-const CASE_STATES: [string, unknown[], string][] = [
-  ['arrival', [], 'View résumé'],
-  ['scope', [OPEN], 'Submit scope'],
-  ['preview', [OPEN, { t: 'SCOPE_STATED', lane: 'plt' }], 'Request full document'],
-  ['release', TO_FINDINGS.slice(0, 3), 'Release document'],
-  ['release, resisted', TO_FINDINGS.slice(0, 5), 'Release document (reassigned)'],
-  ['ceremony', TO_FINDINGS.slice(0, 6), 'Continue'],
-  ['findings', TO_FINDINGS, 'Proceed to adjudication'],
-  ['acknowledgment', TO_ACK, 'Acknowledge'],
-  ['appeal', [...TO_ACK, { t: 'APPEAL_REQUESTED' }], 'Continue'],
-  ['disposition', [...TO_ACK, { t: 'ACKNOWLEDGED' }, { t: 'ACKNOWLEDGED' }], 'Open résumé'],
-];
 
 async function seriousViolations(page: Page, include?: string): Promise<string[]> {
   let b = new AxeBuilder({ page }).withTags(TAGS);
@@ -62,26 +37,6 @@ test.describe('accessibility', () => {
     }
     expect(found).toEqual([]);
   });
-
-  for (const scheme of ['light', 'dark'] as const) {
-    test(`case on /, every step (${scheme}): no serious or critical axe violations`, async ({
-      context,
-    }) => {
-      const found: string[] = [];
-      for (const [name, events, ready] of CASE_STATES) {
-        // A new tab per state: sessionStorage (the case) is per tab.
-        const page = await context.newPage();
-        await page.emulateMedia({ colorScheme: scheme });
-        await seedCase(page, { events });
-        await page.goto('./');
-        const role = name === 'arrival' || name === 'disposition' ? 'link' : 'button';
-        await expect(page.getByRole(role, { name: ready }).first()).toBeVisible();
-        for (const v of await seriousViolations(page)) found.push(`${name} → ${v}`);
-        await page.close();
-      }
-      expect(found).toEqual([]);
-    });
-  }
 
   test('interactive controls in main are at least 44×44 CSS px', async ({ page }) => {
     // Measure layout, not a control caught mid-transition.

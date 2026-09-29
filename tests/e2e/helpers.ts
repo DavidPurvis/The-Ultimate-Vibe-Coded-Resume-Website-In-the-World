@@ -6,29 +6,26 @@ export const BASE = (
 ).replace(/\/$/, '');
 
 /**
- * Pre-seed the Access Request case in sessionStorage (the production code path: a stored case).
- * The seed makes every cosmetic choice reproducible; `events` restores a case mid-flow.
+ * Pre-seed this tab's session record and/or the saved preferences before the first page loads
+ * (the production code path: stored values). Written once per test, so reloads see real changes.
  */
-export async function seedCase(
+export async function seedStorage(
   page: Page,
-  { seed = 4242, events = [] as unknown[] }: { seed?: number; events?: unknown[] } = {},
+  { session, prefs }: { session?: Record<string, unknown>; prefs?: Record<string, unknown> },
 ): Promise<void> {
-  const flag = `__case:${seed}:${JSON.stringify(events)}`;
+  const flag = `__seed:${JSON.stringify({ session, prefs })}`;
   await page.addInitScript(
-    ([s, ev, f]) => {
+    ([s, p, f]) => {
       try {
         if (sessionStorage.getItem(f as string)) return;
-        const opened = (ev as { t: string }[]).some((e) => e.t === 'RESUME_REQUESTED');
-        sessionStorage.setItem(
-          'uvcr:case',
-          JSON.stringify({ v: 2, seed: s, events: ev, hint: opened ? 'open' : 'arrival' }),
-        );
+        if (s) sessionStorage.setItem('uvcr:session', JSON.stringify({ v: 1, ...(s as object) }));
+        if (p) localStorage.setItem('uvcr:prefs', JSON.stringify({ v: 1, ...(p as object) }));
         sessionStorage.setItem(f as string, '1');
       } catch {
         /* ignore */
       }
     },
-    [seed, events, flag] as const,
+    [session ?? null, prefs ?? null, flag] as const,
   );
 }
 

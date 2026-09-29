@@ -11,7 +11,7 @@ import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { checkResumeText, formatViolations } from '../src/lib/integrity';
 import { LANE_IDS, LANES, type LaneId } from '../src/content/resume/resolve';
 import { PLACEHOLDERS } from '../src/content/resume/selections';
-import { institutionStrings } from '../src/content/institution/strings';
+import { departmentStrings } from '../src/content/department/strings';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const SUBJECT = 'Résumé — Software Engineer';
@@ -93,7 +93,7 @@ export async function verifyPdf(
   if (violations.length) problems.push(`Integrity violations:\n${formatViolations(violations)}`);
   if (subject !== SUBJECT)
     problems.push(`PDF Subject metadata is "${subject}", expected "${SUBJECT}".`);
-  for (const s of institutionStrings())
+  for (const s of departmentStrings())
     if (text.includes(s) || meta.includes(s))
       problems.push(`Institutional copy in the PDF: "${s.slice(0, 60)}"`);
 

@@ -14,7 +14,7 @@ test.describe('résumé page @smoke', () => {
       await expect(resume.getByRole('heading', { level: 2, name: h })).toBeVisible();
     }
     // Reward page: no chaos layer.
-    await expect(page.locator('#case, .case-chip, .site-header')).toHaveCount(0);
+    await expect(page.locator('.site-header, [data-status], [data-notice-slot]')).toHaveCount(0);
     await done();
   });
 
@@ -119,7 +119,7 @@ test.describe('lane résumés', () => {
       await expect(resume.getByRole('heading', { level: 1, name: 'David Purvis' })).toBeVisible();
       expect(checkResumeText(await resume.innerText(), 'resume')).toEqual([]);
       await expect(page.getByText(`Cut for: ${label}`)).toBeVisible();
-      await expect(page.locator('#case, .case-chip, .site-header')).toHaveCount(0);
+      await expect(page.locator('.site-header, [data-status], [data-notice-slot]')).toHaveCount(0);
 
       const nav = page.getByRole('navigation', { name: 'Other cuts of this résumé' });
       await expect(nav.locator('[aria-current="page"]')).toHaveAttribute(

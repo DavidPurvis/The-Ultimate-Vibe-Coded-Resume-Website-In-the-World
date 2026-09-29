@@ -1,6 +1,6 @@
 /**
- * Source-level policies that types alone can't express. Later phases extend this file as the
- * runtime, steps and clean-résumé boundary land.
+ * Source-level policies that types alone can't express: a pure case core, a disciplined
+ * runtime, a résumé that imports nothing of the Department, and one owner of browser storage.
  */
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -14,39 +14,31 @@ const files = (dir: string) =>
 const importsOf = (src: string) =>
   [...src.matchAll(/^\s*import[^'"]*['"]([^'"]+)['"]/gm)].map((m) => m[1] ?? '');
 
-describe('domain purity', () => {
-  const domain = files('src/domain');
+describe('purity of the case core', () => {
+  const pure = ['src/case/state.ts', 'src/case/policy.ts', 'src/domain/random.ts'];
 
-  it('the domain imports nothing but itself', () => {
-    for (const f of domain)
+  it('state and policy import only each other, and state imports nothing', () => {
+    expect(importsOf(read('src/case/state.ts'))).toEqual([]);
+    for (const f of pure)
       for (const spec of importsOf(read(f)))
         expect(spec.startsWith('./'), `${f} imports ${spec}`).toBe(true);
   });
 
-  it('the domain touches no DOM, storage, clock or Math.random', () => {
-    for (const f of domain) {
-      const src = read(f);
-      expect(src, f).not.toMatch(
+  it('touches no DOM, storage, clock or Math.random', () => {
+    for (const f of pure)
+      expect(read(f), f).not.toMatch(
         /(?<![\w-])(?:document|window|localStorage|sessionStorage|navigator)\s*\.|Date\.now|performance\.now|Math\.random/,
       );
-    }
   });
 
-  it('the reducer and findings never read randomness (A6)', () => {
-    for (const f of ['src/domain/case.ts', 'src/domain/findings.ts'])
-      expect(importsOf(read(f)), f).not.toContain('./random');
+  it('storage imports the case state, never its copy or its policy', () => {
+    const specs = importsOf(read('src/lib/storage.ts'));
+    expect(specs).toEqual(['../case/state']);
   });
 });
 
-describe('steps and runtime', () => {
+describe('runtime', () => {
   const code = (f: string) => read(f).replace(/\/\*[^]*?\*\/|\/\/.*$/gm, '');
-
-  it('steps own nothing directly: timers, listeners and frames go through their Scope (§L)', () => {
-    for (const f of files('src/steps'))
-      expect(code(f), f).not.toMatch(
-        /\b(?:setTimeout|setInterval|requestAnimationFrame|addEventListener)\s*\(/,
-      );
-  });
 
   it('only the lifecycle and the announcer touch raw timers or listeners', () => {
     const allowed = new Set(['src/runtime/lifecycle.ts', 'src/runtime/announce.ts']);
@@ -54,21 +46,11 @@ describe('steps and runtime', () => {
       expect(code(f), f).not.toMatch(/\b(?:setTimeout|setInterval|addEventListener)\s*\(/);
   });
 
-  it('builds DOM from text only, reads no randomness and stores nothing outside the case', () => {
-    for (const f of [...files('src/steps'), ...files('src/runtime')]) {
+  it('builds DOM from text only and reads no randomness', () => {
+    for (const f of [...files('src/runtime'), ...files('src/case')]) {
       const src = code(f);
       expect(src, f).not.toMatch(/innerHTML|outerHTML|insertAdjacentHTML|document\.write/);
       expect(src, f).not.toMatch(/Math\.random/);
-      expect(src, f).not.toMatch(/\blocalStorage\b/);
-    }
-  });
-
-  it('only the kernel reduces, persists, or loads steps', () => {
-    const owners = new Set(['src/runtime/kernel.ts', 'src/runtime/persistence.ts']);
-    for (const f of [...files('src/steps'), ...files('src/runtime')]) {
-      if (owners.has(f)) continue;
-      const src = code(f);
-      expect(src, f).not.toMatch(/\breduce\(|\bsave\(|import\(['"]\.\.\/steps/);
     }
   });
 });
@@ -83,11 +65,11 @@ describe('the résumé boundary, at the source (A-10)', () => {
     'src/scripts/resume-page.ts',
   ];
 
-  it('the résumé never imports the case, its steps, its domain or its copy', () => {
+  it('the résumé never imports the Department: its case, scenes, copy, mode or storage', () => {
     for (const f of RESUME_SURFACE)
       for (const spec of importsOf(read(f)))
         expect(spec, `${f} imports ${spec}`).not.toMatch(
-          /\/(domain|steps|content\/institution)\/|runtime\/(kernel|persistence|signals|title)/,
+          /\/(case|scenes|domain)\/|content\/(department|copy)\/|lib\/(scene|mode|storage)$/,
         );
   });
 });

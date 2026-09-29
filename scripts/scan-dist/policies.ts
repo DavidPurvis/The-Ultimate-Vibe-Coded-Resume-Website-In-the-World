@@ -6,7 +6,7 @@
 import { createHash } from 'node:crypto';
 import { buildCsp, ENGINE_CSP } from '../../src/lib/csp';
 import { ROUTES } from '../../src/content/site/meta';
-import { institutionStrings } from '../../src/content/institution/strings';
+import { departmentStrings } from '../../src/content/department/strings';
 import { checkResumeText, formatViolations } from '../../src/lib/integrity';
 import {
   CSS_BUDGET_KB,
@@ -278,12 +278,12 @@ const routeCoverage: Policy = (site) => {
   ].map((message) => ({ policy: 'routes.coverage', file: '.', message }));
 };
 
-/** A-10, C3: the résumé loads nothing of the case, stores nothing, and says nothing institutional. */
+/** The résumé loads nothing of the Department, stores nothing, and says nothing departmental. */
 const resumeBoundary: Policy = (site) => {
   const out: Problem[] = [];
-  const strings = institutionStrings();
+  const strings = departmentStrings();
   const FORBIDDEN_MODULE =
-    /^src\/(steps|domain|content\/institution)\/|^src\/runtime\/(?!lifecycle\.ts$)/;
+    /^src\/(scenes|case|domain|content\/(department|copy))\/|^src\/runtime\/(?!lifecycle\.ts$)|^src\/lib\/(scene|mode|storage)\.ts$/;
   for (const p of site.pages.filter(isResume)) {
     const fail = (m: string) => out.push({ policy: 'boundary.resume', file: p.file, message: m });
     const closure = staticClosure(site, p.moduleScripts);
@@ -293,8 +293,7 @@ const resumeBoundary: Policy = (site) => {
       if ((site.files[f] ?? '').includes('uvcr:case')) fail(`${f} mentions the case record`);
     }
     if (p.html.includes('uvcr:case')) fail('the page mentions the case record');
-    for (const s of strings)
-      if (p.html.includes(s)) fail(`institutional copy: "${s.slice(0, 50)}"`);
+    for (const s of strings) if (p.html.includes(s)) fail(`departmental copy: "${s.slice(0, 50)}"`);
   }
   for (const f of ['resume.md', 'llms.txt'])
     for (const s of strings)
@@ -302,7 +301,7 @@ const resumeBoundary: Policy = (site) => {
         out.push({
           policy: 'boundary.resume',
           file: f,
-          message: `institutional copy: "${s.slice(0, 50)}"`,
+          message: `departmental copy: "${s.slice(0, 50)}"`,
         });
   return out;
 };
