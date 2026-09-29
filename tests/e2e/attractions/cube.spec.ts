@@ -102,7 +102,11 @@ test.describe('The Tungsten Cube Experience', () => {
     await expect(page.getByRole('heading', { name: 'Specifications' })).toBeVisible();
   });
 
-  test('without WebGL the drawing stays and says why', async ({ page }) => {
+  test('without WebGL the drawing stays, says why, and three.js is never fetched', async ({
+    page,
+  }) => {
+    const done = await watchErrors(page);
+    const threeLoaded = watchThree(page);
     await page.addInitScript(() => {
       const orig = HTMLCanvasElement.prototype.getContext;
       HTMLCanvasElement.prototype.getContext = function (
@@ -120,5 +124,7 @@ test.describe('The Tungsten Cube Experience', () => {
     );
     await expect(page.locator('[data-cube-fallback]')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Heft it' })).toBeDisabled();
+    expect(threeLoaded()).toBe(false);
+    await done();
   });
 });

@@ -26,12 +26,14 @@ test.describe('résumé release', () => {
     page,
   }) => {
     const done = await watchErrors(page);
-    // Recreation works on its own, entered directly. Wait for the cube's engine to arrive (drawn,
-    // or its drawing kept where the browser has no WebGL) so nothing is left half-loaded.
+    // Recreation works on its own, entered directly. Wait for the cube to settle (drawn, or its
+    // drawing kept where the browser has no WebGL) so nothing is left half-loaded.
     await page.goto('cube/');
-    await expect(page.locator('[data-cube-stage] canvas[data-engine]')).toBeAttached({
-      timeout: 20_000,
-    });
+    await expect(
+      page
+        .locator('[data-cube-stage] canvas')
+        .or(page.locator('[data-cube-status]', { hasText: 'declined to render tungsten' })),
+    ).toBeVisible({ timeout: 20_000 });
     await page.goto('doom/');
     await expect(page.getByRole('button', { name: '▶ Play DOOM' })).toBeVisible();
     await page.goto('./');

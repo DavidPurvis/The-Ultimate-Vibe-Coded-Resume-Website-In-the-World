@@ -5,12 +5,13 @@
 import { register, start } from '../../lib/scene';
 import { onModeChange } from '../../lib/mode';
 import { reducedMotion } from '../../runtime/modality';
+import { webgl2 } from './support';
 
 const hero = document.querySelector<HTMLElement>('[data-cube-hero]');
 const canvas = hero?.querySelector<HTMLCanvasElement>('canvas');
 const fallback = hero?.querySelector<HTMLElement>('[data-cube-fallback]');
 
-if (hero && canvas && fallback && !reducedMotion()) {
+if (hero && canvas && fallback && !reducedMotion() && webgl2()) {
   register({
     id: 'cube-hero',
     major: false,

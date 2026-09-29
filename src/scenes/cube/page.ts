@@ -8,6 +8,7 @@ import { reducedMotion } from '../../runtime/modality';
 import { makeRng } from '../../lib/rng';
 import { announce } from '../../runtime/announce';
 import type { CubeHandle } from './scene';
+import { webgl2 } from './support';
 
 const stage = document.querySelector<HTMLElement>('[data-cube-stage]');
 const canvas = stage?.querySelector<HTMLCanvasElement>('canvas');
@@ -53,6 +54,10 @@ if (stage && canvas && fallback && raw) {
     id: 'cube',
     major: false,
     start: async ({ d, stillActive }) => {
+      if (!webgl2()) {
+        if (status) status.textContent = copy.noWebgl;
+        return;
+      }
       const { mountCube } = await import('./scene');
       if (!stillActive()) return;
       cube = mountCube(canvas, {

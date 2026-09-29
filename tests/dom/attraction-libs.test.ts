@@ -15,6 +15,7 @@ import { readSession, SESSION_KEY, writeSession } from '../../src/lib/storage';
 import { installTestHooks, sample, testSubwayVideos } from '../../src/lib/testHooks';
 import { makeRng } from '../../src/lib/rng';
 import { readingMinutes } from '../../src/lib/blog.pure';
+import { webgl2 } from '../../src/scenes/cube/support';
 
 beforeEach(() => {
   document.body.replaceChildren();
@@ -287,5 +288,21 @@ describe('seeds and reading time', () => {
   it('estimates reading time in whole minutes, never zero', () => {
     expect(readingMinutes('')).toBe(1);
     expect(readingMinutes(`<p>${'word '.repeat(660)}</p>`)).toBe(3);
+  });
+});
+
+describe('the tungsten cube’s WebGL check', () => {
+  it('asks for WebGL2 before three.js is fetched, and a refusal or an error means no', () => {
+    const getContext = vi.spyOn(HTMLCanvasElement.prototype, 'getContext');
+    getContext.mockReturnValueOnce({} as WebGL2RenderingContext);
+    expect(webgl2()).toBe(true);
+    expect(getContext).toHaveBeenLastCalledWith('webgl2');
+    getContext.mockReturnValueOnce(null);
+    expect(webgl2()).toBe(false);
+    getContext.mockImplementationOnce(() => {
+      throw new Error('blocked');
+    });
+    expect(webgl2()).toBe(false);
+    getContext.mockRestore();
   });
 });
