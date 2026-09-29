@@ -123,7 +123,7 @@ src/
 public/doom-engine/   DOOM's frame; engine and WAD vendored here at build time
 scripts/        postbuild (PDFs), verify-pdf, scan-dist/, build/chunk-graph.mjs, serve-dist, vendor-doom, rasterize
 tests/          unit, dom (happy-dom), golden, e2e (Playwright)
-docs/department/  the handoff, creative brief, test inventory and report
+docs/department/  the handoff, creative brief, test inventory, report and next steps
 ```
 
 Every department page loads the shell (`src/scripts/department.ts`):
