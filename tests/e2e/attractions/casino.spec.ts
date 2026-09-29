@@ -53,6 +53,11 @@ test.describe('hyperlink allocation', () => {
     expect(await spin(page)).toBe('RICKROLL');
     const result = page.locator('[data-casino-result]');
     await expect(result).toContainText('Your request remains within the processing period.');
+    // Let the (stubbed) player finish loading first: closing mid-load rightly aborts its request,
+    // which the error watcher would report.
+    const loaded = page.waitForEvent('requestfinished', (r) =>
+      r.url().startsWith('https://www.youtube-nocookie.com/embed/'),
+    );
     await page.getByRole('button', { name: 'Review the musical material' }).click();
     const dialog = page.locator('#rickroll');
     await expect(dialog).toBeVisible();
@@ -60,6 +65,7 @@ test.describe('hyperlink allocation', () => {
       'src',
       /youtube-nocookie\.com\/embed\/dQw4w9WgXcQ/,
     );
+    await loaded;
     await page.keyboard.press('Escape');
     await expect(dialog.locator('iframe')).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Review the musical material' })).toBeFocused();
