@@ -63,7 +63,10 @@ test.describe('Overkill HUD', () => {
       expect(
         violations
           .filter((v) => v.impact === 'serious' || v.impact === 'critical')
-          .map((v) => v.id),
+          .map(
+            (v) =>
+              `${v.id}: ${v.nodes.map((n) => `${n.target.join(',')} ${n.failureSummary}`).join('; ')}`,
+          ),
       ).toEqual([]);
     });
 

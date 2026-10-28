@@ -7,6 +7,7 @@
  * or is hidden until JavaScript is available.
  */
 import Site from '../layouts/Site.astro';
+import DepartmentSeal from '../components/DepartmentSeal.astro';
 import IdentityDialog from '../components/IdentityDialog.astro';
 import ModeToggle from '../components/ModeToggle.astro';
 import ThemeCycle from '../components/ThemeCycle.astro';
@@ -25,119 +26,192 @@ import { entityEncode, url } from '../lib/paths';
 const mail = `<a href="${entityEncode(`mailto:${identity.email}`)}">${entityEncode(identity.email)}</a>`;
 ---
 
-<Site route={ROUTES.home} printResume>
+<Site route={ROUTES.home} printResume bodyClass="front-desk">
   <section class="opening" aria-labelledby="opening-heading">
-    <h1 id="opening-heading">{opening.title}</h1>
-    <p class="lede">{opening.lede}</p>
-    <dl class="record">
+    <div class="counter-heading">
       <div>
-        <dt>{opening.subjectLabel}</dt>
-        <dd>{opening.subject}</dd>
+        <p class="kicker">
+          Public records office <span aria-hidden="true">/</span> DDP–001
+        </p>
+        <h1 id="opening-heading">
+          The file on
+          <br />
+          <em>David Purvis.</em>
+        </h1>
+        <p class="counter-heading__note">{opening.lede}</p>
       </div>
-      <div>
-        <dt>{opening.capabilityLabel}</dt>
-        <dd>{opening.capability}</dd>
-      </div>
-    </dl>
-    <div class="btn-row">
-      <a class="btn btn--primary" href={url('/resume/')} data-release>
-        {shell.requestResume}
-      </a>
-      <a class="btn" href={url('/resume/')}>
-        {shell.directResume}
-      </a>
+      <DepartmentSeal />
+    </div>
+    <div class="counter">
+      <article class="dossier" aria-labelledby="dossier-heading">
+        <div class="dossier__tab">
+          01 <span>Personnel</span>
+        </div>
+        <div class="dossier__sheet">
+          <div class="document-register">
+            <span>DDP / RECORD 0001</span>
+            <span>Public copy</span>
+          </div>
+          <div class="dossier__subject">
+            <div>
+              <p class="kicker">Subject of this entire department</p>
+              <h2 id="dossier-heading">David Purvis</h2>
+            </div>
+            <span class="dossier__monogram" aria-hidden="true">
+              DP<span>SUBJECT 01</span>
+            </span>
+          </div>
+          <dl class="record dossier__record">
+            <div>
+              <dt>{opening.subjectLabel}</dt>
+              <dd>{opening.subject}</dd>
+            </div>
+            <div>
+              <dt>{opening.capabilityLabel}</dt>
+              <dd>{opening.capability}</dd>
+            </div>
+          </dl>
+          <div class="dossier__assessment">
+            <p class="fine mono">
+              Supporting particulars
+              <br />
+              held by the relevant offices.
+            </p>
+            <span class="stamp dossier__stamp">On file</span>
+          </div>
+          <a class="btn dossier__open" href={url('/about/')}>
+            Open personnel file <span aria-hidden="true">↗</span>
+          </a>
+          <div class="dossier__footer">
+            <span>Filed under: Purvis, David</span>
+            <span>Sheet 1 of 1</span>
+          </div>
+        </div>
+        <div class="counter__actions">
+          <a class="btn btn--primary" href={url('/resume/')} data-release>
+            {shell.requestResume}
+          </a>
+          <a class="counter__direct" href={url('/resume/')}>
+            {shell.directResume}
+          </a>
+        </div>
+      </article>
+      <nav class="office-index" aria-labelledby="office-index-heading">
+        <p class="kicker">Enquiries & referrals</p>
+        <h2 id="office-index-heading">Find an office.</h2>
+        <ol>
+          {DIRECTORY.map((c, i) => (
+            <li>
+              <a href={`#${c.id}`}>
+                <span class="office-index__number">0{i + 1}</span>
+                <span>{c.title}</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+        <p class="office-index__foot">All offices concern the same person.</p>
+      </nav>
     </div>
   </section>
 
   <section id="directory" class="directory" aria-labelledby="directory-heading">
-    <h2 id="directory-heading">{directory.heading}</h2>
+    <div class="directory__heading">
+      <h2 id="directory-heading">{directory.heading}</h2>
+      <span class="kicker">Six offices. One subject.</span>
+    </div>
     <p class="fine">{directory.lede}</p>
-    {DIRECTORY.map((c) => (
-      <section id={c.id} class="dept" aria-labelledby={`${c.id}-heading`}>
-        <h3 id={`${c.id}-heading`}>{c.title}</h3>
-        <p class="dept__lede">{c.description}</p>
-        <ul class="services">
-          {c.services.map((s) => (
-            <li class="service">
-              <div class="service__name">
-                {s.path ? <a href={url(s.path)}>{s.label}</a> : <span>{s.label}</span>}
-              </div>
-              <p class="service__desc">{s.description}</p>
-              {s.control === 'classification' && (
-                <div class="service__action js-only">
-                  <button type="button" class="btn btn--small" data-open-identity>
-                    {frontDesk.classify}
-                  </button>
+    <div class="directory__grid">
+      {DIRECTORY.map((c, i) => (
+        <section id={c.id} class="dept" aria-labelledby={`${c.id}-heading`}>
+          <p class="dept__number" aria-hidden="true">
+            0{i + 1}
+          </p>
+          <h3 id={`${c.id}-heading`}>{c.title}</h3>
+          <p class="dept__lede">{c.description}</p>
+          <ul class="services">
+            {c.services.map((s) => (
+              <li class="service">
+                <div class="service__name">
+                  {s.path ? <a href={url(s.path)}>{s.label}</a> : <span>{s.label}</span>}
                 </div>
-              )}
-              {s.control === 'overlays' && (
-                <div class="service__action js-only chaos-only">
-                  <button
-                    type="button"
-                    class="switch"
-                    role="switch"
-                    aria-checked="false"
-                    aria-describedby="overlay-hud-hint"
-                    data-hud-toggle
-                  >
-                    <span class="switch__track" aria-hidden="true" />
-                    <span>{modes.hud}</span>
-                  </button>
-                  <span id="overlay-hud-hint" class="fine">
-                    {modes.hudHint}
-                  </span>
-                  <button
-                    type="button"
-                    class="switch"
-                    role="switch"
-                    aria-checked="false"
-                    aria-describedby="overlay-subway-hint"
-                    data-subway-toggle
-                  >
-                    <span class="switch__track" aria-hidden="true" />
-                    <span>{modes.subway}</span>
-                  </button>
-                  <span id="overlay-subway-hint" class="fine">
-                    {modes.subwayHint}
-                  </span>
-                </div>
-              )}
-              {s.control === 'ads' && (
-                <details class="service__action archive">
-                  <summary>{frontDesk.adsOpen}</summary>
-                  <ParodyAd placement="inline" seed="archive" />
-                  <span hidden data-parody-ads={JSON.stringify(PARODY_ADS)} />
-                </details>
-              )}
-              {s.control === 'display' && (
-                <div class="service__action js-only">
-                  <ThemeCycle />
-                </div>
-              )}
-              {s.control === 'direct-access' && (
-                <div class="service__action js-only">
-                  <ModeToggle hintId="direct-access-hint-facilities" />
-                </div>
-              )}
-              {s.control === 'cookies' && (
-                <div class="service__action js-only chaos-only">
-                  <button type="button" class="btn btn--small" data-cookie-admin>
-                    {frontDesk.cookies}
-                  </button>
-                </div>
-              )}
-              {s.path === '/doom/' && (
-                <div class="service__action js-only chaos-only">
-                  <button type="button" class="btn btn--small" data-doom-dock>
-                    {doomCopy.dock.open}
-                  </button>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      </section>
-    ))}
+                <p class="service__desc">{s.description}</p>
+                {s.control === 'classification' && (
+                  <div class="service__action js-only">
+                    <button type="button" class="btn btn--small" data-open-identity>
+                      {frontDesk.classify}
+                    </button>
+                  </div>
+                )}
+                {s.control === 'overlays' && (
+                  <div class="service__action js-only chaos-only">
+                    <button
+                      type="button"
+                      class="switch"
+                      role="switch"
+                      aria-checked="false"
+                      aria-describedby="overlay-hud-hint"
+                      data-hud-toggle
+                    >
+                      <span class="switch__track" aria-hidden="true" />
+                      <span>{modes.hud}</span>
+                    </button>
+                    <span id="overlay-hud-hint" class="fine">
+                      {modes.hudHint}
+                    </span>
+                    <button
+                      type="button"
+                      class="switch"
+                      role="switch"
+                      aria-checked="false"
+                      aria-describedby="overlay-subway-hint"
+                      data-subway-toggle
+                    >
+                      <span class="switch__track" aria-hidden="true" />
+                      <span>{modes.subway}</span>
+                    </button>
+                    <span id="overlay-subway-hint" class="fine">
+                      {modes.subwayHint}
+                    </span>
+                  </div>
+                )}
+                {s.control === 'ads' && (
+                  <details class="service__action archive">
+                    <summary>{frontDesk.adsOpen}</summary>
+                    <ParodyAd placement="inline" seed="archive" />
+                    <span hidden data-parody-ads={JSON.stringify(PARODY_ADS)} />
+                  </details>
+                )}
+                {s.control === 'display' && (
+                  <div class="service__action js-only">
+                    <ThemeCycle />
+                  </div>
+                )}
+                {s.control === 'direct-access' && (
+                  <div class="service__action js-only">
+                    <ModeToggle hintId="direct-access-hint-facilities" />
+                  </div>
+                )}
+                {s.control === 'cookies' && (
+                  <div class="service__action js-only chaos-only">
+                    <button type="button" class="btn btn--small" data-cookie-admin>
+                      {frontDesk.cookies}
+                    </button>
+                  </div>
+                )}
+                {s.path === '/doom/' && (
+                  <div class="service__action js-only chaos-only">
+                    <button type="button" class="btn btn--small" data-doom-dock>
+                      {doomCopy.dock.open}
+                    </button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
   </section>
 
   <section id="contact" class="contact-block" aria-labelledby="contact-heading">
@@ -146,12 +220,12 @@ const mail = `<a href="${entityEncode(`mailto:${identity.email}`)}">${entityEnco
     <ul class="contact-block__list">
       <li set:html={mail} />
       <li>
-        <a href={identity.linkedin.href} rel="noopener noreferrer">
+        <a href={identity.linkedin.href} data-allocate="linkedin" rel="noopener noreferrer">
           {identity.linkedin.display}
         </a>
       </li>
       <li>
-        <a href={identity.github.href} rel="noopener noreferrer">
+        <a href={identity.github.href} data-allocate="github" rel="noopener noreferrer">
           {identity.github.display}
         </a>
       </li>

@@ -41,7 +41,6 @@ export const finding = {
   evidenceHeading: 'Evidence item 1 of 1',
   evidence: 'One (1) shopping cart, left in a parking lot, observed from a distance.',
   result: 'Cart returned.',
-  note: 'Even when no one is watching. Especially when no one is watching.',
   status: 'fictional',
   personalClaim: true,
 } as const;

@@ -1,6 +1,6 @@
 /**
  * The résumé release procedure: exactly three views in one dialog (Résumé request, Request
- * confirmation, Determination). Every view offers Go directly to résumé and an ordinary close.
+ * confirmation, Determination). Unapproved views offer direct access; approval offers the document and an ordinary close.
  * The determination summarizes only what the case record actually holds, and approval is recorded
  * when it is shown; nothing navigates by itself. Escape or closing early costs nothing, and the
  * next request starts again at the first view. A major scene: a replacement procedure, Direct
@@ -83,7 +83,7 @@ export function registerRelease(): void {
             href,
             textContent: R.determination.action,
           });
-          actions.replaceChildren(open, direct(), close);
+          actions.replaceChildren(open, close);
         } else {
           const v = view === 'request' ? R.request : R.confirm;
           heading.textContent = v.heading;

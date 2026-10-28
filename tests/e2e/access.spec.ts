@@ -17,7 +17,7 @@ test.describe('access', () => {
     page,
   }) => {
     await page.goto('./');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Department of David Purvis');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('The file onDavid Purvis.');
     const request = page.getByRole('link', { name: 'Request résumé' });
     const direct = page.getByRole('link', { name: 'Go directly to résumé' });
     await expect(request).toHaveAttribute('href', /\/resume\/$/);

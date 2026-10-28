@@ -170,45 +170,329 @@ html[data-mode='recruiter'] .case-bar:has(.notice-slot:empty) {
   gap: var(--s-2);
 }
 
-/* ---------- the front desk and directory ---------- */
-.opening h1 {
-  font: 600 clamp(2rem, 5vw, 2.75rem) / 1.1 var(--font-body);
-  margin: 0 0 var(--s-3);
+/* ---------- the records counter ---------- */
+.layout-s {
+  --action: var(--ink);
+  --action-hover: var(--stamp);
+  --action-ink: var(--paper);
+}
+.layout-s .btn {
+  border-radius: 2px;
+}
+.layout-s .kicker,
+.layout-s .card__form-id {
+  font-size: 0.875rem;
+}
+.dept-header {
+  position: relative;
+  z-index: var(--z-header);
+  border-top: 6px solid var(--ink);
+  border-bottom-width: 1px;
+}
+.dept-brand__seal {
+  border: 3px double var(--ink);
+}
+.dept-nav__switch {
+  font-size: 0.875rem;
+}
+.case-bar {
+  background: color-mix(in srgb, var(--ink) 4%, var(--paper));
+}
+.case-bar__inner {
+  padding-block: 0.5rem;
+}
+.case-status {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+}
+.case-status__label {
+  font: 500 0.875rem var(--font-mono);
+}
+.front-desk .opening {
+  max-width: none;
+  padding: 0;
+}
+.front-desk main {
+  padding-top: 2rem;
+}
+.counter-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+.counter-heading .kicker {
+  margin-bottom: 1.5rem;
+}
+.counter-heading h1 {
+  font: 500 clamp(3rem, 6vw, 4.75rem)/0.98 var(--font-display);
+  letter-spacing: -0.05em;
+  margin-bottom: 1.5rem;
+}
+.counter-heading h1 em {
+  font-weight: 450;
+}
+.counter-heading__note {
+  margin: 0;
+  color: var(--ink-2);
+}
+.department-seal {
+  width: clamp(7rem, 16vw, 11.5rem);
+  flex: none;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  transform: rotate(-12deg);
+}
+.counter {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+}
+.dossier {
+  position: relative;
+  min-width: 0;
+  padding-top: 2.25rem;
+}
+.dossier__tab {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  gap: 2rem;
+  height: 2.25rem;
+  align-items: center;
+  padding: 0 1.5rem;
+  background: var(--ink);
+  color: var(--paper);
+  font: 500 0.875rem var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 6px 12px 0 0;
+}
+.dossier__sheet {
+  position: relative;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-top: 4px solid var(--ink);
+  box-shadow:
+    4px 5px 0 var(--paper),
+    5px 6px 0 var(--rule),
+    9px 10px 0 var(--paper),
+    10px 11px 0 var(--rule);
+}
+.document-register {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--rule);
+  font: 400 0.875rem var(--font-mono);
+  color: var(--ink-2);
+  text-transform: uppercase;
+}
+.dossier__subject {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.dossier__subject .kicker {
+  max-width: 16rem;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+}
+.dossier__subject h2 {
+  font: 500 clamp(2rem, 3.5vw, 3rem)/1.1 var(--font-display);
+  letter-spacing: -0.035em;
+  margin: 0;
+}
+.dossier__monogram {
+  display: grid;
+  place-content: center;
+  text-align: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  flex: none;
+  border: 1px solid var(--rule);
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 5px,
+    color-mix(in srgb, var(--ink) 6%, transparent) 6px
+  );
+  font: 500 2.5rem var(--font-display);
+}
+.dossier__monogram span {
+  font: 400 0.65rem var(--font-mono);
+}
+.dossier__record {
+  margin: 0;
+  border-top: 1px solid var(--ink);
+}
+.dossier__record > div {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+  padding: 0.75rem 0;
+}
+.dossier__record dt {
+  font: 400 0.875rem/1.6 var(--font-mono);
+  color: var(--ink-2);
+}
+.dossier__record dd {
+  margin: 0;
+}
+.dossier__assessment {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.dossier__assessment p {
+  margin: 0;
+}
+.dossier__stamp {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  border: 3px double;
+  padding: 0.5rem 0.75rem;
+  white-space: nowrap;
+}
+.dossier__open {
+  width: 100%;
+  justify-content: space-between;
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  padding: 0.875rem 1rem;
+}
+.dossier__open:hover {
+  background: var(--stamp);
+  color: var(--paper);
+  border-color: var(--stamp);
+}
+.dossier__footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  font: 400 0.75rem var(--font-mono);
+  color: var(--ink-2);
+}
+.counter__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  margin-top: 2rem;
+}
+.counter__actions .btn {
+  --btn-bg: transparent;
+  --btn-ink: var(--ink);
+  --btn-border: var(--ink);
+}
+.counter__direct {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+.office-index {
+  padding-top: 2.25rem;
+}
+.office-index h2 {
+  font: 500 2rem var(--font-display);
+  margin-bottom: 1.25rem;
+}
+.office-index ol {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  border-top: 2px solid var(--ink);
+}
+.office-index li {
+  border-bottom: 1px solid var(--rule);
+}
+.office-index a {
+  display: grid;
+  grid-template-columns: 2rem 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.65rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.office-index a:hover {
+  color: var(--stamp);
+  background: color-mix(in srgb, var(--stamp) 5%, transparent);
+}
+.office-index__number {
+  color: var(--stamp);
+  font: 400 0.875rem var(--font-mono);
+}
+.office-index__foot {
+  margin-top: 1.25rem;
+  font: 400 0.875rem/1.6 var(--font-mono);
+  color: var(--ink-2);
 }
 .directory {
-  margin-top: var(--s-7);
+  margin-top: 5rem;
   border-top: 3px solid var(--ink);
-  padding-top: var(--s-4);
+  padding-top: 1.5rem;
 }
-.directory > h2 {
-  font: 600 1.75rem/1.2 var(--font-body);
-  margin-bottom: var(--s-1);
+.directory__heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+.directory__heading h2 {
+  font: 500 2.5rem var(--font-display);
+}
+.directory__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
 }
 .dept {
-  margin-top: var(--s-6);
-  scroll-margin-top: var(--s-4);
+  position: relative;
+  min-width: 0;
+  scroll-margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ink);
+}
+.dept__number {
+  color: var(--stamp);
+  font: 400 0.875rem var(--font-mono);
+  margin: 0 0 0.75rem;
 }
 .dept h3 {
   font: 600 1.25rem/1.3 var(--font-body);
-  margin: 0 0 var(--s-1);
 }
 .dept__lede {
-  margin: 0 0 var(--s-3);
   color: var(--ink-2);
+  font-size: 1rem;
+  min-height: 3.2em;
 }
 .services {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--rule);
 }
 .service {
-  display: grid;
-  grid-template-columns: minmax(10rem, 14rem) 1fr;
-  gap: var(--s-1) var(--s-4);
-  align-items: center;
-  padding-block: var(--s-2);
-  border-bottom: 1px solid var(--rule);
+  padding-block: 0.75rem;
+  border-top: 1px solid var(--rule);
 }
 .service__name {
   font-weight: 600;
@@ -221,21 +505,14 @@ html[data-mode='recruiter'] .case-bar:has(.notice-slot:empty) {
 }
 .service__desc {
   margin: 0;
+  font-size: 0.875rem;
+  color: var(--ink-2);
 }
 .service__action {
-  grid-column: 2;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: var(--s-2) var(--s-4);
-}
-@media (max-width: 40rem) {
-  .service {
-    grid-template-columns: 1fr;
-  }
-  .service__action {
-    grid-column: 1;
-  }
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 .archive > summary {
   display: inline-flex;
@@ -244,6 +521,73 @@ html[data-mode='recruiter'] .case-bar:has(.notice-slot:empty) {
   cursor: pointer;
   color: var(--action);
   font-weight: 600;
+}
+.contact-block {
+  border-top: 3px solid var(--ink);
+  padding-top: 1.5rem;
+}
+@media (max-width: 56rem) {
+  .counter {
+    gap: 2rem;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  }
+  .directory__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dossier__assessment {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 42rem) {
+  .front-desk main {
+    padding-top: 2rem;
+  }
+  .counter-heading {
+    gap: 1rem;
+    margin-bottom: 2rem;
+    align-items: flex-start;
+  }
+  .counter-heading h1 {
+    font-size: clamp(2.6rem, 10vw, 3.75rem);
+  }
+  .counter-heading .department-seal {
+    width: 5.5rem;
+  }
+  .counter-heading .kicker {
+    max-width: 15rem;
+  }
+  .counter {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .office-index {
+    padding-top: 1rem;
+  }
+  .directory {
+    margin-top: 3rem;
+  }
+  .dossier__record > div {
+    grid-template-columns: 6rem minmax(0, 1fr);
+  }
+  .dept-brand__name {
+    font-size: 1rem;
+  }
+  .case-status {
+    flex-wrap: wrap;
+    gap: 0 0.5rem;
+  }
+}
+@media (max-width: 30rem) {
+  .directory__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dossier__monogram {
+    width: 4rem;
+    height: 5rem;
+    font-size: 2rem;
+  }
+  .counter-heading .department-seal {
+    display: none;
+  }
 }
 
 /* ---------- related offices and the way back ---------- */
@@ -291,4 +635,78 @@ html[data-mode='recruiter'] .case-bar:has(.notice-slot:empty) {
   font: 600 1.75rem/1.2 var(--font-body);
   color: var(--stamp);
   margin: var(--s-3) 0 var(--s-5);
+}
+
+/* Procedures arrive as documents, not floating application cards. */
+dialog#identity,
+dialog.release {
+  border-radius: 0;
+  border: 1px solid var(--ink);
+  border-top: 6px solid var(--ink);
+}
+#identity .scene-dialog__body,
+.release .scene-dialog__body {
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+#identity .scene-dialog__head {
+  background: var(--paper);
+}
+#identity [data-phase]::before {
+  content: 'VISITOR SERVICES / DECLARATION';
+  display: block;
+  font: 400 0.875rem var(--font-mono);
+  color: var(--ink-2);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+#identity [data-phase='human']::before {
+  content: 'EVIDENCE RECEIVED: YOUR WORD';
+  color: var(--stamp);
+}
+#identity [data-phase='result']::before {
+  content: 'DETERMINATION / RETAIN ON FILE';
+}
+#identity .id-choices {
+  display: grid;
+}
+#identity .id-choices .btn {
+  justify-content: flex-start;
+  padding: 1rem;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+}
+#identity .id-result-stamp .stamp {
+  font-size: 1.5rem;
+  padding: 1rem;
+  margin-block: 1rem;
+}
+#identity .id-result-line {
+  font: 500 3rem var(--font-display);
+}
+.release__approved {
+  display: inline-block;
+  border: 3px double;
+  padding: 0.5rem 1rem;
+  transform: rotate(-3deg);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+@media (prefers-reduced-motion: no-preference) {
+  #identity [data-phase]:not([hidden]) {
+    animation: document-arrival 220ms ease-out;
+  }
+  .release[data-release-view='determination'] .release__approved {
+    animation: document-arrival 220ms ease-out;
+  }
+  @keyframes document-arrival {
+    from {
+      opacity: 0;
+      translate: 0 8px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
 }

@@ -54,7 +54,7 @@ html:not([data-mode='recruiter']) .recruiter-only {
   border-radius: var(--r-1);
   padding: 0.3em 0.6em;
   transform: rotate(var(--stamp-rotate, -4deg));
-  mix-blend-mode: multiply;
+  mix-blend-mode: normal;
   background: transparent;
 }
 :root[data-theme='dark'] .stamp,

@@ -134,7 +134,7 @@ test.describe('hyperlink allocation', () => {
     await expect(page.locator('[data-spin]')).toHaveAttribute('aria-disabled', 'true');
     await page.locator('[data-spin]').click({ force: true }); // aria-disabled, but people still click
     await expect(page.locator('[data-casino-status]')).toContainText(
-      'Please select the information',
+      'Select the destination named in your request.',
     );
     await expect(page.locator('[data-casino-result]')).toBeHidden();
   });

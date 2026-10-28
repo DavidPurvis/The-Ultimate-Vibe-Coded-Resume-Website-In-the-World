@@ -17,13 +17,17 @@ const rank = (id: string) => (LEAD.includes(id) ? LEAD.indexOf(id) : LEAD.length
 const ordered = [...flags].sort((a, b) => rank(a.id) - rank(b.id));
 ---
 
-<Base route={ROUTES.about}>
+<Base route={ROUTES.about} bodyClass="records-page">
   <PageHero kicker={aboutCopy.kicker} title={aboutCopy.h1} sub={aboutCopy.sub}>
     <p class="fine mono">{aboutCopy.reviewer}</p>
     <p class="fine">{aboutCopy.stampHint}</p>
   </PageHero>
 
-  <section class="finding" aria-labelledby="finding-claim" data-finding>
+  <section class="finding" data-processing="idle" aria-labelledby="finding-claim" data-finding>
+    <div class="document-register">
+      <span>Records / character assessment</span>
+      <span>Public copy</span>
+    </div>
     <p class="card__form-id">
       {fid(0)} · {finding.label}
     </p>
@@ -45,11 +49,32 @@ const ordered = [...flags].sort((a, b) => rank(a.id) - rank(b.id));
         {finding.evidenceButton}
       </button>
     </p>
-    <div id="finding-evidence" class="finding__evidence">
+    <div class="finding__routing" data-finding-routing hidden>
+      <p class="kicker">Internal circulation slip / DDP–3</p>
+      <ol class="routing-track" aria-label="Document routing">
+        <li data-route-step="received">
+          <span>01</span>Request received
+        </li>
+        <li data-route-step="referred">
+          <span>02</span>Referred to the issuing office
+        </li>
+        <li data-route-step="returned">
+          <span>03</span>Returned by the issuing office
+        </li>
+      </ol>
+      <p data-finding-status role="status"></p>
+      <div class="btn-row">
+        <button class="btn btn--small" type="button" data-finding-reveal>
+          Reveal now
+        </button>
+        <button class="btn btn--small btn--ghost" type="button" data-finding-cancel>
+          Cancel review
+        </button>
+      </div>
+    </div>
+    <div id="finding-evidence" class="finding__evidence" tabindex="-1">
       <h3>{finding.evidenceHeading}</h3>
-      <p>{finding.evidence}</p>
       <p class="finding__result">{finding.result}</p>
-      <p class="fine">{finding.note}</p>
     </div>
   </section>
 
@@ -79,36 +104,113 @@ const ordered = [...flags].sort((a, b) => rank(a.id) - rank(b.id));
 
 <style>
   .finding {
-    border-top: 3px solid var(--ink);
-    border-bottom: 1px solid var(--rule);
-    padding-block: var(--s-4) var(--s-5);
-    margin-bottom: var(--s-6);
-    max-width: 44rem;
+    position: relative;
+    border: 1px solid var(--rule);
+    border-top: 5px solid var(--ink);
+    padding: clamp(1.25rem, 4vw, 3rem);
+    margin: 2rem 0 3rem;
+    max-width: 50rem;
+    background: var(--card);
+    box-shadow:
+      5px 5px 0 var(--paper),
+      6px 6px 0 var(--rule);
+  }
+  .finding .card__form-id {
+    margin-top: 1.5rem;
   }
   .finding__claim {
-    font: 600 clamp(1.5rem, 4vw, 2rem) / 1.2 var(--font-body);
-    margin: var(--s-1) 0 var(--s-3);
+    font: 500 clamp(2.25rem, 6vw, 3.75rem)/1.05 var(--font-display);
+    max-width: 30rem;
+    margin-block: 1.5rem;
   }
   .finding__stamp {
     display: inline-block;
     font-size: 1.5rem;
-    transform: rotate(-4deg);
-    margin: 0 0 var(--s-3);
+    border: 3px double;
+    transform: rotate(-5deg);
+    margin: 0 0 1.5rem;
+    padding: 0.5rem 1rem;
+  }
+  .finding__routing {
+    border: 1px solid var(--rule);
+    padding: 1.25rem;
+    background: var(--paper);
+    margin-bottom: 1rem;
+  }
+  .routing-track {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+  }
+  .routing-track li {
+    border-bottom: 1px solid var(--rule);
+    padding: 0.5rem 0;
+    color: var(--ink-2);
+    font-size: 0.875rem;
+  }
+  .routing-track span {
+    margin-right: 1rem;
+    font-family: var(--font-mono);
+  }
+  .routing-track li[data-current] {
+    color: var(--stamp);
+    font-weight: 600;
   }
   .finding__evidence {
-    border-left: 3px solid var(--stamp);
-    padding-left: var(--s-4);
+    border-top: 3px double var(--ink);
+    padding-top: 1.5rem;
+    margin-top: 2rem;
   }
   .finding__evidence h3 {
-    font-size: 1rem;
+    font: 400 0.875rem var(--font-mono);
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
   .finding__result {
-    font-size: 1.25rem;
-    font-weight: 600;
+    font: 500 clamp(2rem, 6vw, 3.5rem)/1.2 var(--font-display);
+    margin: 1.5rem 0 0;
+  }
+  .finding[data-processing='received'] .finding__stamp,
+  .finding[data-processing='referred'] .finding__stamp,
+  .finding[data-processing='returned'] .finding__stamp {
+    visibility: hidden;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .finding[data-processing='referred'] .finding__routing {
+      animation: paper-transfer 400ms ease-out;
+    }
+    .finding[data-processing='returned'] .finding__routing {
+      animation: paper-return 400ms ease-out;
+    }
+    .finding[data-processing='complete'] .finding__stamp {
+      animation: stamp-arrival 220ms ease-out;
+    }
+    @keyframes paper-transfer {
+      50% {
+        translate: 12px -4px;
+        rotate: 1deg;
+      }
+    }
+    @keyframes paper-return {
+      50% {
+        translate: -10px 2px;
+        rotate: -1deg;
+      }
+    }
+    @keyframes stamp-arrival {
+      from {
+        opacity: 0;
+        scale: 1.3;
+      }
+      to {
+        opacity: 1;
+        scale: 1;
+      }
+    }
   }
   .flags {
+    display: grid;
+    gap: 1.25rem;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
   }
   .appendix {

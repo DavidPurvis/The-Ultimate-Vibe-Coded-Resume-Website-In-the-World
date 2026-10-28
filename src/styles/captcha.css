@@ -196,3 +196,85 @@
   font-weight: 700;
   color: var(--cn-error);
 }
+
+/* The inspection desk keeps the illustrated challenge inside an official assessment sheet. */
+.cn {
+  --cn-bg: var(--card);
+  --cn-ink: var(--ink);
+  --cn-purple: var(--ink);
+  --cn-error: var(--stamp);
+  --cn-pink: var(--rule);
+  --cn-yellow: var(--paper);
+  border: 1px solid var(--rule);
+  border-top: 5px solid var(--ink);
+  border-radius: 0;
+  box-shadow:
+    5px 5px 0 var(--paper),
+    6px 6px 0 var(--rule);
+  font-family: var(--font-body);
+}
+.inspection-register {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+  font: 400 0.875rem/1.5 var(--font-mono);
+  text-transform: uppercase;
+}
+.inspection-register [data-inspection-status] {
+  color: var(--stamp);
+}
+.cn__logo {
+  font: 500 clamp(1.5rem, 7vw, 3.25rem)/1.1 var(--font-display);
+  border: none;
+  padding: 0;
+  background: none;
+  text-shadow: none;
+  transform: none;
+}
+.cn__h1,
+.cn__prompt h2 {
+  font-family: var(--font-body);
+}
+.cn__prompt {
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 0;
+}
+.cn__verify {
+  --btn-ink: var(--paper);
+  font-family: var(--font-body);
+}
+.cn__feedback:has(.cn__headline:not(:empty)) {
+  border-left: 3px solid var(--stamp);
+  padding: 1rem;
+  background: var(--paper);
+}
+.cn__tile {
+  min-width: 0;
+  min-height: 0;
+}
+.cn__check {
+  color: var(--paper);
+}
+.cn__counter {
+  font-size: 0.875rem;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .cn[data-review-state='feedback'] .cn__feedback {
+    animation: objection-arrives 180ms ease-out;
+  }
+  @keyframes objection-arrives {
+    from {
+      translate: 0 6px;
+      opacity: 0;
+    }
+    to {
+      translate: 0 0;
+      opacity: 1;
+    }
+  }
+}

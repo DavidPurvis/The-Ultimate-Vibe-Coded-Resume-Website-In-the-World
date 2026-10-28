@@ -204,6 +204,15 @@ function renderPrompt(): void {
 }
 
 function renderFeedback(): void {
+  if (root) root.dataset.reviewState = state.phase;
+  const record = $('[data-inspection-status]');
+  if (record)
+    record.textContent =
+      state.phase === 'complete'
+        ? 'Review complete'
+        : state.totalRejections
+          ? `Objection ${String(state.totalRejections).padStart(2, '0')} / Assessment open`
+          : 'Assessment open';
   const h = $('[data-cn-headline]');
   const s = $('[data-cn-subline]');
   if (h) h.textContent = state.feedback?.headline ?? '';
@@ -266,6 +275,7 @@ function dispatch(e: CaptchaEvent): void {
     return;
   }
   if (e.t === 'FEEDBACK_DONE') {
+    renderFeedback();
     renderPrompt();
     renderGrid(true);
     return;

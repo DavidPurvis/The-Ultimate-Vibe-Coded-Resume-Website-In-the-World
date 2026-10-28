@@ -1,0 +1,40 @@
+---
+/** Decorative departmental seal; the surrounding heading supplies the accessible name. */
+---
+
+<svg class="department-seal" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+  <circle cx="100" cy="100" r="94" fill="none" stroke="currentColor" stroke-width="2" />
+  <circle
+    cx="100"
+    cy="100"
+    r="87"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1"
+    stroke-dasharray="1 4"
+  />
+  <circle cx="100" cy="100" r="66" fill="none" stroke="currentColor" stroke-width="1" />
+  <path id="seal-top" d="M 26 100 A 74 74 0 0 1 174 100" fill="none" />
+  <path id="seal-bottom" d="M 24 104 A 76 76 0 0 0 176 104" fill="none" />
+  <text fill="currentColor" font-size="12" letter-spacing="2">
+    <textPath href="#seal-top" startOffset="50%" text-anchor="middle">
+      DEPARTMENT OF
+    </textPath>
+  </text>
+  <text fill="currentColor" font-size="12" letter-spacing="2">
+    <textPath href="#seal-bottom" startOffset="50%" text-anchor="middle">
+      DAVID PURVIS
+    </textPath>
+  </text>
+  <path
+    d="M69 72h62v65H69z M80 88h40 M80 99h40 M80 110h27 M80 121h34"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+  />
+  <path d="M91 64h18v15H91z" fill="var(--paper)" stroke="currentColor" stroke-width="2" />
+  <text x="100" y="157" text-anchor="middle" fill="currentColor" font-size="9" letter-spacing="2">
+    ON RECORD
+  </text>
+  <path d="m29 108 3-5 3 5-3 5z M165 108l3-5 3 5-3 5z" fill="currentColor" />
+</svg>

@@ -15,6 +15,7 @@ import { cleanupLegacy } from '../runtime/legacy';
 import { initTheme } from '../scenes/theme';
 import { initCaseRecord } from '../case/notices';
 import { initReleaseLinks } from '../case/request';
+import { url } from '../lib/paths';
 
 installTestHooks();
 initMode();
@@ -129,4 +130,26 @@ initOverlays();
 initRequests();
 window.addEventListener('pagehide', (e) => {
   if (!(e as PageTransitionEvent).persisted) disposeAll('navigate');
+});
+
+// Only annotated profile requests enter allocation; modified clicks and direct access stay ordinary.
+document.addEventListener('click', (e) => {
+  const a = (e.target as Element | null)?.closest?.<HTMLAnchorElement>('a[data-allocate]');
+  if (
+    !a ||
+    e.defaultPrevented ||
+    e.button !== 0 ||
+    e.metaKey ||
+    e.ctrlKey ||
+    e.shiftKey ||
+    e.altKey ||
+    a.hasAttribute('download') ||
+    (a.target && a.target !== '_self') ||
+    !isChaos()
+  )
+    return;
+  const destination = a.dataset.allocate;
+  if (destination !== 'github' && destination !== 'linkedin') return;
+  e.preventDefault();
+  location.assign(`${url('/casino/')}?dest=${destination}`);
 });

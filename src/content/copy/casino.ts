@@ -4,8 +4,8 @@ import type { DestId } from '../types';
 export const casinoCopy = {
   kicker: 'Form DDP-9 · Correspondence · Hyperlink allocation',
   h1: 'Hyperlink Allocation',
-  lede: 'Links to David’s GitHub, LinkedIn, email and résumé PDF are allocated by wheel. Every destination is available. Allocation is completed no later than the third request.',
-  picker: 'Please select the information you would like to be prevented from accessing.',
+  lede: 'The requested destination is available. Allocation is pending.',
+  picker: 'Select the destination named in your request.',
   attempting: (label: string, display: string) =>
     `The requested destination is available. Allocation is pending. Requested: ${label} (${display}).`,
   oddsSign: [
@@ -15,9 +15,8 @@ export const casinoCopy = {
   rulesHeading: 'Allocation rules',
   rules: [
     'Allocations are final.',
-    'The outcome is determined before the wheel moves (see How it was built).',
     'No money is involved. Chips are denominated in recruiter-minutes.',
-    'Allocation is completed no later than the third request.',
+    'Unsuccessful requests remain open for reconsideration.',
     'The résumé itself is never allocated by wheel.',
   ],
   chips: [

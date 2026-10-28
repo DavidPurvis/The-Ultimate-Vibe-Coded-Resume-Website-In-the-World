@@ -23,6 +23,15 @@ export interface ColophonSection {
 
 export const colophonSections: readonly ColophonSection[] = [
   {
+    id: 'allocation',
+    title: 'How a hyperlink is allocated',
+    body: [
+      'Ordinary GitHub and LinkedIn requests from the front desk enter the allocation table with their destination selected. Modified clicks, JavaScript-free navigation and Direct access follow the original links.',
+      'The result is selected before the wheel moves. The animation then lands on the corresponding wedge. Every destination is guaranteed a hyperlink by its third attempt; no money is involved.',
+    ],
+    limitation: 'The wheel stages a decision; it does not simulate a physical game of chance.',
+  },
+  {
     id: 'directory',
     title: 'A directory, not a sequence',
     body: [

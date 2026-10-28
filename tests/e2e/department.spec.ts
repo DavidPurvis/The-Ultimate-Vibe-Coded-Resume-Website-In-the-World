@@ -15,9 +15,7 @@ test.describe('the front desk', () => {
     const done = await watchErrors(page);
     await page.goto('./');
     const opening = page.locator('.opening');
-    await expect(opening.getByRole('heading', { level: 1 })).toHaveText(
-      'Department of David Purvis',
-    );
+    await expect(opening.getByRole('heading', { level: 1 })).toHaveText('The file onDavid Purvis.');
     await expect(opening).toContainText('Public access to information concerning David Purvis.');
     await expect(opening.locator('dt')).toHaveText(['Subject', 'Capability']);
     await expect(opening.locator('dd')).toHaveText(['David Purvis', 'Good at computers.']);

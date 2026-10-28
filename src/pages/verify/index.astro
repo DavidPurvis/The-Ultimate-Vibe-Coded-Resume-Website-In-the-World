@@ -22,7 +22,11 @@ import '../../styles/captcha.css';
 <Base route={ROUTES.verify} bodyClass="cn-page">
   <Memo text={memos.verify} />
   <p class="kicker">{C.kicker}</p>
-  <div class="cn" data-captcha>
+  <div class="cn" data-captcha data-review-state="round">
+    <div class="inspection-register">
+      <span>Visitor services / Inspection</span>
+      <span data-inspection-status>Assessment open</span>
+    </div>
     <header class="cn__brand">
       <p class="cn__logo" aria-hidden="true">
         {C.logo}

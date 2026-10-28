@@ -100,7 +100,7 @@ describe('which activations are intercepted', () => {
 });
 
 describe('the procedure', () => {
-  it('three views, each with a direct link and a close; approval when shown @smoke', async () => {
+  it('three views, one document link after approval; approval when shown @smoke', async () => {
     const mod = await freshRelease();
     wire({ load: async () => mod });
     const a = link();
@@ -124,7 +124,7 @@ describe('the procedure', () => {
     expect(dialog()?.textContent).toContain('Approved.');
     expect(dialog()?.textContent).toContain('No supporting declarations were supplied.');
     expect(button('Open résumé')?.getAttribute('href')).toBe(RESUME);
-    expect(button('Go directly to résumé')).toBeTruthy();
+    expect(button('Go directly to résumé')).toBeUndefined();
     expect(readSession().caseFile.released).toBe(true);
 
     // Nothing navigates by itself; later requests go straight through.

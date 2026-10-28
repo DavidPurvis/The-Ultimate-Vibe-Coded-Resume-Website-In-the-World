@@ -16,7 +16,10 @@ async function serious(page: Page): Promise<string[]> {
     .analyze();
   return violations
     .filter((v) => v.impact === 'serious' || v.impact === 'critical')
-    .map((v) => v.id);
+    .map(
+      (v) =>
+        `${v.id}: ${v.nodes.map((n) => `${n.target.join(',')} ${n.failureSummary}`).join('; ')}`,
+    );
 }
 
 test.describe('résumé release', () => {
@@ -86,7 +89,9 @@ test.describe('résumé release', () => {
     await expect(dialog(page)).not.toContainText('No supporting declarations');
   });
 
-  test('every view offers the direct link and a close; Escape costs nothing', async ({ page }) => {
+  test('unapproved views offer direct access; approval has one link; Escape costs nothing', async ({
+    page,
+  }) => {
     await page.goto('./');
     const request = page.getByRole('link', { name: 'Request résumé' });
     await request.click();
@@ -97,7 +102,8 @@ test.describe('résumé release', () => {
       await expect(dialog(page).getByRole('button', { name: 'Close' })).toBeVisible();
       await dialog(page).getByRole('button', { name: next, exact: true }).click();
     }
-    await expect(dialog(page).getByRole('link', { name: 'Go directly to résumé' })).toBeVisible();
+    await expect(dialog(page).getByRole('link', { name: 'Go directly to résumé' })).toHaveCount(0);
+    await expect(dialog(page).getByRole('link', { name: 'Open résumé' })).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(dialog(page)).toHaveCount(0);
     await expect(request).toBeFocused();
