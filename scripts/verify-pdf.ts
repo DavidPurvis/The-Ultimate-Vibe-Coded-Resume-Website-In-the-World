@@ -1,6 +1,6 @@
 /**
  * Verifies a résumé PDF against the pack's hard requirements: exactly one US Letter page,
- * a selectable text layer, the integrity rules, and the joke confined to metadata.
+ * a selectable text layer, the integrity rules, and ordinary document metadata.
  * Writes reports/resume-report.json (GEN) or reports/resume-{lane}-report.json for the PR body.
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -13,7 +13,7 @@ import { LANE_IDS, LANES, type LaneId } from '../src/content/lanes';
 import { selection } from '../src/content/resume';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const SUBJECT = 'Printed from a website that asked if you were Claude.';
+const SUBJECT = 'David Purvis — Software Engineer';
 
 interface TextItemLike {
   str: string;
@@ -87,9 +87,9 @@ export async function verifyPdf(
   const violations = checkResumeText(text, 'pdf');
   if (violations.length) problems.push(`Integrity violations:\n${formatViolations(violations)}`);
   if (subject !== SUBJECT)
-    problems.push(`PDF Subject metadata is "${subject}", expected the joke.`);
-  if (/asked if you were Claude/.test(text))
-    problems.push('The metadata joke leaked into the text layer.');
+    problems.push(`PDF Subject metadata is "${subject}", expected the résumé description.`);
+  if (/asked if you were Claude|Department of (?:Recruiter Verification|David Purvis)/.test(text))
+    problems.push('Department copy appeared in the résumé text layer.');
 
   const renderedLines = lines.length;
   const report = {

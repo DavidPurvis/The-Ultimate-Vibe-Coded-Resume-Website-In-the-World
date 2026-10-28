@@ -10,9 +10,9 @@ import Icon from '../../../components/Icon.astro';
 import '../../../styles/resume.css';
 import { ROUTES, type RouteMeta } from '../../../content/copy/meta';
 import { LANES, TAILORED_LANES, type LaneId } from '../../../content/lanes';
+import { identity } from '../../../content/resume';
 import { laneCopy, resumeTools } from '../../../content/copy/resumeExtras';
-import { recruiterBar } from '../../../content/copy/global';
-import { url } from '../../../lib/paths';
+import { entityEncode, url } from '../../../lib/paths';
 
 export function getStaticPaths() {
   return TAILORED_LANES.map((lane) => ({ params: { lane } }));
@@ -20,6 +20,7 @@ export function getStaticPaths() {
 
 const laneId = Astro.params.lane as Exclude<LaneId, 'gen'>;
 const lane = LANES[laneId];
+const mailLink = `<a class="btn" href="${entityEncode(`mailto:${identity.email}`)}">${resumeTools.email}</a>`;
 const routes: Record<Exclude<LaneId, 'gen'>, RouteMeta> = {
   emb: ROUTES.resumeEmb,
   plt: ROUTES.resumePlt,
@@ -28,15 +29,6 @@ const routes: Record<Exclude<LaneId, 'gen'>, RouteMeta> = {
 ---
 
 <Resume route={routes[laneId]}>
-  <div class="recruiter-bar recruiter-only screen-only" slot="top">
-    <div class="container">
-      <span>{recruiterBar.text}</span>
-      <button type="button" class="btn btn--small" data-reenable-chaos>
-        {recruiterBar.button}
-      </button>
-    </div>
-  </div>
-
   <div class="resume-page">
     <div class="lane-bar screen-only">
       <p class="lane-bar__kicker">{laneCopy.kicker(lane.label)}</p>
@@ -54,6 +46,7 @@ const routes: Record<Exclude<LaneId, 'gen'>, RouteMeta> = {
         <Icon name="printer" />
         {resumeTools.print}
       </button>
+      <Fragment set:html={mailLink} />
     </div>
     <LaneSwitcher current={laneId} />
   </div>

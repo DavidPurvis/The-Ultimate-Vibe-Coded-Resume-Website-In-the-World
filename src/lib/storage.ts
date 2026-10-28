@@ -4,6 +4,7 @@
  * in-memory fallback keeps the site working for the current page.
  */
 import type { DestId } from '../content/types';
+import { DEFAULT_CASE_FILE, validateCaseFile, type CaseFile } from './case';
 
 export const NS = 'uvcr:';
 export const PREFS_KEY = `${NS}prefs`;
@@ -56,6 +57,8 @@ export interface SessionState {
   identity: IdentitySnapshot | null;
   captcha: CaptchaSnapshot | null;
   casino: Partial<Record<DestId, number>>;
+  casinoLosses: number;
+  caseFile: CaseFile;
   lastPlayfulWasRick: boolean;
   threat: number;
   unload: 'idle' | 'armed' | 'fired';
@@ -83,6 +86,8 @@ export const DEFAULT_SESSION: SessionState = {
   identity: null,
   captcha: null,
   casino: {},
+  casinoLosses: 0,
+  caseFile: structuredClone(DEFAULT_CASE_FILE),
   lastPlayfulWasRick: false,
   threat: 0,
   unload: 'idle',
@@ -275,6 +280,8 @@ export function validateSession(o: Record<string, unknown> | null): SessionState
     identity: validateIdentity(o.identity),
     captcha: validateCaptcha(o.captcha),
     casino: validateCasino(o.casino),
+    casinoLosses: Math.min(999, Math.max(0, Math.floor(num(o.casinoLosses, 0)))),
+    caseFile: validateCaseFile(o.caseFile),
     lastPlayfulWasRick: bool(o.lastPlayfulWasRick, false),
     threat: Math.max(0, num(o.threat, 0)),
     unload: oneOf(o.unload, ['idle', 'armed', 'fired'] as const, 'idle'),
@@ -351,6 +358,7 @@ export function clearAll(): void {
   for (const area of ['local', 'session'] as const) {
     for (const k of [PREFS_KEY, SESSION_KEY]) safeRemove(area, k);
   }
+  if (typeof document !== 'undefined') document.dispatchEvent(new Event('uvcr:storage-reset'));
 }
 
 export function writeRaw(area: Area, key: string, value: string): void {
